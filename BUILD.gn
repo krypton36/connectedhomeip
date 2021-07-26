@@ -113,7 +113,7 @@ if (current_toolchain != "${dir_pw_toolchain}/default:default") {
         deps += [ "${chip_root}/src/tools/chip-cert" ]
       }
       if (chip_enable_python_modules) {
-        if (enable_pylib){
+        if (enable_pylib) {
           deps += [ "${chip_root}/src/pybindings/pycontroller" ]
         }
         deps += [ "${chip_root}/src/controller/python" ]
@@ -133,7 +133,7 @@ if (current_toolchain != "${dir_pw_toolchain}/default:default") {
       data_deps = [ "${chip_root}/examples/chip-tool" ]
 
       if (chip_enable_python_modules) {
-        if (enable_pylib){
+        if (enable_pylib) {
           data_deps += [ "${chip_root}/src/pybindings/pycontroller" ]
         }
         data_deps += [ "${chip_root}/src/controller/python" ]

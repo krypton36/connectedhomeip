@@ -124,7 +124,7 @@ pw_python_action("pycontroller") {
   inputs = [
     "${root_gen_dir}/include/pybindings/pycontroller/CHIPErrorToExceptionBindings.cpp",
     "${root_gen_dir}/include/pybindings/pycontroller/CHIPErrorToExceptionBindings.h",
-    ]
+  ]
   _py_manifest_files_rebased = []
   foreach(_manifest_entry, _py_manifest_files) {
     inputs += _manifest_entry.sources
