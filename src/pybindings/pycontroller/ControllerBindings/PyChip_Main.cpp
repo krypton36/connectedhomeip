@@ -18,8 +18,7 @@ PYBIND11_MODULE(PyChip, root_module)
     ModuleGetter M = [&](std::string const & namespace_) -> pybind11::module & {
         auto it = modules.find(namespace_);
         if (it == modules.end())
-            throw std::runtime_error("Attempt to access pybind11::module for namespace " + namespace_ +
-                                     " that does not exist!!!");
+            throw std::runtime_error("Attempt to access pybind11::module for namespace " + namespace_ + " that does not exist!!!");
         return it->second;
     };
 
