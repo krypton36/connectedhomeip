@@ -147,7 +147,7 @@ jobs:
               run: |
                   case $BUILD_TYPE in
                      "clang") brew install openssl pkg-config;;
-                     "python_lib") brew install openssl pkg-config python3.9;;
+                     "python_lib") brew install openssl pkg-config python@3.9;;
                      *) echo >&2 "Unrecognized build type: ${BUILD_TYPE}"; exit 1;;
 
                   esac
