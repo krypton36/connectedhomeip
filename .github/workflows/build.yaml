@@ -130,9 +130,11 @@ jobs:
         name: Build on Darwin
         timeout-minutes: 60
 
+        strategy:
+            matrix:
+                type: [clang, python_lib]
         env:
-            BUILD_TYPE: clang
-
+            BUILD_TYPE: ${{ matrix.type }}
         runs-on: macos-latest
         if: github.actor != 'restyled-io[bot]'
 
@@ -142,7 +144,13 @@ jobs:
               with:
                   submodules: true
             - name: Setup Environment
-              run: brew install openssl pkg-config
+              run: |
+                  case $BUILD_TYPE in
+                     "clang") brew install openssl pkg-config;;
+                     "python_lib") brew install openssl pkg-config python3.9;;
+                     *) echo >&2 "Unrecognized build type: ${BUILD_TYPE}"; exit 1;;
+
+                  esac
             - name: Fix pkgconfig link
               working-directory: /usr/local/lib/pkgconfig
               run: |
@@ -168,7 +176,13 @@ jobs:
               # the examples-linux-standalone.yaml tests on darwin without too
               # much code duplication.
               run: |
-                  scripts/build/gn_gen.sh --args='is_clang=true target_os="all"'
+                  case $BUILD_TYPE in
+                     "clang") GN_ARGS='is_clang=true target_os="all"';;
+                     "python_lib") GN_ARGS='is_clang=true target_os="all" enable_rtti=true enable_pylib=true';;
+                     *) echo >&2 "Unrecognized build type: ${BUILD_TYPE}"; exit 1;;
+
+                  esac
+                  scripts/build/gn_gen.sh --args="$GN_ARGS"
             - name: Run Build
               timeout-minutes: 30
               run: scripts/build/gn_build.sh
