@@ -54,8 +54,8 @@ shared_library("CHIPController") {
   }
 
   sources = [
-    "ControllerBindings/PyChip_ErrorStr.cpp",
     "ControllerBindings/PyChip_ChipError.cpp",
+    "ControllerBindings/PyChip_ErrorStr.cpp",
     "ControllerBindings/PyChip_Main.cpp",
   ]
 
@@ -88,9 +88,7 @@ pw_python_action("pycontroller") {
   _py_manifest_files = [
     {
       src_dir = "."
-      sources = [
-        "pychip/__init__.py",
-      ]
+      sources = [ "pychip/__init__.py" ]
     },
     {
       src_dir = target_out_dir
