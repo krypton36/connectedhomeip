@@ -72,7 +72,8 @@ void CHIPErrorToException(chip::ChipError err);
 def generate_cpp(error_codes):
     exception_binding = '\n\t'.join(
         [x.create_py_bind('M("ChipExceptions")') for x in error_codes])
-    elseifs = ''.join([x.create_else_if('err.AsInteger()') for x in error_codes])
+    elseifs = ''.join([x.create_else_if('err.AsInteger()')
+                      for x in error_codes])
     return '''
 #include "pybind11/pybind11.h"
 #include "CHIPErrorToExceptionBindings.h"
@@ -106,10 +107,11 @@ def create_error_bindings(error_path, config_path, header_out, cpp_out):
         config_header = f.read()
 
     if error_header != None and config_header != None:
-        error_code_re = re.compile(r'#define ([^\s]+).*CHIP_CORE_ERROR\((0[xX][0-9a-fA-F]+)\)')
+        error_code_re = re.compile(
+            r'#define ([^\s]+).*CHIP_CORE_ERROR\((0[xX][0-9a-fA-F]+)\)')
         error_code_tuples = error_code_re.findall(error_header)
         error_codes = [ErrorCode(x[0], x[1])
-                        for x in error_code_tuples]
+                       for x in error_code_tuples]
         header = generate_header(error_codes)
         cpp = generate_cpp(error_codes)
 
