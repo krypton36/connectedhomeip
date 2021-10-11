@@ -1,0 +1,257 @@
+# -*- coding: utf-8 -*-
+'''
+{{> header}}
+'''
+
+import PyChip
+import os
+import objc
+from Foundation import NSObject
+from PyDispatch import dispatch_queue_create
+from threading import Event
+
+GLOBAL_EVENT = Event()
+CHIPErrorCodeUnsupportedAttribute = 10
+
+def waitForEvent(timeout=5):
+    GLOBAL_EVENT.wait(5)
+    GLOBAL_EVENT.clear()
+
+os.environ["XCTestConfigurationFilePath"] = "/blah/"
+
+kPairingTimeoutInSeconds = 10
+kTimeoutInSeconds = 3
+kDeviceId = 1
+kDiscriminator = 3840
+kSetupPINCode = 20202021
+kRemotePort = 5540
+kLocalPort = 5541
+kAddress = "::1"
+
+
+class TestException(Exception):
+    pass
+
+
+def GetPairedDevice(deviceId):
+    controller = PyChip.CHIPDeviceController.sharedController()
+    if not controller:
+        raise TestException("Controller did not instantiate")
+
+    device = controller.getPairedDevice_error_(deviceId, None)
+    if isinstance(device, tuple) or not device:
+        raise TestException("Unable to obtain device")
+
+    return device
+
+
+class CHIPDevicePairingDelegate(NSObject):
+    def onStatusUpdate_(self, status):
+        print(status)
+
+    def onPairingComplete_(self, error):
+        print("Pairing complete")
+        GLOBAL_EVENT.set()
+        print(error)
+
+    def onPairingDeleted_(self, error):
+        print(error)
+
+    def onAddressUpdated_(self, error):
+        print(error)
+
+
+class CHIPClustersTests(object):
+    def __init__(self, device_id, ip_addr, local_port, remote_port, discriminator, setup_code):
+        self.device_id = device_id
+        self.ip_address = ip_addr
+        self.local_port = local_port
+        self.remote_port = remote_port
+        self.discriminator = discriminator
+        self.setup_code = setup_code
+        self.controller = PyChip.CHIPDeviceController.sharedController()
+
+    def setup(self):
+        pass
+
+    def testInitStack(self):
+        controller = PyChip.CHIPDeviceController.sharedController()
+        if not controller:
+            raise TestException("Controller did not instantiate")
+
+        pairDelegate = CHIPDevicePairingDelegate.alloc().init()
+        testDispatchQ = dispatch_queue_create("com.chip.pairing")
+        call_back_q = objc.objc_object(c_void_p=testDispatchQ)
+
+        controller.setListenPort_(kLocalPort)
+        controller.setPairingDelegate_queue_(pairDelegate, call_back_q)
+
+        started = controller.startup_vendorId_nocSigner_(None, 0, None)
+        if not started:
+            raise TestException("Controller was not started.")
+
+        controller.pairDevice_address_port_discriminator_setupPINCode_error_(self.device_id, self.ip_address, self.remote_port, self.discriminator, self.setup_code, None)
+        waitForEvent()
+
+    def testShutdownStack(self):
+        controller = PyChip.CHIPDeviceController.sharedController()
+        if not controller:
+            raise TestException("Controller did not instantiate")
+
+        error = controller.unpairDevice_error_(kDeviceId, None)
+        if error:
+            raise TestException("Unable to unpair device")
+
+        stopped = controller.shutdown()
+        if not stopped:
+            raise TestException("Unable to shutdown controller.")
+
+    def testReuseChipClusterObject(self):
+        result = {"test_passed": False, "error_str": ""}
+        device = GetPairedDevice(kDeviceId)
+        test_dispatch_q = dispatch_queue_create("com.chip.pairing")
+        call_back_q = objc.objc_object(c_void_p=test_dispatch_q)
+
+        cluster = PyChip.CHIPTestCluster.alloc().initWithDevice_endpoint_queue_(device, 1, call_back_q)
+        if not cluster:
+            raise TestException("Unable to instantiate cluster")
+
+        def response_callback(error, value):
+            result['test_passed'] = (error.code if error else 0) == 0
+            GLOBAL_EVENT.set()
+        
+        clust.test_(response_callback)
+        waitForEvent()
+
+        clust.test_(response_callback)
+        waitForEvent()
+        if not result['test_passed']:
+            raise TestException("Received error in test cluster")
+
+    def testSendClusterTestCluster_Reporting_0000_BindOnOff_Test(self):
+        result = {"test_passed": False, "error_str": ""}
+        device = GetPairedDevice(kDeviceId)
+        test_dispatch_q = dispatch_queue_create("com.chip.pairing")
+        call_back_q = objc.objc_object(c_void_p=test_dispatch_q)
+        binding_cluster = CHIPBinding.alloc().initWithDevice_endpoint_queue_(device, 1, call_back_q)
+        if not binding_cluster:
+            raise TestException("Unable to create binding cluster")
+
+        def response_callback(error, value):
+            result['test_passed'] = (error.code if error else 0) == 0
+            GLOBAL_EVENT.set()
+
+        binding_cluster.bind_groupId_endpointId_clusterId_responseHandler_(kDeviceId, 0, 1, 6, response_callback)
+        waitForEvent()
+        if not result['test_passed']:
+            raise TestException("Received error in test cluster")
+
+    def testSendClusterTestCluster_Reporting_0001_ConfigureOnOff_Test(self):
+        result = {"test_passed": False, "error_str": ""}
+        device = GetPairedDevice(kDeviceId)
+        test_dispatch_q = dispatch_queue_create("com.chip.pairing")
+        call_back_q = objc.objc_object(c_void_p=test_dispatch_q)
+        on_off_cluster = CHIPOnOff.alloc().initWithDevice_endpoint_queue_(device, 1, call_back_q)
+        if not on_off_cluster:
+            raise TestException("Unable to create binding cluster")
+
+        def response_callback(error, value):
+            result['test_passed'] = (error.code if error else 0) == 0
+            GLOBAL_EVENT.set()
+
+        on_off_cluster.configureAttributeOnOffWithMinInterval_maxInterval_responseHandler_(0,1, response_callback)
+        waitForEvent()
+        if not result['test_passed']:
+            raise TestException("Received error in test cluster")
+    
+    def testSendClusterTestCluster_Reporting_0002_ReportOnOff_Test(self):
+        result = {"test_passed": False, "error_str": ""}
+        device = GetPairedDevice(kDeviceId)
+        test_dispatch_q = dispatch_queue_create("com.chip.pairing")
+        call_back_q = objc.objc_object(c_void_p=test_dispatch_q)
+
+        on_off_cluster = CHIPOnOff.alloc().initWithDevice_endpoint_queue_(device, 1, call_back_q)
+        if not on_off_cluster:
+            raise TestException("Unable to create binding cluster")
+
+        def response_callback(error, value):
+            result['test_passed'] = (error.code if error else 0) == 0
+            GLOBAL_EVENT.set()
+
+
+        on_off_cluster.reportAttributeOnOffWithResponseHandler_(response_callback)
+        waitForEvent()
+        if not result['test_passed']:
+            raise TestException("Received error in test cluster")
+
+    def testSendClusterTestCluster_Reporting_0003_StopReportOnOff_Test(self):
+        result = {"test_passed": False, "error_str": ""}
+        device = GetPairedDevice(kDeviceId)
+        test_dispatch_q = dispatch_queue_create("com.chip.pairing")
+        call_back_q = objc.objc_object(c_void_p=test_dispatch_q)
+
+        on_off_cluster = CHIPOnOff.alloc().initWithDevice_endpoint_queue_(device, 1, call_back_q)
+        if not on_off_cluster:
+            raise TestException("Unable to create binding cluster")
+
+        def response_callback(error, value):
+            result['test_passed'] = (error.code if error else 0) == 0
+            GLOBAL_EVENT.set()
+
+        on_off_cluster.configureAttributeOnOffWithMinInterval_maxInterval_responseHandler_(0,0xFFFF, response_callback)
+        waitForEvent()
+        if not result['test_passed']:
+            raise TestException("Received error in test cluster")
+
+
+{{>test_cluster_python tests="TestCluster, Test_TC_OO_1_1, Test_TC_OO_2_1, Test_TC_OO_2_2, Test_TC_DM_1_1, Test_TC_DM_3_1, Test_TC_CC_3_4, Test_TC_CC_5, Test_TC_CC_6, Test_TC_CC_7, Test_TC_CC_8, Test_TC_WNCV_1_1, Test_TC_WNCV_2_1, Test_TC_BI_1_1, Test_TC_FLW_1_1, Test_TC_TM_1_1, Test_TC_OCC_1_1, OperationalCredentialsCluster"}}
+
+{{#chip_client_clusters}}
+{{#unless (isStrEqual "Test Cluster" name)}}
+{{#unless (isStrEqual "Basic" name)}}
+{{#chip_server_cluster_attributes}}
+    def testSendCluster{{asUpperCamelCase parent.name}}ReadAttribute{{asUpperCamelCase name}}WithResponseHandler(self):
+        result = {"test_passed": False, "error_str": ""}
+        device = GetPairedDevice(kDeviceId)
+        test_dispatch_q = dispatch_queue_create("com.chip.pairing")
+        call_back_q = objc.objc_object(c_void_p=test_dispatch_q)
+
+        cluster = PyChip.CHIP{{asUpperCamelCase parent.name}}.alloc().initWithDevice_endpoint_queue_(device, {{asExpectedEndpointForCluster (asUpperCamelCase parent.name)}}, call_back_q)
+        if not cluster:
+            raise TestException("Unable to create CHIP{{asUpperCamelCase parent.name}}")
+
+        def response_callback(error, value):
+            result['test_passed'] = (error.code if error else 0) == 0
+            GLOBAL_EVENT.set()
+
+
+        cluster.readAttribute{{asUpperCamelCase name}}WithResponseHandler_(response_callback)
+        waitForEvent()
+        if not result['test_passed']:
+            raise TestException("Received error in test cluster")
+
+{{#if isWritableAttribute}}
+    def testSendCluster{{asUpperCamelCase parent.name}}WriteAttribute{{asUpperCamelCase name}}WithValue(self):
+        result = {"test_passed": False, "error_str": ""}
+        device = GetPairedDevice(kDeviceId)
+        test_dispatch_q = dispatch_queue_create("com.chip.pairing")
+        call_back_q = objc.objc_object(c_void_p=test_dispatch_q)
+
+        cluster = PyChip.CHIP{{asUpperCamelCase parent.name}}.alloc().initWithDevice_endpoint_queue_(device, {{asExpectedEndpointForCluster (asUpperCamelCase parent.name)}}, call_back_q)
+        if not cluster:
+            raise TestException("Unable to create CHIP{{asUpperCamelCase parent.name}}")
+
+        def response_callback(error, value):
+            result['test_passed'] = (error.code if error else 0) == 0
+            GLOBAL_EVENT.set()
+
+        value = {{asTestValuePython}}
+        cluster.writeAttribute{{asUpperCamelCase name}}WithValue_responseHandler_(value, response_callback)
+        waitForEvent()
+        if not result['test_passed']:
+            raise TestException("Received error in test cluster")
+{{/if}}
+{{/chip_server_cluster_attributes}}
+{{/unless}}
+{{/unless}}
+{{/chip_client_clusters}}

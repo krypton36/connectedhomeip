@@ -1,0 +1,92 @@
+{{#chip_tests tests}}
+{{#chip_tests_items}}
+    def testSendCluster{{parent.filename}}_{{asTestIndex index}}_{{asUpperCamelCase command}}(self):
+        result = {"test_passed": False, "error_str": ""}
+        device = GetPairedDevice(kDeviceId)
+        test_dispatch_q = dispatch_queue_create("com.chip.pairing")
+        call_back_q = objc.objc_object(c_void_p=test_dispatch_q)
+
+        cluster = PyChip.CHIP{{asUpperCamelCase cluster}}.alloc().initWithDevice_endpoint_queue_(device, {{asExpectedEndpointForCluster (asUpperCamelCase parent.name)}}, call_back_q)
+        if not cluster:
+            raise TestException("Unable to create CHIP{{asUpperCamelCase cluster}}")
+
+        def response_callback(error, values):
+            {{#if optional}}
+            result['test_passed'] = err.code == CHIPErrorCodeUnsupportedAttribute
+            {{else}} 
+            result['test_passed'] = (error.code  if error else {{response.error}}) == {{response.error}}
+            result['error_str'] = "Received error in test cluster"
+            {{/if}}
+            {{#unless (isStrEqual "0" response.error)}}
+            {{else}}
+            {{#chip_tests_item_response_parameters}}
+            {{#if hasExpectedValue}}
+            {{#if isList}}
+            result['test_passed'] = len(values["{{#if parent.isReadAttribute}}value{{else}}{{name}}{{/if}}"]) == {{expectedValue.length}}
+            result['error_str'] = "List is unexpected length"
+            {{else}}
+            {{#if (isString type)}}
+            {{#if (isOctetString type)}}
+            result['test_passed'] = bytes(values["{{#if parent.isReadAttribute}}value{{else}}{{name}}{{/if}}"]) == expected_value
+            result['error_str'] = "Expected octect string does not match"
+            {{else}}
+            result['test_passed'] = values["{{#if parent.isReadAttribute}}value{{else}}{{name}}{{/if}}"] == "{{expectedValue}}"
+            result['error_str'] = "Expected value {{expectedValue}} does not match actual value {}".format(values["{{#if parent.isReadAttribute}}value{{else}}{{name}}{{/if}}"] )
+            {{/if}}
+            {{else}}
+            result['test_passed'] = values["{{#if parent.isReadAttribute}}value{{else}}{{name}}{{/if}}"] == {{expectedValue}}
+            result['error_str'] = "Expected value {{expectedValue}} does not match actual value {}".format(values["{{#if parent.isReadAttribute}}value{{else}}{{name}}{{/if}}"] )
+            {{/if}}
+            {{/if}}
+            {{/if}}
+            {{#if hasExpectedConstraints}}
+            {{#if expectedConstraints.minLength}}
+            result['test_passed'] = values["{{#if parent.isReadAttribute}}value{{else}}{{name}}{{/if}}"].length() >= {{expectedConstraints.minLength}}
+            result['error_str'] = "Expected value {{expectedValue}} is not less than or equal to {}".format(values["{{#if parent.isReadAttribute}}value{{else}}{{name}}{{/if}}"] )
+            {{/if}}
+            {{#if expectedConstraints.maxLength}}
+            result['test_passed'] = values["{{#if parent.isReadAttribute}}value{{else}}{{name}}{{/if}}"].length() <= {{expectedConstraints.maxLength}}
+            result['error_str'] = "Expected value {{expectedValue}} is not greater than or equal to {}".format(values["{{#if parent.isReadAttribute}}value{{else}}{{name}}{{/if}}"] )
+            {{/if}}
+            {{#if expectedConstraints.minValue}}
+            result['test_passed'] = values["{{#if parent.isReadAttribute}}value{{else}}{{name}}{{/if}}"] >= {{expectedConstraints.minValue}}
+            result['error_str'] = "Expected value {{expectedValue}} is not less than or equal to {}".format(values["{{#if parent.isReadAttribute}}value{{else}}{{name}}{{/if}}"] )
+            {{/if}}
+            {{#if expectedConstraints.maxValue}}
+            result['test_passed'] = [values["{{#if parent.isReadAttribute}}value{{else}}{{name}}{{/if}}"] <= {{expectedConstraints.maxValue}}
+            result['error_str'] = "Expected value {{expectedValue}} is not greater than or equal to {}".format(values["{{#if parent.isReadAttribute}}value{{else}}{{name}}{{/if}}"] )
+            {{/if}}
+            {{/if}}
+            {{/chip_tests_item_response_parameters}}
+            {{/unless}}
+            GLOBAL_EVENT.set()
+
+        {{#if isReadAttribute}}
+        {{else}}
+        {{#chip_tests_item_parameters}}
+        {{#if (isString type)}}
+        {{#if (isOctetString type)}}
+        {{asLowerCamelCase name}}ArgumentString= bytes.fromhex("{{definedValue}}")
+        {{else}}
+        {{asLowerCamelCase name}}Argument= "{{definedValue}}"
+        {{/if}}
+        {{else}}
+        {{asLowerCamelCase name}}Argument = {{definedValue}}
+        {{/if}}
+        {{/chip_tests_item_parameters}}
+        {{/if}}
+
+{{#if isCommand}}
+        cluster.{{asLowerCamelCase command}}_{{#chip_tests_item_parameters}}{{#if index includeZero=false}}{{asLowerCamelCase name}}_{{/if}}{{#last}}responseHandler_{{/last}}{{/chip_tests_item_parameters}}({{#chip_tests_item_parameters}}{{asLowerCamelCase name}}Argument, {{/chip_tests_item_parameters}}response_callback)
+{{else if isReadAttribute}}
+        cluster.readAttribute{{asUpperCamelCase attribute}}WithResponseHandler_(response_callback)
+{{else if isWriteAttribute}}
+        cluster.writeAttribute{{asUpperCamelCase attribute}}WithValue_responseHandler_({{#chip_tests_item_parameters}}{{asLowerCamelCase name}}Argument{{/chip_tests_item_parameters}}, response_callback)
+{{/if}}
+        waitForEvent()
+        if not result['test_passed']:
+            raise TestException(result['error_str'])
+        
+{{/chip_tests_items}}
+
+{{/chip_tests}}

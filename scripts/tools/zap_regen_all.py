@@ -66,12 +66,16 @@ def getSpecificTemplatesTargets():
 
     # Mapping of required template and output directory
     templates = {
-        'src/app/common/templates/templates.json': 'zzz_generated/app-common/app-common/zap-generated',
-        'examples/chip-tool/templates/templates.json': 'zzz_generated/chip-tool/zap-generated',
-        'src/controller/python/templates/templates.json': None,
+        # 'src/app/common/templates/templates.json': 'zzz_generated/app-common/app-common/zap-generated',
+        # 'examples/chip-tool/templates/templates.json': 'zzz_generated/chip-tool/zap-generated',
+        # 'src/controller/python/templates/templates.json': None,
         'src/darwin/Framework/CHIP/templates/templates.json': None,
+<<<<<<< Updated upstream
         'src/controller/java/templates/templates.json': None,
         'src/app/tests/suites/templates/templates.json': 'zzz_generated/controller-clusters/zap-generated',
+=======
+        # 'src/controller/java/templates/templates.json': None,
+>>>>>>> Stashed changes
     }
 
     for template, output_dir in templates.items():
@@ -89,7 +93,7 @@ def getSpecificTemplatesTargets():
 
 def getTargets():
     targets = []
-    targets.extend(getGlobalTemplatesTargets())
+    # targets.extend(getGlobalTemplatesTargets())
     targets.extend(getSpecificTemplatesTargets())
     return targets
 

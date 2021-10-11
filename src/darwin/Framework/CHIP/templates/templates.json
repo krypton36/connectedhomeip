@@ -20,6 +20,10 @@
             "path": "partials/test_cluster.zapt"
         },
         {
+            "name": "test_cluster_python",
+            "path": "partials/test_cluster_python.zapt"
+        },
+        {
             "name": "CHIPCallbackBridge",
             "path": "partials/CHIPCallbackBridge.zapt"
         }
@@ -64,6 +68,11 @@
             "path": "clusters-tests.zapt",
             "name": "Cluster Tests",
             "output": "src/darwin/Framework/CHIPTests/CHIPClustersTests.m"
+        },
+        {
+            "path": "clusters-python-tests.zapt",
+            "name": "Cluster Tests",
+            "output": "src/darwin/Framework/CHIPTests/CHIPClustersTests.py"
         }
     ]
 }

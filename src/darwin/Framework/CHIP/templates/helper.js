@@ -59,6 +59,17 @@ function asTestValue()
   }
 }
 
+function asTestValuePython()
+{
+  if (StringHelper.isOctetString(this.type)) {
+    return 'bytes("Test")';
+  } else if (StringHelper.isCharString(this.type)) {
+    return '"Test"';
+  } else {
+    return this.min || this.max || 0;
+  }
+}
+
 function asObjectiveCBasicType(type)
 {
   if (StringHelper.isOctetString(type)) {
@@ -122,3 +133,4 @@ exports.asObjectiveCNumberType       = asObjectiveCNumberType;
 exports.asExpectedEndpointForCluster = asExpectedEndpointForCluster;
 exports.asTestIndex                  = asTestIndex;
 exports.asTestValue                  = asTestValue;
+exports.asTestValuePython            = asTestValuePython;
