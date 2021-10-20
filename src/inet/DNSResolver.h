@@ -75,20 +75,6 @@ class DNSResolver : public InetLayerBasis
 private:
     friend class InetLayer;
 
-#if CHIP_SYSTEM_CONFIG_USE_SOCKETS
-#if INET_CONFIG_ENABLE_ASYNC_DNS_SOCKETS
-    friend class AsyncDNSResolverSockets;
-
-    /// States of the DNSResolver object with respect to hostname resolution.
-    typedef enum DNSResolverState{
-        kState_Unused   = 0, ///< Used to indicate that the DNSResolver object is not used.
-        kState_Active   = 2, ///< Used to indicate that a DNS resolution is being performed on the DNSResolver object.
-        kState_Complete = 3, ///< Used to indicate that the DNS resolution on the DNSResolver object is complete.
-        kState_Canceled = 4, ///< Used to indicate that the DNS resolution on the DNSResolver has been canceled.
-    } DNSResolverState;
-#endif // CHIP_SYSTEM_CONFIG_USE_SOCKETS
-#endif // INET_CONFIG_ENABLE_ASYNC_DNS_SOCKETS
-
     /**
      * @brief   Type of event handling function called when a DNS request completes.
      *
@@ -102,6 +88,44 @@ private:
      *  completion events.
      */
     typedef void (*OnResolveCompleteFunct)(void * appState, CHIP_ERROR err, uint8_t addrCount, IPAddress * addrArray);
+
+    /**
+     *  This method revolves a host name into a list of IP addresses.
+     *
+     *  @note
+     *     Even if the operation completes successfully, the result might be a zero-length list of IP addresses.
+     *     Most of the error generated are returned via the application callback.
+     *
+     *  @param[in]  hostName    A pointer to a C string representing the host name
+     *                          to be queried.
+     *  @param[in]  hostNameLen The string length of host name.
+     *  @param[in]  maxAddrs    The maximum number of addresses to store in the DNS
+     *                          table.
+     *  @param[in]  options     An integer value controlling how host name address
+     *                          resolution is performed.  Values are from the #DNSOptions
+     *                          enumeration.
+     *  @param[in]  addrArray   A pointer to the DNS table.
+     *  @param[in]  onComplete  A pointer to the callback function when a DNS
+     *                          request is complete.
+     *  @param[in]  appState    A pointer to the application state to be passed to
+     *                          onComplete when a DNS request is complete.
+     *
+     *  @retval CHIP_NO_ERROR                   if a DNS request is handled
+     *                                          successfully.
+     *  @retval CHIP_ERROR_NOT_IMPLEMENTED      if DNS resolution is not enabled on
+     *                                          the underlying platform.
+     *  @retval _other_                         if other POSIX network or OS error
+     *                                          was returned by the underlying DNS
+     *                                          resolver implementation.
+     *
+     */
+    CHIP_ERROR Resolve(const char * hostName, uint16_t hostNameLen, uint8_t options, uint8_t maxAddrs, IPAddress * addrArray,
+                       OnResolveCompleteFunct onComplete, void * appState);
+
+    /**
+     *  This method cancels DNS requests that are in progress.
+     */
+    CHIP_ERROR Cancel();
 
     static chip::System::ObjectPool<DNSResolver, INET_CONFIG_NUM_DNS_RESOLVERS> sPool;
 
@@ -130,6 +154,8 @@ private:
      */
     uint8_t DNSOptions;
 
+    CHIP_ERROR ResolveImpl(char * hostNameBuf);
+
 #if CHIP_SYSTEM_CONFIG_USE_SOCKETS
 
     void InitAddrInfoHints(struct addrinfo & hints);
@@ -137,26 +163,7 @@ private:
     void CopyAddresses(int family, uint8_t maxAddrs, const struct addrinfo * addrs);
     uint8_t CountAddresses(int family, const struct addrinfo * addrs);
 
-#if INET_CONFIG_ENABLE_ASYNC_DNS_SOCKETS
-
-    /* Hostname that requires resolution */
-    char asyncHostNameBuf[NL_DNS_HOSTNAME_MAX_LEN + 1]; // DNS limits hostnames to 253 max characters.
-
-    CHIP_ERROR asyncDNSResolveResult;
-    /* The next DNSResolver object in the asynchronous DNS resolution queue. */
-    DNSResolver * pNextAsyncDNSResolver;
-
-    DNSResolverState mState;
-
-    void HandleAsyncResolveComplete();
-
-#endif // INET_CONFIG_ENABLE_ASYNC_DNS_SOCKETS
-
 #endif // CHIP_SYSTEM_CONFIG_USE_SOCKETS
-
-    CHIP_ERROR Resolve(const char * hostName, uint16_t hostNameLen, uint8_t options, uint8_t maxAddrs, IPAddress * addrArray,
-                       OnResolveCompleteFunct onComplete, void * appState);
-    CHIP_ERROR Cancel();
 
 #if CHIP_SYSTEM_CONFIG_USE_LWIP
     void HandleResolveComplete(void);

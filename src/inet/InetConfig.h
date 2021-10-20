@@ -114,19 +114,6 @@
 #endif // INET_CONFIG_WILL_OVERRIDE_LWIP_ERROR_FUNCS
 
 /**
- *  @def INET_CONFIG_WILL_OVERRIDE_PLATFORM_XTOR_FUNCS
- *
- *  @brief
- *    This defines whether (1) or not (0) your platform will override
- *    the platform- and system-specific InetLayer WillInit, DidInit,
- *    WillShutdown, and DidShutdown.
- *
- */
-#ifndef INET_CONFIG_WILL_OVERRIDE_PLATFORM_XTOR_FUNCS
-#define INET_CONFIG_WILL_OVERRIDE_PLATFORM_XTOR_FUNCS       0
-#endif // INET_CONFIG_WILL_OVERRIDE_PLATFORM_XTOR_FUNCS
-
-/**
  *  @def INET_CONFIG_MAX_DROPPABLE_EVENTS
  *
  *  @brief
@@ -290,25 +277,6 @@
 #ifndef INET_CONFIG_TEST
 #define INET_CONFIG_TEST                                   0
 #endif
-
-/**
- * @def INET_CONFIG_ENABLE_ASYNC_DNS_SOCKETS
- *
- * @brief Enable asynchronous dns name resolution for Linux sockets.
- */
-#ifndef INET_CONFIG_ENABLE_ASYNC_DNS_SOCKETS
-#define INET_CONFIG_ENABLE_ASYNC_DNS_SOCKETS               1
-#endif // INET_CONFIG_ENABLE_ASYNC_DNS_SOCKETS
-
-/**
- * @def INET_CONFIG_DNS_ASYNC_MAX_THREAD_COUNT
- *
- * @brief The maximum number of POSIX threads that would be performing
- * asynchronous DNS resolution.
- */
-#ifndef INET_CONFIG_DNS_ASYNC_MAX_THREAD_COUNT
-#define INET_CONFIG_DNS_ASYNC_MAX_THREAD_COUNT             2
-#endif // INET_CONFIG_DNS_ASYNC_MAX_THREAD_COUNT
 
 /**
  *  @def INET_CONFIG_OVERRIDE_SYSTEM_TCP_USER_TIMEOUT

@@ -206,7 +206,7 @@ void ChannelContext::AddressResolveTimeout()
     EnterFailedState(CHIP_ERROR_PEER_NODE_NOT_FOUND);
 }
 
-void ChannelContext::HandleNodeIdResolve(CHIP_ERROR error, uint64_t nodeId, const Mdns::MdnsService & address)
+void ChannelContext::HandleNodeIdResolve(CHIP_ERROR error, uint64_t nodeId, const Dnssd::DnssdService & address)
 {
     switch (mState)
     {
@@ -274,7 +274,7 @@ void ChannelContext::EnterCasePairingState()
     ExchangeContext * ctxt = mExchangeManager->NewContext(session.Value(), prepare.mCasePairingSession);
     VerifyOrReturn(ctxt != nullptr);
 
-    Transport::FabricInfo * fabric = mFabricsTable->FindFabricWithIndex(mFabricIndex);
+    FabricInfo * fabric = mFabricsTable->FindFabricWithIndex(mFabricIndex);
     VerifyOrReturn(fabric != nullptr);
     CHIP_ERROR err = prepare.mCasePairingSession->EstablishSession(addr, fabric, prepare.mBuilder.GetPeerNodeId(),
                                                                    mExchangeManager->GetNextKeyId(), ctxt, this);

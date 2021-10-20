@@ -130,14 +130,14 @@ CHIP_ERROR LayerImplSelect::StartTimer(uint32_t delayMilliseconds, TimerComplete
     if (dispatchQueue)
     {
         (void) mTimerList.Add(timer);
-        dispatch_source_t timerSource = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, dispatchQueue);
+        dispatch_source_t timerSource = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, DISPATCH_TIMER_STRICT, dispatchQueue);
         if (timerSource == nullptr)
         {
             chipDie();
         }
 
         timer->mTimerSource = timerSource;
-        dispatch_source_set_timer(timerSource, dispatch_walltime(NULL, delayMilliseconds * NSEC_PER_MSEC), 0, 100 * NSEC_PER_MSEC);
+        dispatch_source_set_timer(timerSource, dispatch_walltime(NULL, delayMilliseconds * NSEC_PER_MSEC), 0, 2 * NSEC_PER_MSEC);
         dispatch_source_set_event_handler(timerSource, ^{
             dispatch_source_cancel(timerSource);
             dispatch_release(timerSource);
@@ -328,7 +328,7 @@ void LayerImplSelect::PrepareEvents()
 
     constexpr Clock::MonotonicMilliseconds kMaxTimeout =
         static_cast<Clock::MonotonicMilliseconds>(DEFAULT_MIN_SLEEP_PERIOD) * kMillisecondsPerSecond;
-    const Clock::MonotonicMilliseconds currentTime = Clock::GetMonotonicMilliseconds();
+    const Clock::MonotonicMilliseconds currentTime = SystemClock().GetMonotonicMilliseconds();
     Clock::MonotonicMilliseconds awakenTime        = currentTime + kMaxTimeout;
 
     Timer * timer = mTimerList.Earliest();
@@ -385,7 +385,7 @@ void LayerImplSelect::HandleEvents()
 
     // Obtain the list of currently expired timers. Any new timers added by timer callback are NOT handled on this pass,
     // since that could result in infinite handling of new timers blocking any other progress.
-    Timer::List expiredTimers(mTimerList.ExtractEarlier(1 + Clock::GetMonotonicMilliseconds()));
+    Timer::List expiredTimers(mTimerList.ExtractEarlier(1 + SystemClock().GetMonotonicMilliseconds()));
     Timer * timer = nullptr;
     while ((timer = expiredTimers.PopEarliest()) != nullptr)
     {

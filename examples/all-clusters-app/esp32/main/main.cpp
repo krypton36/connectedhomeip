@@ -23,6 +23,7 @@
 #include "Globals.h"
 #include "LEDWidget.h"
 #include "ListScreen.h"
+#include "OpenThreadLaunch.h"
 #include "QRCodeScreen.h"
 #include "ScreenManager.h"
 #include "WiFiWidget.h"
@@ -48,7 +49,7 @@
 #include <app-common/zap-generated/attribute-type.h>
 #include <app-common/zap-generated/cluster-id.h>
 #include <app/server/AppDelegate.h>
-#include <app/server/Mdns.h>
+#include <app/server/Dnssd.h>
 #include <app/server/OnboardingCodesUtil.h>
 #include <app/server/Server.h>
 #include <app/util/af-types.h>
@@ -68,6 +69,10 @@
 
 #if CONFIG_ENABLE_PW_RPC
 #include "Rpc.h"
+#endif
+
+#if CONFIG_OPENTHREAD_ENABLED
+#include <platform/ThreadStackManager.h>
 #endif
 
 using namespace ::chip;
@@ -325,6 +330,49 @@ public:
     }
 };
 
+class ActionListModel : public ListScreen::Model
+{
+    int GetItemCount() override { return static_cast<int>(mActions.size()); }
+    std::string GetItemText(int i) override { return mActions[i].title.c_str(); }
+    void ItemAction(int i) override
+    {
+        ESP_LOGI(TAG, "generic action %d", i);
+        mActions[i].action();
+    }
+
+protected:
+    void AddAction(const char * name, std::function<void(void)> action) { mActions.push_back(Action(name, action)); }
+
+private:
+    struct Action
+    {
+        std::string title;
+        std::function<void(void)> action;
+
+        Action(const char * t, std::function<void(void)> a) : title(t), action(a) {}
+    };
+
+    std::vector<Action> mActions;
+};
+
+class MdnsDebugListModel : public ActionListModel
+{
+public:
+    std::string GetTitle() override { return "mDNS Debug"; }
+
+    MdnsDebugListModel() { AddAction("(Re-)Init", std::bind(&MdnsDebugListModel::DoReinit, this)); }
+
+private:
+    void DoReinit()
+    {
+        CHIP_ERROR err = Dnssd::ServiceAdvertiser::Instance().Init(&DeviceLayer::InetLayer);
+        if (err != CHIP_NO_ERROR)
+        {
+            ESP_LOGE(TAG, "Error initializing: %s", err.AsString());
+        }
+    }
+};
+
 class SetupListModel : public ListScreen::Model
 {
 public:
@@ -355,10 +403,10 @@ public:
         }
         else if (i == 2)
         {
-            app::MdnsServer::Instance().StartServer(Mdns::CommissioningMode::kEnabledBasic);
+            app::DnssdServer::Instance().StartServer(Dnssd::CommissioningMode::kEnabledBasic);
             chip::Server::GetInstance().GetFabricTable().DeleteAllFabrics();
             chip::Server::GetInstance().GetCommissioningWindowManager().OpenBasicCommissioningWindow(
-                kNoCommissioningTimeout, CommissioningWindowAdvertisement::kMdnsOnly);
+                kNoCommissioningTimeout, CommissioningWindowAdvertisement::kDnssdOnly);
         }
     }
 
@@ -611,6 +659,11 @@ extern "C" void app_main()
     chip::LaunchShell();
 #endif // CONFIG_ENABLE_CHIP_SHELL
 
+#if CONFIG_OPENTHREAD_ENABLED
+    LaunchOpenThread();
+    ThreadStackMgr().InitThreadStack();
+#endif
+
     CHIPDeviceManager & deviceMgr = CHIPDeviceManager::GetInstance();
 
     CHIP_ERROR error = deviceMgr.Init(&EchoCallbacks);
@@ -686,10 +739,10 @@ extern "C" void app_main()
                        ESP_LOGI(TAG, "Opening device list");
                        ScreenManager::PushScreen(chip::Platform::New<ListScreen>(chip::Platform::New<DeviceListModel>()));
                    })
-            ->Item("Custom",
+            ->Item("mDNS Debug",
                    []() {
-                       ESP_LOGI(TAG, "Opening custom screen");
-                       ScreenManager::PushScreen(chip::Platform::New<CustomScreen>());
+                       ESP_LOGI(TAG, "Opening MDNS debug");
+                       ScreenManager::PushScreen(chip::Platform::New<ListScreen>(chip::Platform::New<MdnsDebugListModel>()));
                    })
             ->Item("QR Code",
                    [=]() {
@@ -711,6 +764,11 @@ extern "C" void app_main()
                    [=]() {
                        ESP_LOGI(TAG, "Opening Setup list");
                        ScreenManager::PushScreen(chip::Platform::New<ListScreen>(chip::Platform::New<SetupListModel>()));
+                   })
+            ->Item("Custom",
+                   []() {
+                       ESP_LOGI(TAG, "Opening custom screen");
+                       ScreenManager::PushScreen(chip::Platform::New<CustomScreen>());
                    })
             ->Item("More")
             ->Item("Items")

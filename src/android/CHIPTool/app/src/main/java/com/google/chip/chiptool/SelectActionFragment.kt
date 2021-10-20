@@ -53,7 +53,10 @@ class SelectActionFragment : Fragment() {
       onOffClusterBtn.setOnClickListener { getCallback()?.handleOnOffClicked() }
       sensorClustersBtn.setOnClickListener{ getCallback()?.handleSensorClicked() }
       multiAdminClusterBtn.setOnClickListener{ getCallback()?.handleMultiAdminClicked() }
+      opCredClustersBtn.setOnClickListener{ getCallback()?.handleOpCredClicked() }
+      basicClusterBtn.setOnClickListener{ getCallback()?.handleBasicClicked() }
       attestationTestBtn.setOnClickListener { getCallback()?.handleAttestationTestClicked() }
+      clusterInteractionBtn.setOnClickListener { getCallback()?.handleClusterInteractionClicked() }
     }
   }
 
@@ -112,10 +115,16 @@ class SelectActionFragment : Fragment() {
     fun handleSensorClicked()
     /** Notifies listener of Multi-admin Clusters button click. */
     fun handleMultiAdminClicked()
+    /** Notifies listener of Operational Credentials Clusters button click. */
+    fun handleOpCredClicked()
+    /** Notifies listener of Basic Clusters button click. */
+    fun handleBasicClicked()
     /** Notifies listener of attestation command button clicked. */
     fun handleAttestationTestClicked()
     /** Notifies listener of a click to manually input the CHIP device address.. */
     fun onShowDeviceAddressInput()
+    /** Notifies listener of cluster interaction button click.. */
+    fun handleClusterInteractionClicked()
   }
 
   companion object {

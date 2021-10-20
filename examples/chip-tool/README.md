@@ -1,10 +1,9 @@
-# CHIP Client Example
+# Matter Client Example
 
-An example application that uses CHIP to send messages to a CHIP server.
+An example application that uses Matter to send messages to a Matter server.
 
 ---
 
--   [CHIP Client Example](#chip-client-example)
 -   [Building the Example Application](#building-the-example-application)
 -   [Using the Client to Request an Echo](#using-the-client-to-request-an-echo)
 
@@ -78,18 +77,28 @@ or equivalently:
 
 #### Pair a device over IP
 
-The command below will pair to a localhost device (`::1`) running the
-`all-clusters-app` on the default port (`5540`) over IPv6:
+The command below will discover devices and try to pair with the first one it
+discovers using the provided setup code.
 
-    $ chip-tool pairing onnetwork 0 20202021 3840 ::1 5540
+    $ chip-tool pairing onnetwork 20202021
+
+The command below will discover devices with long discriminator 3840 and try to
+pair with the first one it discovers using the provided setup code.
+
+    $ chip-tool pairing onnetwork-long 20202021 3840
+
+The command below will discover devices based on the given QR code (which
+devices log when they start up) and try to pair with the first one it discovers.
+
+    $ chip-tool pairing qrcode MT:#######
 
 ### Forget the currently-commissioned device
 
     $ chip-tool pairing unpair
 
-## Using the Client to Send CHIP Commands
+## Using the Client to Send Matter Commands
 
-To use the Client to send a CHIP commands, run the built executable and pass it
+To use the Client to send Matter commands, run the built executable and pass it
 the target cluster name, the target command name as well as an endpoint id.
 
 The endpoint id must be between 1 and 240.

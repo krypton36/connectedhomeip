@@ -21,6 +21,7 @@
 
 #include <lib/core/CHIPEncoding.h>
 #include <lib/support/CHIPMem.h>
+#include <lib/support/CHIPMemString.h>
 #include <lib/support/SafeInt.h>
 #include <transport/FabricTable.h>
 #if CHIP_CRYPTO_HSM
@@ -31,14 +32,9 @@ namespace chip {
 using namespace Credentials;
 using namespace Crypto;
 
-namespace Transport {
-
-CHIP_ERROR FabricInfo::SetFabricLabel(const uint8_t * fabricLabel)
+CHIP_ERROR FabricInfo::SetFabricLabel(const CharSpan & fabricLabel)
 {
-    const char * charFabricLabel = Uint8::to_const_char(fabricLabel);
-    size_t stringLength          = strnlen(charFabricLabel, kFabricLabelMaxLengthInBytes);
-    memcpy(mFabricLabel, charFabricLabel, stringLength);
-    mFabricLabel[stringLength] = '\0'; // Set null terminator
+    Platform::CopyString(mFabricLabel, fabricLabel);
 
     return CHIP_NO_ERROR;
 }
@@ -588,5 +584,4 @@ CHIP_ERROR FabricTable::SetFabricDelegate(FabricTableDelegate * delegate)
     return CHIP_NO_ERROR;
 }
 
-} // namespace Transport
 } // namespace chip

@@ -44,20 +44,14 @@
     EmberEventControl emberAfLevelControlClusterServerTickCallbackControl1;                                                        \
     EmberEventControl emberAfBarrierControlClusterServerTickCallbackControl1;                                                      \
     EmberEventControl emberAfIasZoneClusterServerTickCallbackControl1;                                                             \
-    extern EmberEventControl emberAfPluginColorControlServerHueSatTransitionEventControl;                                          \
-    extern EmberEventControl emberAfPluginColorControlServerTempTransitionEventControl;                                            \
-    extern EmberEventControl emberAfPluginColorControlServerXyTransitionEventControl;                                              \
     extern EmberEventControl emberAfPluginDoorLockServerLockoutEventControl;                                                       \
     extern EmberEventControl emberAfPluginDoorLockServerRelockEventControl;                                                        \
     extern EmberEventControl emberAfPluginIasZoneServerManageQueueEventControl;                                                    \
-    extern EmberEventControl emberAfPluginReportingTickEventControl;                                                               \
-    extern void emberAfPluginColorControlServerHueSatTransitionEventHandler(void);                                                 \
     extern void emberAfPluginColorControlServerTempTransitionEventHandler(void);                                                   \
     extern void emberAfPluginColorControlServerXyTransitionEventHandler(void);                                                     \
     extern void emberAfPluginDoorLockServerLockoutEventHandler(void);                                                              \
     extern void emberAfPluginDoorLockServerRelockEventHandler(void);                                                               \
     extern void emberAfPluginIasZoneServerManageQueueEventHandler(void);                                                           \
-    extern void emberAfPluginReportingTickEventHandler(void);                                                                      \
     static void clusterTickWrapper(EmberEventControl * control, EmberAfTickFunction callback, chip::EndpointId endpoint)           \
     {                                                                                                                              \
         /* emberAfPushEndpointNetworkIndex(endpoint); */                                                                           \
@@ -86,20 +80,15 @@
         { &emberAfBarrierControlClusterServerTickCallbackControl1,                                                                 \
           emberAfBarrierControlClusterServerTickCallbackWrapperFunction1 },                                                        \
         { &emberAfIasZoneClusterServerTickCallbackControl1, emberAfIasZoneClusterServerTickCallbackWrapperFunction1 },             \
-        { &emberAfPluginColorControlServerHueSatTransitionEventControl,                                                            \
-          emberAfPluginColorControlServerHueSatTransitionEventHandler },                                                           \
-        { &emberAfPluginColorControlServerTempTransitionEventControl, emberAfPluginColorControlServerTempTransitionEventHandler }, \
-        { &emberAfPluginColorControlServerXyTransitionEventControl, emberAfPluginColorControlServerXyTransitionEventHandler },     \
         { &emberAfPluginDoorLockServerLockoutEventControl, emberAfPluginDoorLockServerLockoutEventHandler },                       \
         { &emberAfPluginDoorLockServerRelockEventControl, emberAfPluginDoorLockServerRelockEventHandler },                         \
-        { &emberAfPluginIasZoneServerManageQueueEventControl, emberAfPluginIasZoneServerManageQueueEventHandler },                 \
-        { &emberAfPluginReportingTickEventControl, emberAfPluginReportingTickEventHandler },
+        { &emberAfPluginIasZoneServerManageQueueEventControl, emberAfPluginIasZoneServerManageQueueEventHandler },
 
 #define EMBER_AF_GENERATED_EVENT_STRINGS                                                                                           \
     "Level Control Cluster Server EP 1", "Barrier Control Cluster Server EP 1", "IAS Zone Cluster Server EP 1",                    \
         "Color Control Cluster Server Plugin HueSatTransition", "Color Control Cluster Server Plugin TempTransition",              \
         "Color Control Cluster Server Plugin XyTransition", "Door Lock Server Cluster Plugin Lockout",                             \
-        "Door Lock Server Cluster Plugin Relock", "IAS Zone Server Plugin ManageQueue", "Reporting Plugin Tick",
+        "Door Lock Server Cluster Plugin Relock", "IAS Zone Server Plugin ManageQueue",
 
 // The length of the event context table used to track and retrieve cluster events
 #define EMBER_AF_EVENT_CONTEXT_LENGTH 3

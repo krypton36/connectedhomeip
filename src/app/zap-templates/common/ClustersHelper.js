@@ -300,12 +300,14 @@ function handleBasic(item, [ atomics, enums, bitmaps, structs ])
 
   const enumItem = getEnum(enums, itemType);
   if (enumItem) {
-    itemType = enumItem.type;
+    item.isEnum = true;
+    itemType    = enumItem.type;
   }
 
   const bitmap = getBitmap(bitmaps, itemType);
   if (bitmap) {
-    itemType = bitmap.type;
+    item.isBitmap = true;
+    itemType      = bitmap.type;
   }
 
   const atomic = getAtomic(atomics, itemType);
@@ -313,7 +315,6 @@ function handleBasic(item, [ atomics, enums, bitmaps, structs ])
     item.name                = item.name || item.label;
     item.isStruct            = false;
     item.atomicTypeId        = atomic.atomicId;
-    item.isAnalog            = atomic.isDiscrete == false && atomic.isString == false;
     item.size                = atomic.size;
     item.chipType            = atomic.chipType;
     item.chipTypePutLength   = asPutLength(atomic.chipType);
@@ -432,15 +433,16 @@ function enhancedCommands(commands, types)
     return commands.find(command => command.responseName == responseName);
   });
 
-  // At this stage, 'command.arguments' may contains 'struct'. But controllers does not know (yet) how
+  // At this stage, 'command.arguments' may contains 'struct'. But some controllers does not know (yet) how
   // to handle them. So those needs to be inlined.
   commands.forEach(command => {
     if (command.isResponse) {
       return;
     }
 
-    command.arguments = inlineStructItems(command.arguments);
+    command.expandedArguments = inlineStructItems(command.arguments);
   });
+
   return commands;
 }
 

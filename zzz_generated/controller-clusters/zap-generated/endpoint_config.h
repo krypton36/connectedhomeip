@@ -444,7 +444,7 @@
 
 // Array of EmberAfCommandMetadata structs.
 #define ZAP_COMMAND_MASK(mask) COMMAND_MASK_##mask
-#define EMBER_AF_GENERATED_COMMAND_COUNT (237)
+#define EMBER_AF_GENERATED_COMMAND_COUNT (246)
 #define GENERATED_COMMANDS                                                                                                         \
     {                                                                                                                              \
                                                                                                                                    \
@@ -452,6 +452,7 @@
         { 0x0003, 0x00, ZAP_COMMAND_MASK(INCOMING_SERVER) },     /* Identify */                                                    \
             { 0x0003, 0x00, ZAP_COMMAND_MASK(INCOMING_CLIENT) }, /* IdentifyQueryResponse */                                       \
             { 0x0003, 0x01, ZAP_COMMAND_MASK(INCOMING_SERVER) }, /* IdentifyQuery */                                               \
+            { 0x0003, 0x40, ZAP_COMMAND_MASK(OUTGOING_CLIENT) }, /* TriggerEffect */                                               \
                                                                                                                                    \
             /* Endpoint: 1, Cluster: Groups (client) */                                                                            \
             { 0x0004, 0x00, ZAP_COMMAND_MASK(INCOMING_SERVER) }, /* AddGroup */                                                    \
@@ -763,6 +764,14 @@
             { 0x050F, 0x02, ZAP_COMMAND_MASK(INCOMING_SERVER) }, /* TestSpecific */                                                \
             { 0x050F, 0x03, ZAP_COMMAND_MASK(OUTGOING_CLIENT) }, /* TestUnknownCommand */                                          \
             { 0x050F, 0x04, ZAP_COMMAND_MASK(INCOMING_SERVER) }, /* TestAddArguments */                                            \
+            { 0x050F, 0x04, ZAP_COMMAND_MASK(INCOMING_CLIENT) }, /* TestListInt8UReverseResponse */                                \
+            { 0x050F, 0x07, ZAP_COMMAND_MASK(INCOMING_SERVER) }, /* TestStructArgumentRequest */                                   \
+            { 0x050F, 0x08, ZAP_COMMAND_MASK(INCOMING_SERVER) }, /* TestNestedStructArgumentRequest */                             \
+            { 0x050F, 0x09, ZAP_COMMAND_MASK(INCOMING_SERVER) }, /* TestListStructArgumentRequest */                               \
+            { 0x050F, 0x0A, ZAP_COMMAND_MASK(INCOMING_SERVER) }, /* TestListInt8UArgumentRequest */                                \
+            { 0x050F, 0x0B, ZAP_COMMAND_MASK(INCOMING_SERVER) }, /* TestNestedStructListArgumentRequest */                         \
+            { 0x050F, 0x0C, ZAP_COMMAND_MASK(INCOMING_SERVER) }, /* TestListNestedStructListArgumentRequest */                     \
+            { 0x050F, 0x0D, ZAP_COMMAND_MASK(INCOMING_SERVER) }, /* TestListInt8UReverseRequest */                                 \
                                                                                                                                    \
             /* Endpoint: 1, Cluster: Binding (client) */                                                                           \
             { 0xF000, 0x00, ZAP_COMMAND_MASK(INCOMING_SERVER) }, /* Bind */                                                        \
@@ -773,7 +782,7 @@
 #define GENERATED_COMMAND_MANUFACTURER_CODE_COUNT (1)
 #define GENERATED_COMMAND_MANUFACTURER_CODES                                                                                       \
     {                                                                                                                              \
-        { 43, 4098 },                                                                                                              \
+        { 44, 4098 },                                                                                                              \
     }
 
 // This is an array of EmberAfManufacturerCodeEntry structures for clusters.
@@ -792,17 +801,4 @@
         {                                                                                                                          \
             0x00, 0x00                                                                                                             \
         }                                                                                                                          \
-    }
-
-// Array of EmberAfPluginReportingEntry structures.
-#define ZRD(x) EMBER_ZCL_REPORTING_DIRECTION_##x
-#define ZAP_REPORT_DIRECTION(x) ZRD(x)
-
-// User options for plugin Reporting
-#define EMBER_AF_PLUGIN_REPORTING_TABLE_SIZE (0)
-#define EMBER_AF_PLUGIN_REPORTING_ENABLE_GROUP_BOUND_REPORTS
-
-#define EMBER_AF_GENERATED_REPORTING_CONFIG_DEFAULTS_TABLE_SIZE (0)
-#define EMBER_AF_GENERATED_REPORTING_CONFIG_DEFAULTS                                                                               \
-    {                                                                                                                              \
     }
