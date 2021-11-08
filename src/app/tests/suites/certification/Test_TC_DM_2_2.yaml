@@ -31,7 +31,7 @@ tests:
       # TODO: Enabled and update value when SDK supports this.
       disabled: true
       attribute: "NOCs"
-      PICS: DM_ICACERT   
+      PICS: DM_ICACERT
       response:
           value: [{NOC: 0}]
           constraints:
@@ -42,7 +42,7 @@ tests:
        # TODO: Enabled and update value when SDK supports this.
       disabled: true
       attribute: "NOCs"
-      PICS: DM_ICACERT   
+      PICS: DM_ICACERT
       response:
           value: [{NOC: 0, ICAC: 0 }]
           constraints:
