@@ -33,18 +33,19 @@ tests:
       attribute: "NOCs"
       PICS: DM_ICACERT
       response:
-          value: [{NOC: 0}]
+          value: [{ NOC: 0 }]
           constraints:
               type: list
 
     - label: "Query NOCs"
-      command: "readAttribute"
-       # TODO: Enabled and update value when SDK supports this.
+      command:
+          "readAttribute"
+          # TODO: Enabled and update value when SDK supports this.
       disabled: true
       attribute: "NOCs"
       PICS: DM_ICACERT
       response:
-          value: [{NOC: 0, ICAC: 0 }]
+          value: [{ NOC: 0, ICAC: 0 }]
           constraints:
               type: list
 
@@ -52,7 +53,17 @@ tests:
       command: "readAttribute"
       attribute: "fabrics list"
       response:
-          value: [{FabricIndex: 0, RootPublicKey: 65, VendorID: 65521, FabricID: 0, NodeID: 305414945, Label: ""}]
+          value:
+              [
+                  {
+                      FabricIndex: 0,
+                      RootPublicKey: 65,
+                      VendorID: 65521,
+                      FabricID: 0,
+                      NodeID: 305414945,
+                      Label: "",
+                  },
+              ]
           constraints:
               type: list
 
