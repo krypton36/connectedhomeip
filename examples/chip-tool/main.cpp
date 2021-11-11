@@ -18,6 +18,7 @@
 
 #include "commands/common/Commands.h"
 
+#include "commands/advertising/Commands.h"
 #include "commands/discover/Commands.h"
 #include "commands/pairing/Commands.h"
 #include "commands/payload/Commands.h"
@@ -38,6 +39,7 @@ int main(int argc, char * argv[])
     registerCommandsReporting(commands);
     registerCommandsTests(commands);
     registerClusters(commands);
+    registerCommandsAdvertising(commands);
 
     return commands.Run(argc, argv);
 }

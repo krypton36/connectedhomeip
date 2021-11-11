@@ -32,69 +32,20 @@
 #include <lib/support/ScopedBuffer.h>
 #include <lib/support/logging/CHIPLogging.h>
 
-constexpr const char * kOptionalArgumentPrefix = "--";
-constexpr size_t kOptionalArgumentPrefixLength = 2;
-
 bool Command::InitArguments(int argc, char ** argv)
 {
     bool isValidCommand = false;
+    size_t argsCount    = mArgs.size();
 
-    size_t argvExtraArgsCount = (size_t) argc;
-    size_t mandatoryArgsCount = 0;
-    size_t optionalArgsCount  = 0;
-    for (size_t i = 0; i < mArgs.size(); i++)
+    VerifyOrExit(argsCount == (size_t)(argc),
+                 ChipLogError(chipTool, "InitArgs: Wrong arguments number: %d instead of %zu", argc, argsCount));
+
+    for (size_t i = 0; i < argsCount; i++)
     {
-        if (mArgs[i].optional)
-        {
-            optionalArgsCount++;
-        }
-        else
-        {
-            mandatoryArgsCount++;
-            argvExtraArgsCount--;
-        }
-    }
-
-    VerifyOrExit((size_t)(argc) >= mandatoryArgsCount && (argvExtraArgsCount == 0 || (argvExtraArgsCount && optionalArgsCount)),
-                 ChipLogError(chipTool, "InitArgs: Wrong arguments number: %d instead of %zu", argc, mandatoryArgsCount));
-
-    // Initialize mandatory arguments
-    for (size_t i = 0; i < mandatoryArgsCount; i++)
-    {
-        char * arg = argv[i];
-        if (!InitArgument(i, arg))
+        if (!InitArgument(i, argv[i]))
         {
             ExitNow();
         }
-    }
-
-    // Initialize optional arguments
-    // Optional arguments expect a name and a value, so i is increased by 2 on every step.
-    for (size_t i = mandatoryArgsCount; i < (size_t) argc; i += 2)
-    {
-        bool found = false;
-        for (size_t j = mandatoryArgsCount; j < mandatoryArgsCount + optionalArgsCount; j++)
-        {
-            // optional arguments starts with kOptionalArgumentPrefix
-            if (strlen(argv[i]) <= kOptionalArgumentPrefixLength &&
-                strncmp(argv[i], kOptionalArgumentPrefix, kOptionalArgumentPrefixLength) != 0)
-            {
-                continue;
-            }
-
-            if (strcmp(argv[i] + strlen(kOptionalArgumentPrefix), mArgs[j].name) == 0)
-            {
-                found = true;
-
-                VerifyOrExit((size_t) argc > (i + 1),
-                             ChipLogError(chipTool, "InitArgs: Optional argument %s missing value.", argv[i]));
-                if (!InitArgument(j, argv[i + 1]))
-                {
-                    ExitNow();
-                }
-            }
-        }
-        VerifyOrExit(found, ChipLogError(chipTool, "InitArgs: Optional argument %s does not exist.", argv[i]));
     }
 
     isValidCommand = true;
@@ -142,16 +93,14 @@ bool Command::InitArgument(size_t argIndex, char * argValue)
     switch (arg.type)
     {
     case ArgumentType::Attribute: {
-        if (arg.optional)
-            arg.value = &(reinterpret_cast<chip::Optional<char *> *>(arg.value))->Emplace();
+        ChipLogProgress(chipTool, "Attribute value passed in.");
         char * value    = reinterpret_cast<char *>(arg.value);
         isValidArgument = (strcmp(argValue, value) == 0);
         break;
     }
 
     case ArgumentType::String: {
-        if (arg.optional)
-            arg.value = &(reinterpret_cast<chip::Optional<const char **> *>(arg.value))->Emplace();
+        ChipLogProgress(chipTool, "String value passed in.");
         const char ** value = reinterpret_cast<const char **>(arg.value);
         *value              = argValue;
         isValidArgument     = true;
@@ -159,8 +108,8 @@ bool Command::InitArgument(size_t argIndex, char * argValue)
     }
 
     case ArgumentType::CharString: {
-        if (arg.optional)
-            arg.value = &(reinterpret_cast<chip::Optional<chip::Span<const char>> *>(arg.value))->Emplace();
+        ChipLogProgress(chipTool, "CharString value passed in.");
+        //  malloc( strlen( argv[1] ) + 1 );
         auto * value    = static_cast<chip::Span<const char> *>(arg.value);
         *value          = chip::Span<const char>(argValue, strlen(argValue));
         isValidArgument = true;
@@ -168,8 +117,7 @@ bool Command::InitArgument(size_t argIndex, char * argValue)
     }
 
     case ArgumentType::OctetString: {
-        if (arg.optional)
-            arg.value = &(reinterpret_cast<chip::Optional<chip::ByteSpan> *>(arg.value))->Emplace();
+        ChipLogProgress(chipTool, "OctetString value passed in.");
         auto * value = static_cast<chip::ByteSpan *>(arg.value);
         // We support two ways to pass an octet string argument.  If it happens
         // to be all-ASCII, you can just pass it in.  Otherwise you can pass in
@@ -224,8 +172,6 @@ bool Command::InitArgument(size_t argIndex, char * argValue)
 
     case ArgumentType::Boolean:
     case ArgumentType::Number_uint8: {
-        if (arg.optional)
-            arg.value = &(reinterpret_cast<chip::Optional<uint8_t> *>(arg.value))->Emplace();
         uint8_t * value = reinterpret_cast<uint8_t *>(arg.value);
 
         // stringstream treats uint8_t as char, which is not what we want here.
@@ -249,8 +195,6 @@ bool Command::InitArgument(size_t argIndex, char * argValue)
     }
 
     case ArgumentType::Number_uint16: {
-        if (arg.optional)
-            arg.value = &(reinterpret_cast<chip::Optional<uint16_t> *>(arg.value))->Emplace();
         uint16_t * value = reinterpret_cast<uint16_t *>(arg.value);
         std::stringstream ss;
         isHexNotation ? ss << std::hex << argValue : ss << argValue;
@@ -263,8 +207,6 @@ bool Command::InitArgument(size_t argIndex, char * argValue)
     }
 
     case ArgumentType::Number_uint32: {
-        if (arg.optional)
-            arg.value = &(reinterpret_cast<chip::Optional<uint32_t> *>(arg.value))->Emplace();
         uint32_t * value = reinterpret_cast<uint32_t *>(arg.value);
         std::stringstream ss;
         isHexNotation ? ss << std::hex << argValue : ss << argValue;
@@ -277,8 +219,6 @@ bool Command::InitArgument(size_t argIndex, char * argValue)
     }
 
     case ArgumentType::Number_uint64: {
-        if (arg.optional)
-            arg.value = &(reinterpret_cast<chip::Optional<uint64_t> *>(arg.value))->Emplace();
         uint64_t * value = reinterpret_cast<uint64_t *>(arg.value);
         std::stringstream ss;
         isHexNotation ? ss << std::hex << argValue : ss << argValue;
@@ -291,8 +231,6 @@ bool Command::InitArgument(size_t argIndex, char * argValue)
     }
 
     case ArgumentType::Number_int8: {
-        if (arg.optional)
-            arg.value = &(reinterpret_cast<chip::Optional<int8_t> *>(arg.value))->Emplace();
         int8_t * value = reinterpret_cast<int8_t *>(arg.value);
 
         // stringstream treats int8_t as char, which is not what we want here.
@@ -316,8 +254,6 @@ bool Command::InitArgument(size_t argIndex, char * argValue)
     }
 
     case ArgumentType::Number_int16: {
-        if (arg.optional)
-            arg.value = &(reinterpret_cast<chip::Optional<int16_t> *>(arg.value))->Emplace();
         int16_t * value = reinterpret_cast<int16_t *>(arg.value);
         std::stringstream ss;
         isHexNotation ? ss << std::hex << argValue : ss << argValue;
@@ -330,8 +266,6 @@ bool Command::InitArgument(size_t argIndex, char * argValue)
     }
 
     case ArgumentType::Number_int32: {
-        if (arg.optional)
-            arg.value = &(reinterpret_cast<chip::Optional<int32_t> *>(arg.value))->Emplace();
         int32_t * value = reinterpret_cast<int32_t *>(arg.value);
         std::stringstream ss;
         isHexNotation ? ss << std::hex << argValue : ss << argValue;
@@ -344,8 +278,6 @@ bool Command::InitArgument(size_t argIndex, char * argValue)
     }
 
     case ArgumentType::Number_int64: {
-        if (arg.optional)
-            arg.value = &(reinterpret_cast<chip::Optional<int64_t> *>(arg.value))->Emplace();
         int64_t * value = reinterpret_cast<int64_t *>(arg.value);
         std::stringstream ss;
         isHexNotation ? ss << std::hex << argValue : ss << argValue;
@@ -358,8 +290,6 @@ bool Command::InitArgument(size_t argIndex, char * argValue)
     }
 
     case ArgumentType::Address: {
-        if (arg.optional)
-            arg.value = &(reinterpret_cast<chip::Optional<AddressWithInterface> *>(arg.value))->Emplace();
         AddressWithInterface * value = reinterpret_cast<AddressWithInterface *>(arg.value);
         isValidArgument              = ParseAddressWithInterface(argValue, value);
         break;
@@ -374,83 +304,76 @@ bool Command::InitArgument(size_t argIndex, char * argValue)
     return isValidArgument;
 }
 
-size_t Command::AddArgument(const char * name, const char * value, bool optional)
+size_t Command::AddArgument(const char * name, const char * value)
 {
     Argument arg;
-    arg.type     = ArgumentType::Attribute;
-    arg.name     = name;
-    arg.value    = const_cast<void *>(reinterpret_cast<const void *>(value));
-    arg.optional = optional;
+    arg.type  = ArgumentType::Attribute;
+    arg.name  = name;
+    arg.value = const_cast<void *>(reinterpret_cast<const void *>(value));
 
     return AddArgumentToList(std::move(arg));
 }
 
-size_t Command::AddArgument(const char * name, char ** value, bool optional)
+size_t Command::AddArgument(const char * name, char ** value)
 {
     Argument arg;
-    arg.type     = ArgumentType::String;
-    arg.name     = name;
-    arg.value    = reinterpret_cast<void *>(value);
-    arg.optional = optional;
+    arg.type  = ArgumentType::String;
+    arg.name  = name;
+    arg.value = reinterpret_cast<void *>(value);
 
     return AddArgumentToList(std::move(arg));
 }
 
-size_t Command::AddArgument(const char * name, chip::CharSpan * value, bool optional)
+size_t Command::AddArgument(const char * name, chip::CharSpan * value)
 {
     Argument arg;
-    arg.type     = ArgumentType::CharString;
-    arg.name     = name;
-    arg.value    = reinterpret_cast<void *>(value);
-    arg.optional = optional;
+    arg.type  = ArgumentType::CharString;
+    arg.name  = name;
+    arg.value = reinterpret_cast<void *>(value);
 
     return AddArgumentToList(std::move(arg));
 }
 
-size_t Command::AddArgument(const char * name, chip::ByteSpan * value, bool optional)
+size_t Command::AddArgument(const char * name, chip::ByteSpan * value)
 {
     Argument arg;
-    arg.type     = ArgumentType::OctetString;
-    arg.name     = name;
-    arg.value    = reinterpret_cast<void *>(value);
-    arg.optional = optional;
+    arg.type  = ArgumentType::OctetString;
+    arg.name  = name;
+    arg.value = reinterpret_cast<void *>(value);
 
     return AddArgumentToList(std::move(arg));
 }
 
-size_t Command::AddArgument(const char * name, AddressWithInterface * out, bool optional)
+size_t Command::AddArgument(const char * name, AddressWithInterface * out)
 {
     Argument arg;
-    arg.type     = ArgumentType::Address;
-    arg.name     = name;
-    arg.value    = reinterpret_cast<void *>(out);
-    arg.optional = optional;
+    arg.type  = ArgumentType::Address;
+    arg.name  = name;
+    arg.value = reinterpret_cast<void *>(out);
 
     return AddArgumentToList(std::move(arg));
 }
 
-size_t Command::AddArgument(const char * name, int64_t min, uint64_t max, void * out, ArgumentType type, bool optional)
+size_t Command::AddArgument(const char * name, int64_t min, uint64_t max, void * out, ArgumentType type)
 {
     Argument arg;
-    arg.type     = type;
-    arg.name     = name;
-    arg.value    = out;
-    arg.min      = min;
-    arg.max      = max;
-    arg.optional = optional;
+    arg.type  = type;
+    arg.name  = name;
+    arg.value = out;
+    arg.min   = min;
+    arg.max   = max;
 
     return AddArgumentToList(std::move(arg));
 }
 
-size_t Command::AddArgument(const char * name, int64_t min, uint64_t max, void * out, bool optional)
+size_t Command::AddArgument(const char * name, int64_t min, uint64_t max, void * out)
 {
     Argument arg;
-    arg.type     = ArgumentType::Number_uint8;
-    arg.name     = name;
-    arg.value    = out;
-    arg.min      = min;
-    arg.max      = max;
-    arg.optional = optional;
+    arg.type  = ArgumentType::Number_uint8;
+    arg.name  = name;
+    arg.value = out;
+    arg.min   = min;
+    arg.max   = max;
 
     return AddArgumentToList(std::move(arg));
 }

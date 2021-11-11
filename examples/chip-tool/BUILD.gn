@@ -25,6 +25,7 @@ declare_args() {
 }
 
 executable("chip-tool") {
+  cflags = []
   sources = [
     "commands/clusters/ModelCommand.cpp",
     "commands/common/CHIPCommand.cpp",
@@ -49,6 +50,15 @@ executable("chip-tool") {
     "config/PersistentStorage.cpp",
     "main.cpp",
   ]
+  if (current_os == "linux") {
+      sources += [   "commands/advertising/ScanCommand.cpp", ]
+    } else if (current_os == "mac") {
+      sources += [
+      ]
+      cflags += [ "-fobjc-arc" ]
+    } else {
+      assert(false, "No BLE implementation available for the current OS.")
+    }
 
   defines = [ "CONFIG_USE_SEPARATE_EVENTLOOP=${config_use_separate_eventloop}" ]
 
@@ -59,9 +69,10 @@ executable("chip-tool") {
     "${chip_root}/src/lib",
     "${chip_root}/src/platform",
     "${chip_root}/third_party/inipp",
+    "${chip_root}/src/platform",
   ]
 
-  cflags = [ "-Wconversion" ]
+  cflags += [ "-Wconversion" ]
 
   include_dirs = [
     ".",
