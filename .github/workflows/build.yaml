@@ -18,12 +18,28 @@ on:
     push:
     pull_request:
     workflow_dispatch:
+    workflow_run:
+      workflows: ["CI"]
+      types:
+        - requested
 
 concurrency:
     group: ${{ github.ref }}-${{ github.workflow }}-${{ (github.event_name == 'pull_request' && github.event.number) || (github.event_name == 'workflow_dispatch' && github.run_number) || github.sha }}
     cancel-in-progress: true
 
 jobs:
+    cancel_ubuntu:
+      runs-on: ubuntu-latest
+      steps:
+        - uses: styfle/cancel-workflow-action@0.9.1
+          with:
+            workflow_id: ${{ github.event.workflow.id}}
+    cancel_darwin:
+      runs-on: macos-latest
+      steps:
+        - uses: styfle/cancel-workflow-action@0.9.1
+          with:
+            workflow_id: ${{ github.event.workflow.id}}
     build_linux_gcc_debug:
         name: Build on Linux (gcc_debug)
         timeout-minutes: 60
