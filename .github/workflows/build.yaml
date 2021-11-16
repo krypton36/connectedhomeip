@@ -91,7 +91,7 @@ jobs:
               timeout-minutes: 20
               run: scripts/build/gn_build.sh
     build_linux:
-        name: Build on Linux (gcc_release, clang, mbedtls)
+        name: Build on Linux (gcc_release, clang, mbedtls, simulated)
         timeout-minutes: 60
 
         runs-on: ubuntu-latest
@@ -256,7 +256,7 @@ jobs:
             #   if: ${{ github.event_name == 'push' && github.event.ref == 'refs/heads/master' }}
             #   uses: github/codeql-action/analyze@v1
     build_darwin:
-        name: Build on Darwin (clang, python_lib)
+        name: Build on Darwin (clang, python_lib, simulated)
         timeout-minutes: 90
 
         env:
