@@ -40,9 +40,22 @@ def getGlobalTemplatesTargets():
         example_name = example_name[example_name.index('examples/') + 9:]
         example_name = example_name[:example_name.index('/')]
 
-        # Ignore placeholder examples since the zap files there are not intended to
-        # be part of the tree.
+        # Place holder has apps within each build
         if example_name == "placeholder":
+            example_name = filepath.as_posix()
+            example_name = example_name[example_name.index('apps/') + 5:]
+            example_name = example_name[:example_name.index('/')]
+            logging.info("Found example %s (via %s)" %
+                     (example_name, str(filepath)))
+
+            # The name zap-generated is to make includes clear by using
+            # a name like <zap-generated/foo.h>
+            output_dir = os.path.join(
+                'zzz_generated','placeholder', example_name, 'zap-generated')
+            if not os.path.exists(output_dir):
+                os.makedirs(output_dir)
+
+            targets.append([str(filepath), '-o', output_dir])
             continue
 
         logging.info("Found example %s (via %s)" %
@@ -77,6 +90,7 @@ def getSpecificTemplatesTargets():
         'src/darwin/Framework/CHIP/templates/templates.json': None,
         'src/controller/java/templates/templates.json': None,
         'src/app/tests/suites/templates/templates.json': 'zzz_generated/controller-clusters/zap-generated',
+        'examples/placeholder/templates/templates.json': 'zzz_generated/placeholder/app1/zap-generated',
     }
 
     for template, output_dir in templates.items():
@@ -88,7 +102,7 @@ def getSpecificTemplatesTargets():
             target.extend(['-o', output_dir])
 
         targets.append(target)
-
+    
     return targets
 
 

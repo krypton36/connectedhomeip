@@ -135,6 +135,14 @@ jobs:
                   path: |
                    .environment/gn_out/.ninja_log
                    .environment/pigweed-venv/*.log
+            - name: Setup and Build Simulated Device
+              timeout-minutes: 5
+              run: |
+                    BUILD_TYPE=simulated
+                    GN_ARGS='chip_tests_zap_config="app1" chip_project_config_include_dirs=["../../examples/placeholder/linux/apps/app1/include", "../../config/standalone"] chip_config_network_layer_ble=false'
+                    CHIP_ROOT_PATH=examples/placeholder/linux
+                    CHIP_ROOT_PATH="$CHIP_ROOT_PATH" BUILD_TYPE="$BUILD_TYPE" scripts/build/gn_gen.sh --args="$GN_ARGS"
+                    CHIP_ROOT_PATH="$CHIP_ROOT_PATH" BUILD_TYPE="$BUILD_TYPE" scripts/build/gn_build.sh
             - name: Setup Build, Run Build and Run Tests
               timeout-minutes: 50
               run: |
@@ -292,6 +300,14 @@ jobs:
                   path: |
                    .environment/gn_out/.ninja_log
                    .environment/pigweed-venv/*.log
+            - name: Setup and Build Simulated Device
+              timeout-minutes: 5
+              run: |
+                    BUILD_TYPE=simulated
+                    GN_ARGS='chip_tests_zap_config="app1" chip_project_config_include_dirs=["../../examples/placeholder/linux/apps/app1/include", "../../config/standalone"] chip_config_network_layer_ble=false'
+                    CHIP_ROOT_PATH=examples/placeholder/linux
+                    CHIP_ROOT_PATH="$CHIP_ROOT_PATH" BUILD_TYPE="$BUILD_TYPE" scripts/build/gn_gen.sh --args="$GN_ARGS"
+                    CHIP_ROOT_PATH="$CHIP_ROOT_PATH" BUILD_TYPE="$BUILD_TYPE" scripts/build/gn_build.sh
             - name: Setup Build, Run Build and Run Tests
               timeout-minutes: 75
               # Just go ahead and do the "all" build; on Darwin that's fairly
