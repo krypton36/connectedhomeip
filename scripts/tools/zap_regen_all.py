@@ -46,12 +46,12 @@ def getGlobalTemplatesTargets():
             example_name = example_name[example_name.index('apps/') + 5:]
             example_name = example_name[:example_name.index('/')]
             logging.info("Found example %s (via %s)" %
-                     (example_name, str(filepath)))
+                         (example_name, str(filepath)))
 
             # The name zap-generated is to make includes clear by using
             # a name like <zap-generated/foo.h>
             output_dir = os.path.join(
-                'zzz_generated','placeholder', example_name, 'zap-generated')
+                'zzz_generated', 'placeholder', example_name, 'zap-generated')
             if not os.path.exists(output_dir):
                 os.makedirs(output_dir)
 
