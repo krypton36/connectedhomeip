@@ -102,7 +102,7 @@ def getSpecificTemplatesTargets():
             target.extend(['-o', output_dir])
 
         targets.append(target)
-    
+
     return targets
 
 
