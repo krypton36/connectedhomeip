@@ -27,7 +27,7 @@ const path              = require('path');
 const templateUtil = require(zapPath + 'dist/src-electron/generator/template-util.js')
 
 const { getClusters, getCommands, getAttributes, isTestOnlyCluster } = require('./simulated-clusters/SimulatedClusters.js');
-const { asBlocks, initClusters }                                                   = require('./ClustersHelper.js');
+const { asBlocks, initClusters }                                     = require('./ClustersHelper.js');
 
 const kIdentityName           = 'identity';
 const kClusterName            = 'cluster';
