@@ -33,7 +33,7 @@ CHIP_ERROR SetupPayloadVerhoeffVerify::Run()
 
     VerifyOrReturnError(!isQRCode, CHIP_ERROR_NOT_IMPLEMENTED);
     VerifyOrReturnError(codeString.length() > mPos && mPos >= 0, CHIP_ERROR_INVALID_STRING_LENGTH);
-    
+
     ReturnErrorOnFailure(Verify(codeString, result));
     ChipLogProgress(SetupPayload, "%s is %sVALID at position %u", codeString.c_str(), result ? "":"IN", mPos);
 
@@ -47,7 +47,7 @@ CHIP_ERROR SetupPayloadVerhoeffVerify::Verify(std::string codeString, bool & res
     checkChar = codeString.at(mPos);
     codeString.erase(mPos, mPos);
     ChipLogDetail(SetupPayload, "Verifying Manual Code: %s", codeString.c_str());
-    
+
     result = Verhoeff10::ValidateCheckChar(checkChar, codeString.c_str());
 
     return CHIP_NO_ERROR;
@@ -75,4 +75,4 @@ CHIP_ERROR SetupPayloadVerhoeffGenerate::GenerateChar(std::string codeString, ch
 
     return CHIP_NO_ERROR;
 }
-// 
+//
