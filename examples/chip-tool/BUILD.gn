@@ -45,6 +45,7 @@ executable("chip-tool") {
     "commands/pairing/PairingCommand.cpp",
     "commands/payload/AdditionalDataParseCommand.cpp",
     "commands/payload/SetupPayloadParseCommand.cpp",
+    "commands/payload/SetupPayloadVerhoeff.cpp",
     "commands/reporting/ReportingCommand.cpp",
     "commands/tests/TestCommand.cpp",
     "config/PersistentStorage.cpp",
@@ -67,6 +68,7 @@ executable("chip-tool") {
   include_dirs = [
     ".",
     "${chip_root}/zzz_generated/chip-tool",
+    "${chip_root}/src/lib",
   ]
 
   if (chip_enable_transport_trace) {
