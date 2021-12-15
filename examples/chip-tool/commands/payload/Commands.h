@@ -30,7 +30,7 @@ void registerCommandsPayload(Commands & commands)
         make_unique<AdditionalDataParseCommand>(),
         make_unique<SetupPayloadVerhoeffVerify>(),
         make_unique<SetupPayloadVerhoeffGenerate>(),
-        };
+    };
 
     commands.Register(clusterName, clusterCommands);
 }

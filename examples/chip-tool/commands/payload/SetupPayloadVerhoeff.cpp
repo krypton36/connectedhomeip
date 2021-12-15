@@ -16,11 +16,10 @@
  *
  */
 
-#include "SetupPayloadParseCommand.h"
 #include "SetupPayloadVerhoeff.h"
+#include "SetupPayloadParseCommand.h"
 #include <setup_payload/SetupPayload.h>
 #include <support/verhoeff/Verhoeff.h>
-
 
 using namespace ::chip;
 
@@ -35,7 +34,7 @@ CHIP_ERROR SetupPayloadVerhoeffVerify::Run()
     VerifyOrReturnError(codeString.length() > mPos && mPos >= 0, CHIP_ERROR_INVALID_STRING_LENGTH);
 
     ReturnErrorOnFailure(Verify(codeString, result));
-    ChipLogProgress(SetupPayload, "%s is %sVALID at position %u", codeString.c_str(), result ? "":"IN", mPos);
+    ChipLogProgress(SetupPayload, "%s is %sVALID at position %u", codeString.c_str(), result ? "" : "IN", mPos);
 
     return CHIP_NO_ERROR;
 }
@@ -64,7 +63,8 @@ CHIP_ERROR SetupPayloadVerhoeffGenerate::Run()
     return CHIP_NO_ERROR;
 }
 
-CHIP_ERROR SetupPayloadVerhoeffGenerate::GenerateChar(std::string codeString, char & generatedChar){
+CHIP_ERROR SetupPayloadVerhoeffGenerate::GenerateChar(std::string codeString, char & generatedChar)
+{
     bool isQRCode = SetupPayloadParseCommand::IsQRCode(codeString);
     ;
 

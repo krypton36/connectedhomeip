@@ -24,10 +24,11 @@
 class SetupPayloadVerhoeffVerify : public Command
 {
 public:
-    SetupPayloadVerhoeffVerify() : Command("verhoeff-verify") {
+    SetupPayloadVerhoeffVerify() : Command("verhoeff-verify")
+    {
         AddArgument("payload", &mSetupCode);
         AddArgument("position", 0, UINT8_MAX, &mPos);
-        }
+    }
     CHIP_ERROR Run() override;
 
 private:
