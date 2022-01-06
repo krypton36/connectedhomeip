@@ -379,11 +379,162 @@ private:
     }
 };
 
+class Test_TC_DM_3_3_Simulated : public TestCommand
+{
+public:
+    Test_TC_DM_3_3_Simulated() : TestCommand("Test_TC_DM_3_3_Simulated"), mTestIndex(0) {}
+
+    /////////// TestCommand Interface /////////
+    void NextTest() override
+    {
+        CHIP_ERROR err = CHIP_NO_ERROR;
+
+        if (0 == mTestIndex)
+        {
+            ChipLogProgress(chipTool, " **** Test Start: Test_TC_DM_3_3_Simulated\n");
+        }
+
+        if (mTestCount == mTestIndex)
+        {
+            ChipLogProgress(chipTool, " **** Test Complete: Test_TC_DM_3_3_Simulated\n");
+            SetCommandExitStatus(CHIP_NO_ERROR);
+            return;
+        }
+
+        Wait();
+
+        // Ensure we increment mTestIndex before we start running the relevant
+        // command.  That way if we lose the timeslice after we send the message
+        // but before our function call returns, we won't end up with an
+        // incorrect mTestIndex value observed when we get the response.
+        switch (mTestIndex++)
+        {
+        case 0:
+            ChipLogProgress(chipTool, " ***** Test Step 0 : Wait for the device to be commissioned\n");
+            err = TestWaitForTheDeviceToBeCommissioned_0();
+            break;
+        case 1:
+            ChipLogProgress(chipTool, " ***** Test Step 1 : Wait for Scan Network Command\n");
+            err = TestWaitForScanNetworkCommand_1();
+            break;
+        case 2:
+            ChipLogProgress(chipTool, " ***** Test Step 2 : Wait for Add Wifi Network Command\n");
+            err = ShouldSkip("WIFI") ? CHIP_NO_ERROR : TestWaitForAddWifiNetworkCommand_2();
+            break;
+        case 3:
+            ChipLogProgress(chipTool, " ***** Test Step 3 : Wait for Update WiFi Network Command\n");
+            err = ShouldSkip("WIFI") ? CHIP_NO_ERROR : TestWaitForUpdateWiFiNetworkCommand_3();
+            break;
+        case 4:
+            ChipLogProgress(chipTool, " ***** Test Step 4 : Wait for Remove Network Command\n");
+            err = ShouldSkip("WIFI") ? CHIP_NO_ERROR : TestWaitForRemoveNetworkCommand_4();
+            break;
+        case 5:
+            ChipLogProgress(chipTool, " ***** Test Step 5 : Wait for Enable Network Command\n");
+            err = TestWaitForEnableNetworkCommand_5();
+            break;
+        }
+
+        if (CHIP_NO_ERROR != err)
+        {
+            ChipLogError(chipTool, " ***** Test Failure: %s\n", chip::ErrorStr(err));
+            SetCommandExitStatus(err);
+        }
+    }
+
+private:
+    std::atomic_uint16_t mTestIndex;
+    const uint16_t mTestCount = 6;
+
+    //
+    // Tests methods
+    //
+
+    CHIP_ERROR TestWaitForTheDeviceToBeCommissioned_0()
+    {
+        SetIdentity(kIdentityAlpha);
+        return WaitForCommissioning();
+    }
+
+    CHIP_ERROR TestWaitForScanNetworkCommand_1()
+    {
+        const chip::EndpointId endpoint = mEndpointId.HasValue() ? mEndpointId.Value() : 0;
+        ChipLogError(chipTool,
+                     "[Endpoint: 0x%08x Cluster: Network Commissioning Command: ScanNetworks] Wait for Scan Network Command",
+                     endpoint);
+
+        ClearAttributeAndCommandPaths();
+        mCommandPath = chip::app::ConcreteCommandPath(endpoint, chip::app::Clusters::NetworkCommissioning::Id,
+                                                      chip::app::Clusters::NetworkCommissioning::Commands::ScanNetworks::Id);
+        return CHIP_NO_ERROR;
+    }
+
+    CHIP_ERROR TestWaitForAddWifiNetworkCommand_2()
+    {
+        const chip::EndpointId endpoint = mEndpointId.HasValue() ? mEndpointId.Value() : 0;
+        ChipLogError(
+            chipTool,
+            "[Endpoint: 0x%08x Cluster: Network Commissioning Command: AddOrUpdateWiFiNetwork] Wait for Add Wifi Network Command",
+            endpoint);
+
+        ClearAttributeAndCommandPaths();
+        mCommandPath =
+            chip::app::ConcreteCommandPath(endpoint, chip::app::Clusters::NetworkCommissioning::Id,
+                                           chip::app::Clusters::NetworkCommissioning::Commands::AddOrUpdateWiFiNetwork::Id);
+        return CHIP_NO_ERROR;
+    }
+
+    CHIP_ERROR TestWaitForUpdateWiFiNetworkCommand_3()
+    {
+        const chip::EndpointId endpoint = mEndpointId.HasValue() ? mEndpointId.Value() : 0;
+        ChipLogError(chipTool,
+                     "[Endpoint: 0x%08x Cluster: Network Commissioning Command: AddOrUpdateWiFiNetwork] Wait for Update WiFi "
+                     "Network Command",
+                     endpoint);
+
+        ClearAttributeAndCommandPaths();
+        mCommandPath =
+            chip::app::ConcreteCommandPath(endpoint, chip::app::Clusters::NetworkCommissioning::Id,
+                                           chip::app::Clusters::NetworkCommissioning::Commands::AddOrUpdateWiFiNetwork::Id);
+        return CHIP_NO_ERROR;
+    }
+
+    CHIP_ERROR TestWaitForRemoveNetworkCommand_4()
+    {
+        const chip::EndpointId endpoint = mEndpointId.HasValue() ? mEndpointId.Value() : 0;
+        ChipLogError(chipTool,
+                     "[Endpoint: 0x%08x Cluster: Network Commissioning Command: RemoveNetwork] Wait for Remove Network Command",
+                     endpoint);
+
+        ClearAttributeAndCommandPaths();
+        mCommandPath = chip::app::ConcreteCommandPath(endpoint, chip::app::Clusters::NetworkCommissioning::Id,
+                                                      chip::app::Clusters::NetworkCommissioning::Commands::RemoveNetwork::Id);
+        return CHIP_NO_ERROR;
+    }
+
+    CHIP_ERROR TestWaitForEnableNetworkCommand_5()
+    {
+        const chip::EndpointId endpoint = mEndpointId.HasValue() ? mEndpointId.Value() : 0;
+        ChipLogError(chipTool,
+                     "[Endpoint: 0x%08x Cluster: Network Commissioning Command: ConnectNetwork] Wait for Enable Network Command",
+                     endpoint);
+
+        ClearAttributeAndCommandPaths();
+        mCommandPath = chip::app::ConcreteCommandPath(endpoint, chip::app::Clusters::NetworkCommissioning::Id,
+                                                      chip::app::Clusters::NetworkCommissioning::Commands::ConnectNetwork::Id);
+        return CHIP_NO_ERROR;
+    }
+};
+
 std::unique_ptr<TestCommand> GetTestCommand(std::string testName)
 {
     if (testName == "Test_TC_DM_1_3_Simulated")
     {
         return std::unique_ptr<Test_TC_DM_1_3_Simulated>(new Test_TC_DM_1_3_Simulated());
+    }
+    if (testName == "Test_TC_DM_3_3_Simulated")
+    {
+        return std::unique_ptr<Test_TC_DM_3_3_Simulated>(new Test_TC_DM_3_3_Simulated());
     }
 
     return nullptr;

@@ -1,0 +1,30 @@
+name: 10.3.3. [TC-DM-3.3] Network Commissioning Commands [DUT - Commissioner]
+
+config:
+    cluster: "Network Commissioning"
+    endpoint: 0
+
+tests:
+    - label: "Wait for the device to be commissioned"
+      cluster: "DelayCommands"
+      command: "WaitForCommissioning"
+
+    - label: "Wait for Scan Network Command"
+      wait: "ScanNetworks"
+      
+    - label: "Wait for Add Wifi Network Command"
+      wait: "AddOrUpdateWiFiNetwork"
+      PICS: WIFI
+
+    - label: "Wait for Update WiFi Network Command"
+      wait: "AddOrUpdateWiFiNetwork"
+      PICS: WIFI
+    
+    # if PICS_WIFI) OR (PICS_THREAD then TH issues a RemoveNetwork command
+    - label: "Wait for Remove Network Command"
+      wait: "RemoveNetwork"
+      PICS: WIFI
+   
+    - label: "Wait for Enable Network Command"
+      wait: "ConnectNetwork"
+      
