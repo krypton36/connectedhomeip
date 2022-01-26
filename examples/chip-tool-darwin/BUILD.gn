@@ -20,14 +20,24 @@ import("${chip_root}/build/chip/tools.gni")
 assert(chip_build_tools)
 
 executable("chip-tool-darwin") {
-  sources = [ "main.m" ]
+  sources = [
+    "commands/common/CHIPCommandBridge.mm",
+    "commands/pairing/Commands.h",
+    "commands/pairing/PairingCommandBridge.mm",
+    "commands/pairing/PairingDelegateBridge.mm",
+    "main.mm",
+  ]
+
+  include_dirs = [ "." ]
 
   deps = [
+    "${chip_root}/examples/chip-tool:chip-tool-utils",
     "${chip_root}/src/app/server",
     "${chip_root}/src/darwin/Framework/CHIP",
     "${chip_root}/src/lib",
     "${chip_root}/src/platform",
     "${chip_root}/third_party/inipp",
+    "${chip_root}/third_party/jsoncpp",
   ]
 
   cflags = [
