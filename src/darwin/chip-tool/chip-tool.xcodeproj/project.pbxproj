@@ -7,10 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		036F8244279F87C4004EB19C /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 036F8242279F87C4004EB19C /* main.m */; };
 		036F8247279F87DF004EB19C /* CHIP.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 036F8246279F87DF004EB19C /* CHIP.framework */; };
-		036F824E279F9024004EB19C /* CHIPCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = 036F824D279F9024004EB19C /* CHIPCommand.m */; };
-		036F8251279F9142004EB19C /* Command.m in Sources */ = {isa = PBXBuildFile; fileRef = 036F8250279F9142004EB19C /* Command.m */; };
+		03F24B6327A06B2200DA5E74 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 03F24B6227A06B2200DA5E74 /* main.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -26,14 +24,19 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		03520BC727A065E200E4D5B6 /* chip-tool-utils.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "chip-tool-utils.a"; path = "../../../examples/chip-tool/out/host/chip-tool-utils.a"; sourceTree = "<group>"; };
 		036F8236279F87B1004EB19C /* chip-tool */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "chip-tool"; sourceTree = BUILT_PRODUCTS_DIR; };
-		036F8242279F87C4004EB19C /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = "../../../../../Documents/MacCLI/chip-tool/main.m"; sourceTree = "<group>"; };
 		036F8246279F87DF004EB19C /* CHIP.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = CHIP.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		036F824B279F8921004EB19C /* chip-tool.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "chip-tool.entitlements"; sourceTree = "<group>"; };
 		036F824D279F9024004EB19C /* CHIPCommand.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CHIPCommand.m; sourceTree = "<group>"; };
 		036F824F279F903A004EB19C /* CHIPCommand.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CHIPCommand.h; sourceTree = "<group>"; };
 		036F8250279F9142004EB19C /* Command.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Command.m; sourceTree = "<group>"; };
 		036F8252279F914E004EB19C /* Command.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Command.h; sourceTree = "<group>"; };
+		03F24B6227A06B2200DA5E74 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		03F24B6427A071DD00DA5E74 /* main_backup.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main_backup.m; sourceTree = "<group>"; };
+		03F24B6727A072AE00DA5E74 /* Command.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Command.cpp; path = "../../../examples/chip-tool/commands/common/Command.cpp"; sourceTree = "<group>"; };
+		03F24B6D27A073F700DA5E74 /* Nullable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Nullable.h; path = "../../app/data-model/Nullable.h"; sourceTree = "<group>"; };
+		03F24B7027A07E5700DA5E74 /* libCHIP.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libCHIP.a; path = "../../../../Library/Developer/Xcode/DerivedData/Darwin-czvzsrqkgfvbhsfrkdrwellkxgxc/Build/Intermediates.noindex/CHIP.build/Debug/CHIP.build/out/lib/libCHIP.a"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -48,9 +51,19 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		03520BCE27A0683A00E4D5B6 /* CHIP */ = {
+			isa = PBXGroup;
+			children = (
+				03F24B6727A072AE00DA5E74 /* Command.cpp */,
+				03F24B6D27A073F700DA5E74 /* Nullable.h */,
+			);
+			name = CHIP;
+			sourceTree = "<group>";
+		};
 		036F822D279F87B1004EB19C = {
 			isa = PBXGroup;
 			children = (
+				03520BCE27A0683A00E4D5B6 /* CHIP */,
 				036F8238279F87B1004EB19C /* chip-tool */,
 				036F8237279F87B1004EB19C /* Products */,
 				036F8245279F87DF004EB19C /* Frameworks */,
@@ -68,8 +81,9 @@
 		036F8238279F87B1004EB19C /* chip-tool */ = {
 			isa = PBXGroup;
 			children = (
+				03F24B6227A06B2200DA5E74 /* main.m */,
+				03F24B6427A071DD00DA5E74 /* main_backup.m */,
 				036F824A279F8903004EB19C /* entitlements */,
-				036F8242279F87C4004EB19C /* main.m */,
 				036F8248279F8889004EB19C /* commands */,
 			);
 			path = "chip-tool";
@@ -78,6 +92,8 @@
 		036F8245279F87DF004EB19C /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				03F24B7027A07E5700DA5E74 /* libCHIP.a */,
+				03520BC727A065E200E4D5B6 /* chip-tool-utils.a */,
 				036F8246279F87DF004EB19C /* CHIP.framework */,
 			);
 			name = Frameworks;
@@ -175,9 +191,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				036F8244279F87C4004EB19C /* main.m in Sources */,
-				036F8251279F9142004EB19C /* Command.m in Sources */,
-				036F824E279F9024004EB19C /* CHIPCommand.m in Sources */,
+				03F24B6327A06B2200DA5E74 /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -298,18 +312,38 @@
 		036F823E279F87B1004EB19C /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CHIP_ROOT = "$(PROJECT_DIR)/../../..";
 				CODE_SIGN_ENTITLEMENTS = "chip-tool/entitlements/chip-tool.entitlements";
 				CODE_SIGN_STYLE = Automatic;
+				HEADER_SEARCH_PATHS = (
+					"$(CHIP_ROOT)/src",
+					"$(CHIP_ROOT)/src/app",
+					"$(CHIP_ROOT)/src/app/data-model",
+					"$(CHIP_ROOT)/third_party/nlassert/repo/include",
+					"$(CHIP_ROOT)/src/lib",
+				);
+				LIBRARY_SEARCH_PATHS = "$(TEMP_DIR)/out/lib";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "macosx iphonesimulator iphoneos";
 			};
 			name = Debug;
 		};
 		036F823F279F87B1004EB19C /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CHIP_ROOT = "$(PROJECT_DIR)/../../..";
 				CODE_SIGN_ENTITLEMENTS = "chip-tool/entitlements/chip-tool.entitlements";
 				CODE_SIGN_STYLE = Automatic;
+				HEADER_SEARCH_PATHS = (
+					"$(CHIP_ROOT)/src",
+					"$(CHIP_ROOT)/src/app",
+					"$(CHIP_ROOT)/src/app/data-model",
+					"$(CHIP_ROOT)/third_party/nlassert/repo/include",
+					"$(CHIP_ROOT)/src/lib",
+				);
+				LIBRARY_SEARCH_PATHS = "$(TEMP_DIR)/out/lib";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "macosx iphonesimulator iphoneos";
 			};
 			name = Release;
 		};

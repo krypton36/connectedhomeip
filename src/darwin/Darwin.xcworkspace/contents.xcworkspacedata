@@ -5,7 +5,7 @@
       location = "group:chip-tool/chip-tool.xcodeproj">
    </FileRef>
    <FileRef
-      location = "group:/Users/josh/connectedhomeip_fork/src/darwin/CHIPTool/CHIPToolApp.xcodeproj">
+      location = "group:/Users/josh/connectedhomeip_fork/src/darwin/CHIPTool/CHIPTool.xcodeproj">
    </FileRef>
    <FileRef
       location = "group:Framework/CHIP.xcodeproj">
