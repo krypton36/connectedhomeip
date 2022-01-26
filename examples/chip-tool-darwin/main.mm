@@ -15,8 +15,15 @@
  *   limitations under the License.
  *
  */
+#import <CHIP/CHIPDevice.h>
+#include <commands/common/Commands.h>
+#include "commands/pairing/Commands.h"
 
-#import <CHIP/CHIP.h>
-#import <Foundation/Foundation.h>
 
-int main(int argc, const char * argv[]) { return EXIT_SUCCESS; }
+
+int main(int argc, const char * argv[])
+{
+    Commands commands;
+    registerCommandsPairing(commands);
+    return commands.Run(argc, (char **) argv);;
+}
