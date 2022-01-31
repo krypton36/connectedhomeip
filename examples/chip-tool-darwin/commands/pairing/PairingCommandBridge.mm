@@ -17,9 +17,9 @@
  */
 
 #include "PairingCommandBridge.h"
+#include "../common/CHIPCommandBridge.h"
 #include "PairingDelegateBridge.h"
 #include "platform/PlatformManager.h"
-#include "../common/CHIPCommandBridge.h"
 #include <controller/ExampleOperationalCredentialsIssuer.h>
 #include <crypto/CHIPCryptoPAL.h>
 #include <lib/core/CHIPSafeCasts.h>
@@ -32,12 +32,10 @@
 using namespace ::chip;
 using namespace ::chip::Controller;
 
-
 CHIP_ERROR PairingCommandBridge::RunCommand()
 {
     CHIP_ERROR err = CHIP_NO_ERROR;
-    switch (mPairingMode)
-    {
+    switch (mPairingMode) {
     case PairingMode::None:
         err = Unpair();
         break;
@@ -58,7 +56,7 @@ CHIP_ERROR PairingCommandBridge::RunCommand()
 CHIP_ERROR PairingCommandBridge::PairWithQRCode()
 {
     NSError * error;
-    NSString * payload = [NSString stringWithUTF8String: mOnboardingPayload];
+    NSString * payload = [NSString stringWithUTF8String:mOnboardingPayload];
     dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.pairing", DISPATCH_QUEUE_SERIAL);
 
     CHIPToolPairingDelegate * pairing = [[CHIPToolPairingDelegate alloc] init];
@@ -82,11 +80,11 @@ CHIP_ERROR PairingCommandBridge::PairWithIPAddress()
     pairing.commandBridge = this;
     [CurrentCommissioner() setPairingDelegate:pairing queue:callbackQueue];
     [CurrentCommissioner() pairDevice:mNodeId
-                   address:[NSString stringWithUTF8String: ipAddress]
-                      port:mRemotePort
-             discriminator:mDiscriminator
-              setupPINCode:mSetupPINCode
-                     error:&error];
+                              address:[NSString stringWithUTF8String:ipAddress]
+                                 port:mRemotePort
+                        discriminator:mDiscriminator
+                         setupPINCode:mSetupPINCode
+                                error:&error];
 
     if ([error code] != 0) {
         NSLog(@"Pairing error: %@", error);
@@ -102,8 +100,8 @@ CHIP_ERROR PairingCommandBridge::Unpair()
     [CurrentCommissioner() unpairDevice:mNodeId error:&error];
     if ([error code] != 0) {
         NSLog(@"Upairing error: %@", error);
-         SetCommandExitStatus(CHIP_ERROR_INTERNAL);
-         return CHIP_ERROR_INTERNAL;
+        SetCommandExitStatus(CHIP_ERROR_INTERNAL);
+        return CHIP_ERROR_INTERNAL;
     }
     SetCommandExitStatus(CHIP_NO_ERROR);
     return CHIP_NO_ERROR;

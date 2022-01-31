@@ -24,33 +24,25 @@
 class Unpair : public PairingCommandBridge
 {
 public:
-    Unpair() :
-        PairingCommandBridge("unpair", PairingMode::None)
-    {}
+    Unpair() : PairingCommandBridge("unpair", PairingMode::None) {}
 };
 
 class PairQRCode : public PairingCommandBridge
 {
 public:
-    PairQRCode() :
-        PairingCommandBridge("qrcode", PairingMode::QRCode)
-    {}
+    PairQRCode() : PairingCommandBridge("qrcode", PairingMode::QRCode) {}
 };
 
 class PairManualCode : public PairingCommandBridge
 {
 public:
-    PairManualCode() :
-        PairingCommandBridge("manualcode", PairingMode::ManualCode)
-    {}
+    PairManualCode() : PairingCommandBridge("manualcode", PairingMode::ManualCode) {}
 };
 
 class PairWithIPAddress : public PairingCommandBridge
 {
 public:
-    PairWithIPAddress() :
-        PairingCommandBridge("ethernet", PairingMode::Ethernet)
-    {}
+    PairWithIPAddress() : PairingCommandBridge("ethernet", PairingMode::Ethernet) {}
 };
 
 void registerCommandsPairing(Commands & commands)

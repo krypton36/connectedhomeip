@@ -52,12 +52,9 @@ void CHIPCommandBridge::StartTracing()
 #if CHIP_CONFIG_TRANSPORT_TRACE_ENABLED
     chip::trace::InitTrace();
 
-    if (mTraceFile.HasValue())
-    {
+    if (mTraceFile.HasValue()) {
         chip::trace::SetTraceStream(new chip::trace::TraceStreamFile(mTraceFile.Value()));
-    }
-    else if (mTraceLog.HasValue() && mTraceLog.Value() == true)
-    {
+    } else if (mTraceLog.HasValue() && mTraceLog.Value() == true) {
         chip::trace::SetTraceStream(new chip::trace::TraceStreamLog());
     }
 #endif // CHIP_CONFIG_TRANSPORT_TRACE_ENABLED
@@ -70,17 +67,13 @@ void CHIPCommandBridge::StopTracing()
 #endif // CHIP_CONFIG_TRANSPORT_TRACE_ENABLED
 }
 
-
-CHIPDeviceController * CHIPCommandBridge::CurrentCommissioner()
-{
-    return mController;
-}
+CHIPDeviceController * CHIPCommandBridge::CurrentCommissioner() { return mController; }
 
 CHIP_ERROR CHIPCommandBridge::ShutdownCommissioner()
 {
     NSLog(@"Shutting down controller");
     BOOL result = [CurrentCommissioner() shutdown];
-    if (!result){
+    if (!result) {
         NSLog(@"Unable to shut down controller");
         return CHIP_ERROR_INTERNAL;
     }
@@ -101,8 +94,7 @@ CHIP_ERROR CHIPCommandBridge::StartWaiting(chip::System::Clock::Timeout duration
     auto waitingUntil = std::chrono::system_clock::now() + std::chrono::duration_cast<std::chrono::seconds>(duration);
     {
         std::unique_lock<std::mutex> lk(cvWaitingForResponseMutex);
-        if (!cvWaitingForResponse.wait_until(lk, waitingUntil, [this]() { return !this->mWaitingForResponse; }))
-        {
+        if (!cvWaitingForResponse.wait_until(lk, waitingUntil, [this]() { return !this->mWaitingForResponse; })) {
             mCommandExitStatus = CHIP_ERROR_TIMEOUT;
         }
     }
@@ -123,7 +115,7 @@ void CHIPCommandBridge::StopWaiting()
         mWaitingForResponse = false;
     }
     cvWaitingForResponse.notify_all();
-#else  // CONFIG_USE_SEPARATE_EVENTLOOP
+#else // CONFIG_USE_SEPARATE_EVENTLOOP
     LogErrorOnFailure(chip::DeviceLayer::PlatformMgr().StopEventLoopTask());
 #endif // CONFIG_USE_SEPARATE_EVENTLOOP
 }

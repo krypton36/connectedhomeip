@@ -17,13 +17,12 @@
  */
 
 #pragma once
+#import <CHIP/CHIPDeviceController.h>
 #include <commands/common/Command.h>
 #include <commands/common/CredentialIssuerCommands.h>
 #include <commands/example/ExampleCredentialIssuerCommands.h>
-#import <CHIP/CHIPDeviceController.h>
 
 #pragma once
-
 
 class CHIPCommandBridge : public Command
 {
@@ -43,9 +42,7 @@ public:
 #endif // CHIP_CONFIG_TRANSPORT_TRACE_ENABLED
     }
 
-    CHIPCommandBridge(const char * commandName, CredentialIssuerCommands * credIssuerCmds) : CHIPCommandBridge(commandName)
-    {
-    }
+    CHIPCommandBridge(const char * commandName, CredentialIssuerCommands * credIssuerCmds) : CHIPCommandBridge(commandName) {}
 
     /////////// Command Interface /////////
     CHIP_ERROR Run() override;
@@ -72,7 +69,6 @@ protected:
     // Shut down the command, in case any work needs to be done after the event
     // loop has been stopped.
     virtual void Shutdown() {}
-
 
     void SetIdentity(const char * name);
 

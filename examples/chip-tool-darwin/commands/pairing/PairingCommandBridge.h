@@ -18,10 +18,10 @@
 
 #pragma once
 #include "../common/CHIPCommandBridge.h"
-#include <controller/CommissioningDelegate.h>
-#include <zap-generated/CHIPClientCallbacks.h>
 #import <CHIP/CHIPClustersObjc.h>
 #import <CHIP/CHIPDevicePairingDelegate.h>
+#include <controller/CommissioningDelegate.h>
+#include <zap-generated/CHIPClientCallbacks.h>
 
 #include <commands/common/CredentialIssuerCommands.h>
 #include <lib/support/Span.h>
@@ -35,13 +35,10 @@ enum class PairingMode
     Ethernet
 };
 
-
 class PairingCommandBridge : public CHIPCommandBridge
 {
 public:
-    PairingCommandBridge(const char * commandName, PairingMode mode) :
-        CHIPCommandBridge(commandName),
-        mPairingMode(mode)
+    PairingCommandBridge(const char * commandName, PairingMode mode) : CHIPCommandBridge(commandName), mPairingMode(mode)
     {
         AddArgument("node-id", 0, UINT64_MAX, &mNodeId);
 
@@ -67,7 +64,6 @@ public:
     /////////// CHIPCommandBridge Interface /////////
     CHIP_ERROR RunCommand() override;
     chip::System::Clock::Timeout GetWaitDuration() const override { return chip::System::Clock::Seconds16(120); }
-
 
 private:
     CHIP_ERROR PairWithQRCode();

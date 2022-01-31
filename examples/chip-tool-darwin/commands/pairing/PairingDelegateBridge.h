@@ -27,7 +27,6 @@ NSString * kAddress = @"192.168.1.115";
 
 static CHIPDevice * mConnectedDevice;
 
-
 @interface CHIPToolPairingDelegate : NSObject <CHIPDevicePairingDelegate>
 @property PairingCommandBridge * commandBridge;
 - (void)onPairingComplete:(NSError *)error;
