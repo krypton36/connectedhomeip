@@ -42,7 +42,7 @@ CHIP_ERROR CHIPCommandBridge::Run()
     [mController startup:nil vendorId:0 nocSigner:nil];
 
     RunCommand();
-    ReturnLogErrorOnFailure(StartWaiting(GetWaitDuration())); 
+    ReturnLogErrorOnFailure(StartWaiting(GetWaitDuration()));
     StopTracing();
     return CHIP_NO_ERROR;
 }
