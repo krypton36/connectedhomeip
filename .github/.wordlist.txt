@@ -957,6 +957,7 @@ sexualized
 SHA
 showDocumentation
 shubhamdp
+signgin
 SIGINT
 SiLabs
 SiliconLabs

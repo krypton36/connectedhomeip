@@ -21,6 +21,8 @@
 #include "commands/pairing/Commands.h"
 #include <zap-generated/cluster/Commands.h>
 
+#include <zap-generated/cluster/CommandsBridge.h>
+
 int main(int argc, const char * argv[])
 {
     Commands commands;
