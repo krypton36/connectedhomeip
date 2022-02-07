@@ -7,7 +7,9 @@
         "../../../src/app/zap-templates/partials/helper.js",
         "../../../src/app/zap-templates/templates/app/helper.js",
         "../../../src/app/zap-templates/templates/chip/helper.js",
-        "../../../src/darwin/Framework/CHIP/templates/helper.js"
+        "../../../src/darwin/Framework/CHIP/templates/helper.js",
+        "../../../src/app/zap-templates/common/ClusterTestGeneration.js",
+        "tests.js"
     ],
     "override": "../../../src/app/zap-templates/common/override.js",
     "partials": [
@@ -22,6 +24,26 @@
         {
             "name": "cluster_header",
             "path": "../../../src/app/zap-templates/partials/cluster_header.zapt"
+        },
+        {
+            "name": "test_cluster",
+            "path": "partials/test_cluster.zapt"
+        },
+        {
+            "name": "encode_value",
+            "path": "partials/encode_value.zapt"
+        },
+        {
+            "name": "decode_value",
+            "path": "partials/decode_value.zapt"
+        },
+        {
+            "name": "test_value",
+            "path": "partials/test_value.zapt"
+        },
+        {
+            "name": "check_test_value",
+            "path": "partials/check_test_value.zapt"
         }
     ],
     "templates": [
@@ -34,6 +56,21 @@
             "path": "README.zapt",
             "name": "Tests Commands header",
             "output": "README_CLUSTER_COMMANDS.md"
+        },
+        {
+            "path": "tests-commands.zapt",
+            "name": "Tests Commands header",
+            "output": "test/Commands.h"
+        },
+        {
+            "path": "CHIPTestClustersObjc.zapt",
+            "name": "Test Objc API Header",
+            "output": "cluster/CHIPTestClustersObjc.h"
+        },
+        {
+            "path": "CHIPTestClustersObjc-src.zapt",
+            "name": "Test Objc API",
+            "output": "cluster/CHIPTestClustersObjc.mm"
         }
     ]
 }

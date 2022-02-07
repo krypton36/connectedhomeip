@@ -18,28 +18,8 @@
             "path": "../../../../../src/app/zap-templates/partials/header.zapt"
         },
         {
-            "name": "test_cluster",
-            "path": "partials/test_cluster.zapt"
-        },
-        {
             "name": "CHIPCallbackBridge",
             "path": "partials/CHIPCallbackBridge.zapt"
-        },
-        {
-            "name": "encode_value",
-            "path": "partials/encode_value.zapt"
-        },
-        {
-            "name": "decode_value",
-            "path": "partials/decode_value.zapt"
-        },
-        {
-            "name": "test_value",
-            "path": "partials/test_value.zapt"
-        },
-        {
-            "name": "check_test_value",
-            "path": "partials/check_test_value.zapt"
         },
         {
             "name": "init_struct_member",
@@ -101,24 +81,9 @@
             "output": "src/darwin/Framework/CHIP/zap-generated/CHIPCommandPayloadsObjc.mm"
         },
         {
-            "path": "CHIPTestClustersObjc.zapt",
-            "name": "Test Objc API Header",
-            "output": "src/darwin/Framework/CHIP/zap-generated/CHIPTestClustersObjc.h"
-        },
-        {
-            "path": "CHIPTestClustersObjc-src.zapt",
-            "name": "Test Objc API",
-            "output": "src/darwin/Framework/CHIP/zap-generated/CHIPTestClustersObjc.mm"
-        },
-        {
             "path": "CHIPAttributeTLVValueDecoder-src.zapt",
             "name": "Decode TLV attribute values into Objc objects",
             "output": "src/darwin/Framework/CHIP/zap-generated/CHIPAttributeTLVValueDecoder.mm"
-        },
-        {
-            "path": "clusters-tests.zapt",
-            "name": "Cluster Tests",
-            "output": "src/darwin/Framework/CHIPTests/CHIPClustersTests.m"
         }
     ]
 }

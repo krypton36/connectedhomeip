@@ -15,6 +15,11 @@
  *    limitations under the License.
  */
 
+function getManualTests()
+{
+  return [];
+}
+
 function getTests()
 {
   const BinaryInput = [
@@ -266,4 +271,5 @@ function getTests()
 //
 // Module exports
 //
-exports.getTests = getTests;
+exports.getTests       = getTests;
+exports.getManualTests = getManualTests;
