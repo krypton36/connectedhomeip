@@ -124,6 +124,7 @@ BorderRouterAP
 BRD
 breakpoint
 bredr
+bridgedactions
 BridgedDeviceBasic
 bridgedLightEndpoint
 bringup
@@ -248,6 +249,7 @@ CQM
 crypto
 cryptographic
 CSA
+csrrequest
 csu
 csv
 ctl
@@ -311,6 +313,7 @@ DHCP
 DHCPC
 DHCPv
 dhrishi
+diagnosticlogs
 dialout
 diffstat
 diffsyms
@@ -678,6 +681,7 @@ mlan
 MLD
 mmevk
 moal
+modeselect
 modprobe
 Modustoolbox
 moveMode
@@ -716,6 +720,7 @@ nfds
 nl
 NLUnitTest
 NLUnitTests
+noc
 NodeId
 nongnu
 nordicsemi
@@ -771,6 +776,7 @@ OTARequesterImpl
 OTARequestor
 OTARequestorDriver
 OTARequestorSerialPort
+otasoftwareupdateprovider
 otasoftwareupdaterequestor
 otaURL
 OTBR
@@ -805,6 +811,7 @@ pickString
 PID
 Pigweed
 PinCode
+pinrequest
 pkgconfig
 plaintext
 PlatformManager
@@ -1039,6 +1046,7 @@ texinfo
 textboxes
 TFT
 threadOperationalDataset
+threadnetworkdiagnostics
 ThreadStackManager
 ThreadStackManagerImpl
 Thunderboard
@@ -1071,6 +1079,7 @@ ttyUSB
 TXD
 txt
 UART
+uargument
 udc
 UDC
 udcport
@@ -1091,7 +1100,9 @@ unprovisioned
 untrusted
 UpdateTokens
 upstreamed
+ureverse
 URI
+urlrequest
 usbmodem
 USBtoUART
 uscif
@@ -1130,6 +1141,7 @@ whitespace
 whitespaces
 whl
 wic
+wifinetworkdiagnostics
 WindowCovering
 WindowCoveringGoToLiftPercentage
 wlan
