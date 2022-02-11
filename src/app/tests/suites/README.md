@@ -155,13 +155,13 @@ properties:
 
 ##### Property: [_response_](./examples/Test_Example.yaml)
 
-| Name        | Description                                                                                         | Required               |
-| ----------- | --------------------------------------------------------------------------------------------------- | ---------------------- |
-| values      | A list of values to expect on response. See [Property: value](#property-values)                     | No (If other provided) |
-| value       | The values expected on the the response from the command                                            | No (If other provided) |
-| error       | Error code that is expected from response                                                           | No (If other provided) |
+| Name        | Description                                                                                                  | Required               |
+| ----------- | ------------------------------------------------------------------------------------------------------------ | ---------------------- |
+| values      | A list of values to expect on response. See [Property: value](#property-values)                              | No (If other provided) |
+| value       | The values expected on the the response from the command                                                     | No (If other provided) |
+| error       | Error code that is expected from response                                                                    | No (If other provided) |
 | saveAs      | Save a value to a variable name for later use. Value above required. [Example](./examples/Test_Example.yaml) | No                     |
-| constraints | Constraints to check for on response from the command                                               | No                     |
+| constraints | Constraints to check for on response from the command                                                        | No                     |
 
 ##### Property: [_constraints_](../../../../src/app/tests/suites/TestConstraints.yaml)
 
@@ -262,34 +262,39 @@ Top level key to define a YAML test: [test](#property-test)
 # PICS Usage
 
 #### Required Files
-- [PICS Test YAML](./examples/PICS_Example.yaml)
-- [TestPICS](./examples/TestPICS)
+
+-   [PICS Test YAML](./examples/PICS_Example.yaml)
+-   [TestPICS](./examples/TestPICS)
 
 #### Example PICS Command
 
 ```
 chip-tool tests Test 1 --PICS TestPICS.txt
 ```
+
 # Examples
 
 ## YAML Examples
 
-- [Basic YAML Config Example](./examples/Config_Example.yaml)
-- [YAML Response Example](./examples/Response_Example.yaml)
-- [YAML Tests Example](./examples/Test_Example.yaml)
-- [YAML Config Variables Example](./examples/Config_Variables_Example.yaml)
+-   [Basic YAML Config Example](./examples/Config_Example.yaml)
+-   [YAML Response Example](./examples/Response_Example.yaml)
+-   [YAML Tests Example](./examples/Test_Example.yaml)
+-   [YAML Config Variables Example](./examples/Config_Variables_Example.yaml)
 
 ## ZAP Example
 
 ### Required Files
-- [ZAP Example](./examples/TestGenExample.zapt)
-- [Test1](./examples/Test_Example_1.yaml)
-- [Test2](./examples/Test_Example_2.yaml)
-- [Test3](./examples/Test_Example_3.yaml)
-  
+
+-   [ZAP Example](./examples/TestGenExample.zapt)
+-   [Test1](./examples/Test_Example_1.yaml)
+-   [Test2](./examples/Test_Example_2.yaml)
+-   [Test3](./examples/Test_Example_3.yaml)
 
 ### Generate Example Script
-The following script will generate an output file TestGenExample.out in src/app/tests/suites/examples/out. The directory and the file will be created. This is a basic demonstration on how tests are generated.
+
+The following script will generate an output file TestGenExample.out in
+src/app/tests/suites/examples/out. The directory and the file will be created.
+This is a basic demonstration on how tests are generated.
 
 ```
 src/app/tests/suites/examples/gen_readme_example.sh
