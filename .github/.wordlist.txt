@@ -279,6 +279,7 @@ CQM
 crypto
 cryptographic
 CSA
+csrrequest
 csu
 csv
 ctl
@@ -808,6 +809,7 @@ NitrogenDioxideConcentrationMeasurement
 nl
 NLUnitTest
 NLUnitTests
+noc
 NodeId
 nongnu
 nordicsemi
@@ -903,6 +905,7 @@ pickString
 PID
 Pigweed
 PinCode
+pinrequest
 pkgconfig
 plaintext
 PlatformManager
@@ -1056,6 +1059,7 @@ SetDns
 SetImageProcessorDelegate
 SetOtaRequestorDriver
 setpin
+setpoint
 SetpointRaiseLower
 SetRequestorInstance
 SetUpPINCode
@@ -1170,6 +1174,7 @@ ThermostatUserInterfaceConfiguration
 ThIsIsNoTMyReAlGiThUbToKeNSoDoNoTtRy
 ThreadNetworkDiagnostics
 threadOperationalDataset
+threadnetworkdiagnostics
 ThreadStackManager
 ThreadStackManagerImpl
 ths
@@ -1210,6 +1215,7 @@ TurbidityConcentrationMeasurement
 TXD
 txt
 UART
+uargument
 udc
 udcport
 udhcpc
@@ -1233,7 +1239,9 @@ updateAvailable
 updateNotAvailable
 UpdateTokens
 upstreamed
+ureverse
 URI
+urlrequest
 usbmodem
 USBtoUART
 uscif
