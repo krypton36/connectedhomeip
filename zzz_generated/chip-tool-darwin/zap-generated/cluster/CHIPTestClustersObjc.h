@@ -491,22 +491,6 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 /**
- * Cluster Fan Control
- *
- */
-@interface CHIPTestFanControl : CHIPFanControl
-
-- (void)writeAttributeServerGeneratedCommandListWithValue:(NSArray * _Nonnull)value
-                                        completionHandler:(StatusCompletion)completionHandler;
-- (void)writeAttributeClientGeneratedCommandListWithValue:(NSArray * _Nonnull)value
-                                        completionHandler:(StatusCompletion)completionHandler;
-- (void)writeAttributeAttributeListWithValue:(NSArray * _Nonnull)value completionHandler:(StatusCompletion)completionHandler;
-- (void)writeAttributeFeatureMapWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler;
-- (void)writeAttributeClusterRevisionWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler;
-
-@end
-
-/**
  * Cluster Fixed Label
  *
  */
@@ -1105,9 +1089,9 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @interface CHIPTestTemperatureMeasurement : CHIPTemperatureMeasurement
 
-- (void)writeAttributeMeasuredValueWithValue:(NSNumber * _Nullable)value completionHandler:(StatusCompletion)completionHandler;
-- (void)writeAttributeMinMeasuredValueWithValue:(NSNumber * _Nullable)value completionHandler:(StatusCompletion)completionHandler;
-- (void)writeAttributeMaxMeasuredValueWithValue:(NSNumber * _Nullable)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeMeasuredValueWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeMinMeasuredValueWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeMaxMeasuredValueWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler;
 - (void)writeAttributeToleranceWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler;
 - (void)writeAttributeAttributeListWithValue:(NSArray * _Nonnull)value completionHandler:(StatusCompletion)completionHandler;
 - (void)writeAttributeClusterRevisionWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler;

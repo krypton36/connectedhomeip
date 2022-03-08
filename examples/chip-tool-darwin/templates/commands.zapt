@@ -122,7 +122,9 @@ public:
         CHIP{{asUpperCamelCase parent.name}} * cluster = [[CHIP{{asUpperCamelCase parent.name}} alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
         CHIP_ERROR __block err = CHIP_NO_ERROR;
         {{#if_is_fabric_scoped_struct type}}
+        {{#if_is_fabric_scoped_struct type}}
         CHIPReadParams * params = [[CHIPReadParams alloc] init];
+        {{/if_is_fabric_scoped_struct}}
         {{/if_is_fabric_scoped_struct}}
         [cluster readAttribute{{asUpperCamelCase name}}With
         {{~#if_is_fabric_scoped_struct type~}}
@@ -231,10 +233,15 @@ public:
         ChipLogProgress(chipTool, "Sending cluster ({{asHex parent.code 8}}) ReportAttribute ({{asHex code 8}}) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIP{{asUpperCamelCase parent.name}} * cluster = [[CHIP{{asUpperCamelCase parent.name}} alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIPSubscribeParams * params = [[CHIPSubscribeParams alloc] init];
+        
+        {{#if_is_fabric_scoped_struct type}}
+        CHIPReadParams * params = [[CHIPReadParams alloc] init];
+        {{/if_is_fabric_scoped_struct}}
         [cluster subscribe{{>attribute}}WithMinInterval:[NSNumber numberWithUnsignedInt:mMinInterval] 
                                             maxInterval:[NSNumber numberWithUnsignedInt:mMaxInterval] 
+        {{#if_is_fabric_scoped_struct type}}
                                             params:params
+        {{/if_is_fabric_scoped_struct}}
                                 subscriptionEstablished: NULL reportHandler:^({{asObjectiveCClass type parent.name}} * _Nullable value, NSError * _Nullable error) {
         NSLog(@"{{asUpperCamelCase parent.name}}.{{asUpperCamelCase name}} response %@", [value description]);
         SetCommandExitStatus([CHIPError errorToCHIPErrorCode:error]);
