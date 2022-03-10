@@ -18,7 +18,7 @@ import("${chip_root}/src/app/common_flags.gni")
 import("${chip_root}/src/lib/lib.gni")
 
 config("app-main-config") {
-  include_dirs = [ "." ]
+  include_dirs = [ ".", "${chip_root}/zzz_generated/all-clusters-app" ]
 }
 
 source_set("app-main") {

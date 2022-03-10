@@ -36,6 +36,8 @@
 #include <setup_payload/SetupPayload.h>
 
 #include <platform/DiagnosticDataProvider.h>
+#include <app/clusters/on-off-server/on-off-server.h>
+#include <app-common/zap-generated/attributes/Accessors.h>
 
 #if CHIP_DEVICE_CONFIG_ENABLE_BOTH_COMMISSIONER_AND_COMMISSIONEE
 #include <ControllerShellCommands.h>
@@ -94,6 +96,7 @@ void EventHandler(const DeviceLayer::ChipDeviceEvent * event, intptr_t arg)
 
 void OnSignalHandler(int signum)
 {
+    bool currentValue;
     ChipLogDetail(DeviceLayer, "Caught signal %d", signum);
 
     // The BootReason attribute SHALL indicate the reason for the Node’s most recent boot, the real usecase
@@ -106,8 +109,12 @@ void OnSignalHandler(int signum)
         bootReason = BootReasonType::PowerOnReboot;
         break;
     case SIGALRM:
-        bootReason = BootReasonType::BrownOutReset;
-        break;
+        OnOff::Attributes::OnOff::Get(1, &currentValue);
+        ChipLogDetail(DeviceLayer, "Caught signal %d", currentValue);
+        OnOff::Attributes::OnOff::Set(1, (currentValue ? OnOff::Commands::Off::Id : OnOff::Commands::On::Id));
+        // OnOffServer::Instance().setOnOffValue(1, (currentValue ? OnOff::Commands::Off::Id : OnOff::Commands::On::Id), false);
+
+        return;
     case SIGILL:
         bootReason = BootReasonType::SoftwareWatchdogReset;
         break;
