@@ -15,6 +15,8 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
+#include <fstream>
+#include <string>
 
 #include <platform/CHIPDeviceLayer.h>
 #include <platform/PlatformManager.h>
@@ -96,8 +98,10 @@ void EventHandler(const DeviceLayer::ChipDeviceEvent * event, intptr_t arg)
 
 void OnSignalHandler(int signum)
 {
-    bool currentValue;
+    std::string content;
+    int value;
     ChipLogDetail(DeviceLayer, "Caught signal %d", signum);
+    std::ifstream ifs;
 
     // The BootReason attribute SHALL indicate the reason for the Node’s most recent boot, the real usecase
     // for this attribute is embedded system. In Linux simulation, we use different signals to tell the current
@@ -109,11 +113,12 @@ void OnSignalHandler(int signum)
         bootReason = BootReasonType::PowerOnReboot;
         break;
     case SIGALRM:
-        OnOff::Attributes::OnOff::Get(1, &currentValue);
-        ChipLogDetail(DeviceLayer, "Caught signal %d", currentValue);
-        OnOff::Attributes::OnOff::Set(1, (currentValue ? OnOff::Commands::Off::Id : OnOff::Commands::On::Id));
-        // OnOffServer::Instance().setOnOffValue(1, (currentValue ? OnOff::Commands::Off::Id : OnOff::Commands::On::Id), false);
-
+        ifs.open("measure_value", std::ifstream::in);
+        content.assign( (std::istreambuf_iterator<char>(ifs) ),
+                (std::istreambuf_iterator<char>()    ) );
+        value = stoi(content);
+        ChipLogDetail(DeviceLayer, "Setting Measure Value to %d", value);
+        IlluminanceMeasurement::Attributes::MeasuredValue::Set(1, (uint16_t)value);
         return;
     case SIGILL:
         bootReason = BootReasonType::SoftwareWatchdogReset;
