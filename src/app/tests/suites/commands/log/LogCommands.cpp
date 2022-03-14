@@ -33,7 +33,7 @@ CHIP_ERROR LogCommands::UserPrompt(const char * message, const char * expectedVa
     if(expectedValue == nullptr){
         return ContinueOnChipMainThread(err);
     }
-    
+
     std::getline(std::cin, line);
     if (line != expectedValue){
         err = CHIP_ERROR_INVALID_ARGUMENT;
