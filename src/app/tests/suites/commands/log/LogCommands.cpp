@@ -30,12 +30,14 @@ CHIP_ERROR LogCommands::UserPrompt(const char * message, const char * expectedVa
     CHIP_ERROR err = CHIP_NO_ERROR;
     std::string line;
     ChipLogDetail(chipTool, "USER_PROMPT: %s", message);
-    if(expectedValue == nullptr){
+    if (expectedValue == nullptr)
+    {
         return ContinueOnChipMainThread(err);
     }
 
     std::getline(std::cin, line);
-    if (line != expectedValue){
+    if (line != expectedValue)
+    {
         err = CHIP_ERROR_INVALID_ARGUMENT;
     }
     return ContinueOnChipMainThread(err);
