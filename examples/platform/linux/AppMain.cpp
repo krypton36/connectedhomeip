@@ -118,7 +118,7 @@ void OnSignalHandler(int signum)
                 (std::istreambuf_iterator<char>()    ) );
         value = stoi(content);
         ChipLogDetail(DeviceLayer, "Setting Measure Value to %d", value);
-        IlluminanceMeasurement::Attributes::MeasuredValue::Set(1, (uint16_t)value);
+        LevelControl::Attributes::CurrentLevel::Set(1, (uint16_t)value);
         return;
     case SIGILL:
         bootReason = BootReasonType::SoftwareWatchdogReset;
