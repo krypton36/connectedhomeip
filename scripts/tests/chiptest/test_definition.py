@@ -200,7 +200,7 @@ class TestDefinition:
     run_name: str
     target: TestTarget
 
-    def Run(self, runner, apps_register, paths: ApplicationPaths):
+    def Run(self, runner, apps_register, paths: ApplicationPaths, pics_file: str):
         """
         Executes the given test case using the provided runner for execution.
         """
@@ -244,7 +244,7 @@ class TestDefinition:
                 name='PAIR', dependencies=[apps_register])
 
             runner.RunSubprocess(
-                tool_cmd + ['tests', self.run_name],
+                tool_cmd + ['tests', self.run_name, '--PICS', pics_file],
                 name='TEST', dependencies=[apps_register])
 
         except Exception:
