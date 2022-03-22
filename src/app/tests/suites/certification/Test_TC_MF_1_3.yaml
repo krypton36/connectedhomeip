@@ -118,7 +118,7 @@ tests:
       attribute: "Fabrics"
       fabricFiltered: false
       response:
-          value: [{ Label: "", nodeId: nodeId}, { Label: "", nodeId: nodeId2}]
+          value: [{ Label: "", nodeId: nodeId }, { Label: "", nodeId: nodeId2 }]
           constraints:
               type: list
 
