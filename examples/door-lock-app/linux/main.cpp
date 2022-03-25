@@ -18,7 +18,6 @@
 
 #include "AppMain.h"
 
-
 void ApplicationInit() {}
 
 int main(int argc, char * argv[])
