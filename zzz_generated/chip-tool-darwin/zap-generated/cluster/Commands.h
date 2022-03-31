@@ -27,6 +27,7 @@
 #include <type_traits>
 
 #include <app/data-model/DecodableList.h>
+#include <commands/clusters/ComplexArgument.h>
 #include <commands/clusters/ModelCommandBridge.h>
 
 /*----------------------------------------------------------------------------*\
@@ -204,6 +205,99 @@ public:
     }
 };
 
+class WriteAccessControlAcl : public ModelCommand {
+public:
+    WriteAccessControlAcl()
+        : ModelCommand("write")
+        , mComplex(&mValue)
+    {
+        AddArgument("attr-name", "acl");
+        AddArgument("attr-value", &mComplex);
+        ModelCommand::AddArguments();
+    }
+
+    ~WriteAccessControlAcl() {}
+
+    CHIP_ERROR SendCommand(CHIPDevice * device, chip::EndpointId endpointId) override
+    {
+        ChipLogProgress(chipTool, "Sending cluster (0x0000001F) WriteAttribute (0x00000000) on endpoint %" PRIu16, endpointId);
+        dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
+        CHIPAccessControl * cluster = [[CHIPAccessControl alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
+
+        NSArray * _Nonnull value;
+        { // Scope for our temporary variables
+            auto * array_0 = [NSMutableArray new];
+            for (chip::ListIndex index_0 = 0; index_0 < mValue.size(); index_0++) {
+                auto & entry_0 = mValue.data()[index_0];
+                CHIPAccessControlClusterAccessControlEntry * newElement_0;
+                newElement_0 = [CHIPAccessControlClusterAccessControlEntry new];
+                newElement_0.privilege = [NSNumber numberWithUnsignedChar:chip::to_underlying(entry_0.privilege)];
+                newElement_0.authMode = [NSNumber numberWithUnsignedChar:chip::to_underlying(entry_0.authMode)];
+                if (entry_0.subjects.IsNull()) {
+                    newElement_0.subjects = nil;
+                } else {
+                    { // Scope for our temporary variables
+                        auto * array_3 = [NSMutableArray new];
+                        for (chip::ListIndex index_3 = 0; index_3 < entry_0.subjects.Value().size(); index_3++) {
+                            auto & entry_3 = entry_0.subjects.Value().data()[index_3];
+                            NSNumber * newElement_3;
+                            newElement_3 = [NSNumber numberWithUnsignedLongLong:entry_3];
+                            [array_3 addObject:newElement_3];
+                        }
+                        newElement_0.subjects = array_3;
+                    }
+                }
+                if (entry_0.targets.IsNull()) {
+                    newElement_0.targets = nil;
+                } else {
+                    { // Scope for our temporary variables
+                        auto * array_3 = [NSMutableArray new];
+                        for (chip::ListIndex index_3 = 0; index_3 < entry_0.targets.Value().size(); index_3++) {
+                            auto & entry_3 = entry_0.targets.Value().data()[index_3];
+                            CHIPAccessControlClusterTarget * newElement_3;
+                            newElement_3 = [CHIPAccessControlClusterTarget new];
+                            if (entry_3.cluster.IsNull()) {
+                                newElement_3.cluster = nil;
+                            } else {
+                                newElement_3.cluster = [NSNumber numberWithUnsignedInt:entry_3.cluster.Value()];
+                            }
+                            if (entry_3.endpoint.IsNull()) {
+                                newElement_3.endpoint = nil;
+                            } else {
+                                newElement_3.endpoint = [NSNumber numberWithUnsignedShort:entry_3.endpoint.Value()];
+                            }
+                            if (entry_3.deviceType.IsNull()) {
+                                newElement_3.deviceType = nil;
+                            } else {
+                                newElement_3.deviceType = [NSNumber numberWithUnsignedInt:entry_3.deviceType.Value()];
+                            }
+                            [array_3 addObject:newElement_3];
+                        }
+                        newElement_0.targets = array_3;
+                    }
+                }
+                newElement_0.fabricIndex = [NSNumber numberWithUnsignedChar:entry_0.fabricIndex];
+                [array_0 addObject:newElement_0];
+            }
+            value = array_0;
+        }
+
+        [cluster writeAttributeAclWithValue:value
+                          completionHandler:^(NSError * _Nullable error) {
+                              chipError = [CHIPError errorToCHIPErrorCode:error];
+                              ChipLogError(chipTool, "AccessControl Acl Error: %s", chip::ErrorStr(chipError));
+                              SetCommandExitStatus(chipError);
+                          }];
+        return chipError;
+    }
+
+private:
+    chip::app::DataModel::List<const chip::app::Clusters::AccessControl::Structs::AccessControlEntry::Type> mValue;
+    TypedComplexArgument<chip::app::DataModel::List<const chip::app::Clusters::AccessControl::Structs::AccessControlEntry::Type>>
+        mComplex;
+};
+
 class SubscribeAttributeAccessControlAcl : public ModelCommand {
 public:
     SubscribeAttributeAccessControlAcl()
@@ -281,6 +375,55 @@ public:
                                 }];
         return err;
     }
+};
+
+class WriteAccessControlExtension : public ModelCommand {
+public:
+    WriteAccessControlExtension()
+        : ModelCommand("write")
+        , mComplex(&mValue)
+    {
+        AddArgument("attr-name", "extension");
+        AddArgument("attr-value", &mComplex);
+        ModelCommand::AddArguments();
+    }
+
+    ~WriteAccessControlExtension() {}
+
+    CHIP_ERROR SendCommand(CHIPDevice * device, chip::EndpointId endpointId) override
+    {
+        ChipLogProgress(chipTool, "Sending cluster (0x0000001F) WriteAttribute (0x00000001) on endpoint %" PRIu16, endpointId);
+        dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
+        CHIPAccessControl * cluster = [[CHIPAccessControl alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
+
+        NSArray * _Nonnull value;
+        { // Scope for our temporary variables
+            auto * array_0 = [NSMutableArray new];
+            for (chip::ListIndex index_0 = 0; index_0 < mValue.size(); index_0++) {
+                auto & entry_0 = mValue.data()[index_0];
+                CHIPAccessControlClusterExtensionEntry * newElement_0;
+                newElement_0 = [CHIPAccessControlClusterExtensionEntry new];
+                newElement_0.data = [NSData dataWithBytes:entry_0.data.data() length:entry_0.data.size()];
+                newElement_0.fabricIndex = [NSNumber numberWithUnsignedChar:entry_0.fabricIndex];
+                [array_0 addObject:newElement_0];
+            }
+            value = array_0;
+        }
+
+        [cluster writeAttributeExtensionWithValue:value
+                                completionHandler:^(NSError * _Nullable error) {
+                                    chipError = [CHIPError errorToCHIPErrorCode:error];
+                                    ChipLogError(chipTool, "AccessControl Extension Error: %s", chip::ErrorStr(chipError));
+                                    SetCommandExitStatus(chipError);
+                                }];
+        return chipError;
+    }
+
+private:
+    chip::app::DataModel::List<const chip::app::Clusters::AccessControl::Structs::ExtensionEntry::Type> mValue;
+    TypedComplexArgument<chip::app::DataModel::List<const chip::app::Clusters::AccessControl::Structs::ExtensionEntry::Type>>
+        mComplex;
 };
 
 class SubscribeAttributeAccessControlExtension : public ModelCommand {
@@ -674,8 +817,9 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPAccountLogin * cluster = [[CHIPAccountLogin alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPAccountLoginClusterGetSetupPINParams alloc] init];
+
         params.tempAccountIdentifier = [[NSString alloc] initWithBytes:mTempAccountIdentifier.data()
                                                                 length:mTempAccountIdentifier.size()
                                                               encoding:NSUTF8StringEncoding];
@@ -683,11 +827,11 @@ public:
                      completionHandler:^(
                          CHIPAccountLoginClusterGetSetupPINResponseParams * _Nullable values, NSError * _Nullable error) {
                          NSLog(@"Values: %@", values);
-                         err = [CHIPError errorToCHIPErrorCode:error];
-                         ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                         SetCommandExitStatus(err);
+                         chipError = [CHIPError errorToCHIPErrorCode:error];
+                         ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                         SetCommandExitStatus(chipError);
                      }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -713,19 +857,21 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPAccountLogin * cluster = [[CHIPAccountLogin alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPAccountLoginClusterLoginParams alloc] init];
+
         params.tempAccountIdentifier = [[NSString alloc] initWithBytes:mTempAccountIdentifier.data()
                                                                 length:mTempAccountIdentifier.size()
                                                               encoding:NSUTF8StringEncoding];
+
         params.setupPIN = [[NSString alloc] initWithBytes:mSetupPIN.data() length:mSetupPIN.size() encoding:NSUTF8StringEncoding];
         [cluster loginWithParams:params
                completionHandler:^(NSError * _Nullable error) {
-                   err = [CHIPError errorToCHIPErrorCode:error];
-                   ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                   SetCommandExitStatus(err);
+                   chipError = [CHIPError errorToCHIPErrorCode:error];
+                   ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                   SetCommandExitStatus(chipError);
                }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -750,13 +896,13 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPAccountLogin * cluster = [[CHIPAccountLogin alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         [cluster logoutWithCompletionHandler:^(NSError * _Nullable error) {
-            err = [CHIPError errorToCHIPErrorCode:error];
-            ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-            SetCommandExitStatus(err);
+            chipError = [CHIPError errorToCHIPErrorCode:error];
+            ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+            SetCommandExitStatus(chipError);
         }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -1113,16 +1259,17 @@ public:
         CHIPAdministratorCommissioning * cluster = [[CHIPAdministratorCommissioning alloc] initWithDevice:device
                                                                                                  endpoint:endpointId
                                                                                                     queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPAdministratorCommissioningClusterOpenBasicCommissioningWindowParams alloc] init];
+
         params.commissioningTimeout = [NSNumber numberWithUnsignedShort:mCommissioningTimeout];
         [cluster openBasicCommissioningWindowWithParams:params
                                       completionHandler:^(NSError * _Nullable error) {
-                                          err = [CHIPError errorToCHIPErrorCode:error];
-                                          ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                                          SetCommandExitStatus(err);
+                                          chipError = [CHIPError errorToCHIPErrorCode:error];
+                                          ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                                          SetCommandExitStatus(chipError);
                                       }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -1153,20 +1300,25 @@ public:
         CHIPAdministratorCommissioning * cluster = [[CHIPAdministratorCommissioning alloc] initWithDevice:device
                                                                                                  endpoint:endpointId
                                                                                                     queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPAdministratorCommissioningClusterOpenCommissioningWindowParams alloc] init];
+
         params.commissioningTimeout = [NSNumber numberWithUnsignedShort:mCommissioningTimeout];
+
         params.pakeVerifier = [[NSData alloc] initWithBytes:mPAKEVerifier.data() length:mPAKEVerifier.size()];
+
         params.discriminator = [NSNumber numberWithUnsignedShort:mDiscriminator];
+
         params.iterations = [NSNumber numberWithUnsignedInt:mIterations];
+
         params.salt = [[NSData alloc] initWithBytes:mSalt.data() length:mSalt.size()];
         [cluster openCommissioningWindowWithParams:params
                                  completionHandler:^(NSError * _Nullable error) {
-                                     err = [CHIPError errorToCHIPErrorCode:error];
-                                     ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                                     SetCommandExitStatus(err);
+                                     chipError = [CHIPError errorToCHIPErrorCode:error];
+                                     ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                                     SetCommandExitStatus(chipError);
                                  }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -1196,13 +1348,13 @@ public:
         CHIPAdministratorCommissioning * cluster = [[CHIPAdministratorCommissioning alloc] initWithDevice:device
                                                                                                  endpoint:endpointId
                                                                                                     queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         [cluster revokeCommissioningWithCompletionHandler:^(NSError * _Nullable error) {
-            err = [CHIPError errorToCHIPErrorCode:error];
-            ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-            SetCommandExitStatus(err);
+            chipError = [CHIPError errorToCHIPErrorCode:error];
+            ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+            SetCommandExitStatus(chipError);
         }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -2811,7 +2963,9 @@ class ApplicationLauncherHideApp : public ModelCommand {
 public:
     ApplicationLauncherHideApp()
         : ModelCommand("hide-app")
+        , mComplex_Application(&mRequest.application)
     {
+        AddArgument("Application", &mComplex_Application);
         ModelCommand::AddArguments();
     }
 
@@ -2823,21 +2977,28 @@ public:
         CHIPApplicationLauncher * cluster = [[CHIPApplicationLauncher alloc] initWithDevice:device
                                                                                    endpoint:endpointId
                                                                                       queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPApplicationLauncherClusterHideAppParams alloc] init];
-        // application Struct parsing is not supported yet
+
+        params.application = [CHIPApplicationLauncherClusterApplication new];
+        params.application.catalogVendorId = [NSNumber numberWithUnsignedShort:mRequest.application.catalogVendorId];
+        params.application.applicationId = [[NSString alloc] initWithBytes:mRequest.application.applicationId.data()
+                                                                    length:mRequest.application.applicationId.size()
+                                                                  encoding:NSUTF8StringEncoding];
         [cluster hideAppWithParams:params
                  completionHandler:^(
                      CHIPApplicationLauncherClusterLauncherResponseParams * _Nullable values, NSError * _Nullable error) {
                      NSLog(@"Values: %@", values);
-                     err = [CHIPError errorToCHIPErrorCode:error];
-                     ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                     SetCommandExitStatus(err);
+                     chipError = [CHIPError errorToCHIPErrorCode:error];
+                     ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                     SetCommandExitStatus(chipError);
                  }];
-        return err;
+        return chipError;
     }
 
 private:
+    chip::app::Clusters::ApplicationLauncher::Commands::HideApp::Type mRequest;
+    TypedComplexArgument<chip::app::Clusters::ApplicationLauncher::Structs::Application::Type> mComplex_Application;
 };
 
 /*
@@ -2847,7 +3008,9 @@ class ApplicationLauncherLaunchApp : public ModelCommand {
 public:
     ApplicationLauncherLaunchApp()
         : ModelCommand("launch-app")
+        , mComplex_Application(&mRequest.application)
     {
+        AddArgument("Application", &mComplex_Application);
         AddArgument("Data", &mData);
         ModelCommand::AddArguments();
     }
@@ -2860,22 +3023,30 @@ public:
         CHIPApplicationLauncher * cluster = [[CHIPApplicationLauncher alloc] initWithDevice:device
                                                                                    endpoint:endpointId
                                                                                       queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPApplicationLauncherClusterLaunchAppParams alloc] init];
-        // application Struct parsing is not supported yet
+
+        params.application = [CHIPApplicationLauncherClusterApplication new];
+        params.application.catalogVendorId = [NSNumber numberWithUnsignedShort:mRequest.application.catalogVendorId];
+        params.application.applicationId = [[NSString alloc] initWithBytes:mRequest.application.applicationId.data()
+                                                                    length:mRequest.application.applicationId.size()
+                                                                  encoding:NSUTF8StringEncoding];
+
         params.data = [[NSData alloc] initWithBytes:mData.data() length:mData.size()];
         [cluster launchAppWithParams:params
                    completionHandler:^(
                        CHIPApplicationLauncherClusterLauncherResponseParams * _Nullable values, NSError * _Nullable error) {
                        NSLog(@"Values: %@", values);
-                       err = [CHIPError errorToCHIPErrorCode:error];
-                       ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                       SetCommandExitStatus(err);
+                       chipError = [CHIPError errorToCHIPErrorCode:error];
+                       ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                       SetCommandExitStatus(chipError);
                    }];
-        return err;
+        return chipError;
     }
 
 private:
+    chip::app::Clusters::ApplicationLauncher::Commands::LaunchApp::Type mRequest;
+    TypedComplexArgument<chip::app::Clusters::ApplicationLauncher::Structs::Application::Type> mComplex_Application;
     chip::ByteSpan mData;
 };
 
@@ -2886,7 +3057,9 @@ class ApplicationLauncherStopApp : public ModelCommand {
 public:
     ApplicationLauncherStopApp()
         : ModelCommand("stop-app")
+        , mComplex_Application(&mRequest.application)
     {
+        AddArgument("Application", &mComplex_Application);
         ModelCommand::AddArguments();
     }
 
@@ -2898,21 +3071,28 @@ public:
         CHIPApplicationLauncher * cluster = [[CHIPApplicationLauncher alloc] initWithDevice:device
                                                                                    endpoint:endpointId
                                                                                       queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPApplicationLauncherClusterStopAppParams alloc] init];
-        // application Struct parsing is not supported yet
+
+        params.application = [CHIPApplicationLauncherClusterApplication new];
+        params.application.catalogVendorId = [NSNumber numberWithUnsignedShort:mRequest.application.catalogVendorId];
+        params.application.applicationId = [[NSString alloc] initWithBytes:mRequest.application.applicationId.data()
+                                                                    length:mRequest.application.applicationId.size()
+                                                                  encoding:NSUTF8StringEncoding];
         [cluster stopAppWithParams:params
                  completionHandler:^(
                      CHIPApplicationLauncherClusterLauncherResponseParams * _Nullable values, NSError * _Nullable error) {
                      NSLog(@"Values: %@", values);
-                     err = [CHIPError errorToCHIPErrorCode:error];
-                     ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                     SetCommandExitStatus(err);
+                     chipError = [CHIPError errorToCHIPErrorCode:error];
+                     ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                     SetCommandExitStatus(chipError);
                  }];
-        return err;
+        return chipError;
     }
 
 private:
+    chip::app::Clusters::ApplicationLauncher::Commands::StopApp::Type mRequest;
+    TypedComplexArgument<chip::app::Clusters::ApplicationLauncher::Structs::Application::Type> mComplex_Application;
 };
 
 /*
@@ -3035,8 +3215,10 @@ class WriteApplicationLauncherCurrentApp : public ModelCommand {
 public:
     WriteApplicationLauncherCurrentApp()
         : ModelCommand("write")
+        , mComplex(&mValue)
     {
         AddArgument("attr-name", "current-app");
+        AddArgument("attr-value", &mComplex);
         ModelCommand::AddArguments();
     }
 
@@ -3049,20 +3231,38 @@ public:
         CHIPApplicationLauncher * cluster = [[CHIPApplicationLauncher alloc] initWithDevice:device
                                                                                    endpoint:endpointId
                                                                                       queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
-        CHIPApplicationLauncherClusterApplicationEP * value = [[CHIPApplicationLauncherClusterApplicationEP alloc] init];
+        CHIPApplicationLauncherClusterApplicationEP * _Nullable value;
+        if (mValue.IsNull()) {
+            value = nil;
+        } else {
+            value = [CHIPApplicationLauncherClusterApplicationEP new];
+            value.application = [CHIPApplicationLauncherClusterApplication new];
+            value.application.catalogVendorId = [NSNumber numberWithUnsignedShort:mValue.Value().application.catalogVendorId];
+            value.application.applicationId = [[NSString alloc] initWithBytes:mValue.Value().application.applicationId.data()
+                                                                       length:mValue.Value().application.applicationId.size()
+                                                                     encoding:NSUTF8StringEncoding];
+            if (mValue.Value().endpoint.HasValue()) {
+                value.endpoint = [NSNumber numberWithUnsignedShort:mValue.Value().endpoint.Value()];
+            } else {
+                value.endpoint = nil;
+            }
+        }
 
         [cluster writeAttributeCurrentAppWithValue:value
                                  completionHandler:^(NSError * _Nullable error) {
-                                     err = [CHIPError errorToCHIPErrorCode:error];
-                                     ChipLogError(chipTool, "ApplicationLauncher CurrentApp Error: %s", chip::ErrorStr(err));
-                                     SetCommandExitStatus(err);
+                                     chipError = [CHIPError errorToCHIPErrorCode:error];
+                                     ChipLogError(chipTool, "ApplicationLauncher CurrentApp Error: %s", chip::ErrorStr(chipError));
+                                     SetCommandExitStatus(chipError);
                                  }];
-        return err;
+        return chipError;
     }
 
 private:
+    chip::app::DataModel::Nullable<chip::app::Clusters::ApplicationLauncher::Structs::ApplicationEP::Type> mValue;
+    TypedComplexArgument<chip::app::DataModel::Nullable<chip::app::Clusters::ApplicationLauncher::Structs::ApplicationEP::Type>>
+        mComplex;
 };
 
 class SubscribeAttributeApplicationLauncherCurrentApp : public ModelCommand {
@@ -3478,17 +3678,19 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPAudioOutput * cluster = [[CHIPAudioOutput alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPAudioOutputClusterRenameOutputParams alloc] init];
+
         params.index = [NSNumber numberWithUnsignedChar:mIndex];
+
         params.name = [[NSString alloc] initWithBytes:mName.data() length:mName.size() encoding:NSUTF8StringEncoding];
         [cluster renameOutputWithParams:params
                       completionHandler:^(NSError * _Nullable error) {
-                          err = [CHIPError errorToCHIPErrorCode:error];
-                          ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                          SetCommandExitStatus(err);
+                          chipError = [CHIPError errorToCHIPErrorCode:error];
+                          ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                          SetCommandExitStatus(chipError);
                       }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -3514,16 +3716,17 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPAudioOutput * cluster = [[CHIPAudioOutput alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPAudioOutputClusterSelectOutputParams alloc] init];
+
         params.index = [NSNumber numberWithUnsignedChar:mIndex];
         [cluster selectOutputWithParams:params
                       completionHandler:^(NSError * _Nullable error) {
-                          err = [CHIPError errorToCHIPErrorCode:error];
-                          ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                          SetCommandExitStatus(err);
+                          chipError = [CHIPError errorToCHIPErrorCode:error];
+                          ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                          SetCommandExitStatus(chipError);
                       }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -4039,16 +4242,17 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPBarrierControl * cluster = [[CHIPBarrierControl alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPBarrierControlClusterBarrierControlGoToPercentParams alloc] init];
+
         params.percentOpen = [NSNumber numberWithUnsignedChar:mPercentOpen];
         [cluster barrierControlGoToPercentWithParams:params
                                    completionHandler:^(NSError * _Nullable error) {
-                                       err = [CHIPError errorToCHIPErrorCode:error];
-                                       ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                                       SetCommandExitStatus(err);
+                                       chipError = [CHIPError errorToCHIPErrorCode:error];
+                                       ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                                       SetCommandExitStatus(chipError);
                                    }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -4072,13 +4276,13 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPBarrierControl * cluster = [[CHIPBarrierControl alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         [cluster barrierControlStopWithCompletionHandler:^(NSError * _Nullable error) {
-            err = [CHIPError errorToCHIPErrorCode:error];
-            ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-            SetCommandExitStatus(err);
+            chipError = [CHIPError errorToCHIPErrorCode:error];
+            ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+            SetCommandExitStatus(chipError);
         }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -5178,7 +5382,7 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x00000028) WriteAttribute (0x00000005) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPBasic * cluster = [[CHIPBasic alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSString * _Nonnull value = [[NSString alloc] initWithBytes:mValue.data()
                                                              length:mValue.size()
@@ -5186,11 +5390,11 @@ public:
 
         [cluster writeAttributeNodeLabelWithValue:value
                                 completionHandler:^(NSError * _Nullable error) {
-                                    err = [CHIPError errorToCHIPErrorCode:error];
-                                    ChipLogError(chipTool, "Basic NodeLabel Error: %s", chip::ErrorStr(err));
-                                    SetCommandExitStatus(err);
+                                    chipError = [CHIPError errorToCHIPErrorCode:error];
+                                    ChipLogError(chipTool, "Basic NodeLabel Error: %s", chip::ErrorStr(chipError));
+                                    SetCommandExitStatus(chipError);
                                 }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -5291,7 +5495,7 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x00000028) WriteAttribute (0x00000006) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPBasic * cluster = [[CHIPBasic alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSString * _Nonnull value = [[NSString alloc] initWithBytes:mValue.data()
                                                              length:mValue.size()
@@ -5299,11 +5503,11 @@ public:
 
         [cluster writeAttributeLocationWithValue:value
                                completionHandler:^(NSError * _Nullable error) {
-                                   err = [CHIPError errorToCHIPErrorCode:error];
-                                   ChipLogError(chipTool, "Basic Location Error: %s", chip::ErrorStr(err));
-                                   SetCommandExitStatus(err);
+                                   chipError = [CHIPError errorToCHIPErrorCode:error];
+                                   ChipLogError(chipTool, "Basic Location Error: %s", chip::ErrorStr(chipError));
+                                   SetCommandExitStatus(chipError);
                                }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -6099,17 +6303,18 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x00000028) WriteAttribute (0x00000010) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPBasic * cluster = [[CHIPBasic alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nonnull value = [NSNumber numberWithBool:mValue];
 
-        [cluster writeAttributeLocalConfigDisabledWithValue:value
-                                          completionHandler:^(NSError * _Nullable error) {
-                                              err = [CHIPError errorToCHIPErrorCode:error];
-                                              ChipLogError(chipTool, "Basic LocalConfigDisabled Error: %s", chip::ErrorStr(err));
-                                              SetCommandExitStatus(err);
-                                          }];
-        return err;
+        [cluster
+            writeAttributeLocalConfigDisabledWithValue:value
+                                     completionHandler:^(NSError * _Nullable error) {
+                                         chipError = [CHIPError errorToCHIPErrorCode:error];
+                                         ChipLogError(chipTool, "Basic LocalConfigDisabled Error: %s", chip::ErrorStr(chipError));
+                                         SetCommandExitStatus(chipError);
+                                     }];
+        return chipError;
     }
 
 private:
@@ -6700,17 +6905,17 @@ public:
         CHIPBinaryInputBasic * cluster = [[CHIPBinaryInputBasic alloc] initWithDevice:device
                                                                              endpoint:endpointId
                                                                                 queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nonnull value = [NSNumber numberWithBool:mValue];
 
         [cluster writeAttributeOutOfServiceWithValue:value
                                    completionHandler:^(NSError * _Nullable error) {
-                                       err = [CHIPError errorToCHIPErrorCode:error];
-                                       ChipLogError(chipTool, "BinaryInputBasic OutOfService Error: %s", chip::ErrorStr(err));
-                                       SetCommandExitStatus(err);
+                                       chipError = [CHIPError errorToCHIPErrorCode:error];
+                                       ChipLogError(chipTool, "BinaryInputBasic OutOfService Error: %s", chip::ErrorStr(chipError));
+                                       SetCommandExitStatus(chipError);
                                    }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -6817,17 +7022,17 @@ public:
         CHIPBinaryInputBasic * cluster = [[CHIPBinaryInputBasic alloc] initWithDevice:device
                                                                              endpoint:endpointId
                                                                                 queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nonnull value = [NSNumber numberWithBool:mValue];
 
         [cluster writeAttributePresentValueWithValue:value
                                    completionHandler:^(NSError * _Nullable error) {
-                                       err = [CHIPError errorToCHIPErrorCode:error];
-                                       ChipLogError(chipTool, "BinaryInputBasic PresentValue Error: %s", chip::ErrorStr(err));
-                                       SetCommandExitStatus(err);
+                                       chipError = [CHIPError errorToCHIPErrorCode:error];
+                                       ChipLogError(chipTool, "BinaryInputBasic PresentValue Error: %s", chip::ErrorStr(chipError));
+                                       SetCommandExitStatus(chipError);
                                    }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -7336,6 +7541,73 @@ public:
                               }];
         return err;
     }
+};
+
+class WriteBindingBinding : public ModelCommand {
+public:
+    WriteBindingBinding()
+        : ModelCommand("write")
+        , mComplex(&mValue)
+    {
+        AddArgument("attr-name", "binding");
+        AddArgument("attr-value", &mComplex);
+        ModelCommand::AddArguments();
+    }
+
+    ~WriteBindingBinding() {}
+
+    CHIP_ERROR SendCommand(CHIPDevice * device, chip::EndpointId endpointId) override
+    {
+        ChipLogProgress(chipTool, "Sending cluster (0x0000001E) WriteAttribute (0x00000000) on endpoint %" PRIu16, endpointId);
+        dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
+        CHIPBinding * cluster = [[CHIPBinding alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
+
+        NSArray * _Nonnull value;
+        { // Scope for our temporary variables
+            auto * array_0 = [NSMutableArray new];
+            for (chip::ListIndex index_0 = 0; index_0 < mValue.size(); index_0++) {
+                auto & entry_0 = mValue.data()[index_0];
+                CHIPBindingClusterTargetStruct * newElement_0;
+                newElement_0 = [CHIPBindingClusterTargetStruct new];
+                if (entry_0.node.HasValue()) {
+                    newElement_0.node = [NSNumber numberWithUnsignedLongLong:entry_0.node.Value()];
+                } else {
+                    newElement_0.node = nil;
+                }
+                if (entry_0.group.HasValue()) {
+                    newElement_0.group = [NSNumber numberWithUnsignedShort:entry_0.group.Value()];
+                } else {
+                    newElement_0.group = nil;
+                }
+                if (entry_0.endpoint.HasValue()) {
+                    newElement_0.endpoint = [NSNumber numberWithUnsignedShort:entry_0.endpoint.Value()];
+                } else {
+                    newElement_0.endpoint = nil;
+                }
+                if (entry_0.cluster.HasValue()) {
+                    newElement_0.cluster = [NSNumber numberWithUnsignedInt:entry_0.cluster.Value()];
+                } else {
+                    newElement_0.cluster = nil;
+                }
+                newElement_0.fabricIndex = [NSNumber numberWithUnsignedChar:entry_0.fabricIndex];
+                [array_0 addObject:newElement_0];
+            }
+            value = array_0;
+        }
+
+        [cluster writeAttributeBindingWithValue:value
+                              completionHandler:^(NSError * _Nullable error) {
+                                  chipError = [CHIPError errorToCHIPErrorCode:error];
+                                  ChipLogError(chipTool, "Binding Binding Error: %s", chip::ErrorStr(chipError));
+                                  SetCommandExitStatus(chipError);
+                              }];
+        return chipError;
+    }
+
+private:
+    chip::app::DataModel::List<const chip::app::Clusters::Binding::Structs::TargetStruct::Type> mValue;
+    TypedComplexArgument<chip::app::DataModel::List<const chip::app::Clusters::Binding::Structs::TargetStruct::Type>> mComplex;
 };
 
 class SubscribeAttributeBindingBinding : public ModelCommand {
@@ -8147,17 +8419,19 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPBridgedActions * cluster = [[CHIPBridgedActions alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPBridgedActionsClusterDisableActionParams alloc] init];
+
         params.actionID = [NSNumber numberWithUnsignedShort:mActionID];
+
         params.invokeID = [NSNumber numberWithUnsignedInt:mInvokeID];
         [cluster disableActionWithParams:params
                        completionHandler:^(NSError * _Nullable error) {
-                           err = [CHIPError errorToCHIPErrorCode:error];
-                           ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                           SetCommandExitStatus(err);
+                           chipError = [CHIPError errorToCHIPErrorCode:error];
+                           ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                           SetCommandExitStatus(chipError);
                        }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -8185,18 +8459,21 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPBridgedActions * cluster = [[CHIPBridgedActions alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPBridgedActionsClusterDisableActionWithDurationParams alloc] init];
+
         params.actionID = [NSNumber numberWithUnsignedShort:mActionID];
+
         params.invokeID = [NSNumber numberWithUnsignedInt:mInvokeID];
+
         params.duration = [NSNumber numberWithUnsignedInt:mDuration];
         [cluster disableActionWithDurationWithParams:params
                                    completionHandler:^(NSError * _Nullable error) {
-                                       err = [CHIPError errorToCHIPErrorCode:error];
-                                       ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                                       SetCommandExitStatus(err);
+                                       chipError = [CHIPError errorToCHIPErrorCode:error];
+                                       ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                                       SetCommandExitStatus(chipError);
                                    }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -8224,17 +8501,19 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPBridgedActions * cluster = [[CHIPBridgedActions alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPBridgedActionsClusterEnableActionParams alloc] init];
+
         params.actionID = [NSNumber numberWithUnsignedShort:mActionID];
+
         params.invokeID = [NSNumber numberWithUnsignedInt:mInvokeID];
         [cluster enableActionWithParams:params
                       completionHandler:^(NSError * _Nullable error) {
-                          err = [CHIPError errorToCHIPErrorCode:error];
-                          ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                          SetCommandExitStatus(err);
+                          chipError = [CHIPError errorToCHIPErrorCode:error];
+                          ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                          SetCommandExitStatus(chipError);
                       }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -8262,18 +8541,21 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPBridgedActions * cluster = [[CHIPBridgedActions alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPBridgedActionsClusterEnableActionWithDurationParams alloc] init];
+
         params.actionID = [NSNumber numberWithUnsignedShort:mActionID];
+
         params.invokeID = [NSNumber numberWithUnsignedInt:mInvokeID];
+
         params.duration = [NSNumber numberWithUnsignedInt:mDuration];
         [cluster enableActionWithDurationWithParams:params
                                   completionHandler:^(NSError * _Nullable error) {
-                                      err = [CHIPError errorToCHIPErrorCode:error];
-                                      ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                                      SetCommandExitStatus(err);
+                                      chipError = [CHIPError errorToCHIPErrorCode:error];
+                                      ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                                      SetCommandExitStatus(chipError);
                                   }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -8301,17 +8583,19 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPBridgedActions * cluster = [[CHIPBridgedActions alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPBridgedActionsClusterInstantActionParams alloc] init];
+
         params.actionID = [NSNumber numberWithUnsignedShort:mActionID];
+
         params.invokeID = [NSNumber numberWithUnsignedInt:mInvokeID];
         [cluster instantActionWithParams:params
                        completionHandler:^(NSError * _Nullable error) {
-                           err = [CHIPError errorToCHIPErrorCode:error];
-                           ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                           SetCommandExitStatus(err);
+                           chipError = [CHIPError errorToCHIPErrorCode:error];
+                           ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                           SetCommandExitStatus(chipError);
                        }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -8339,18 +8623,21 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPBridgedActions * cluster = [[CHIPBridgedActions alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPBridgedActionsClusterInstantActionWithTransitionParams alloc] init];
+
         params.actionID = [NSNumber numberWithUnsignedShort:mActionID];
+
         params.invokeID = [NSNumber numberWithUnsignedInt:mInvokeID];
+
         params.transitionTime = [NSNumber numberWithUnsignedShort:mTransitionTime];
         [cluster instantActionWithTransitionWithParams:params
                                      completionHandler:^(NSError * _Nullable error) {
-                                         err = [CHIPError errorToCHIPErrorCode:error];
-                                         ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                                         SetCommandExitStatus(err);
+                                         chipError = [CHIPError errorToCHIPErrorCode:error];
+                                         ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                                         SetCommandExitStatus(chipError);
                                      }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -8378,17 +8665,19 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPBridgedActions * cluster = [[CHIPBridgedActions alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPBridgedActionsClusterPauseActionParams alloc] init];
+
         params.actionID = [NSNumber numberWithUnsignedShort:mActionID];
+
         params.invokeID = [NSNumber numberWithUnsignedInt:mInvokeID];
         [cluster pauseActionWithParams:params
                      completionHandler:^(NSError * _Nullable error) {
-                         err = [CHIPError errorToCHIPErrorCode:error];
-                         ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                         SetCommandExitStatus(err);
+                         chipError = [CHIPError errorToCHIPErrorCode:error];
+                         ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                         SetCommandExitStatus(chipError);
                      }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -8416,18 +8705,21 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPBridgedActions * cluster = [[CHIPBridgedActions alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPBridgedActionsClusterPauseActionWithDurationParams alloc] init];
+
         params.actionID = [NSNumber numberWithUnsignedShort:mActionID];
+
         params.invokeID = [NSNumber numberWithUnsignedInt:mInvokeID];
+
         params.duration = [NSNumber numberWithUnsignedInt:mDuration];
         [cluster pauseActionWithDurationWithParams:params
                                  completionHandler:^(NSError * _Nullable error) {
-                                     err = [CHIPError errorToCHIPErrorCode:error];
-                                     ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                                     SetCommandExitStatus(err);
+                                     chipError = [CHIPError errorToCHIPErrorCode:error];
+                                     ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                                     SetCommandExitStatus(chipError);
                                  }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -8455,17 +8747,19 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPBridgedActions * cluster = [[CHIPBridgedActions alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPBridgedActionsClusterResumeActionParams alloc] init];
+
         params.actionID = [NSNumber numberWithUnsignedShort:mActionID];
+
         params.invokeID = [NSNumber numberWithUnsignedInt:mInvokeID];
         [cluster resumeActionWithParams:params
                       completionHandler:^(NSError * _Nullable error) {
-                          err = [CHIPError errorToCHIPErrorCode:error];
-                          ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                          SetCommandExitStatus(err);
+                          chipError = [CHIPError errorToCHIPErrorCode:error];
+                          ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                          SetCommandExitStatus(chipError);
                       }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -8492,17 +8786,19 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPBridgedActions * cluster = [[CHIPBridgedActions alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPBridgedActionsClusterStartActionParams alloc] init];
+
         params.actionID = [NSNumber numberWithUnsignedShort:mActionID];
+
         params.invokeID = [NSNumber numberWithUnsignedInt:mInvokeID];
         [cluster startActionWithParams:params
                      completionHandler:^(NSError * _Nullable error) {
-                         err = [CHIPError errorToCHIPErrorCode:error];
-                         ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                         SetCommandExitStatus(err);
+                         chipError = [CHIPError errorToCHIPErrorCode:error];
+                         ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                         SetCommandExitStatus(chipError);
                      }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -8530,18 +8826,21 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPBridgedActions * cluster = [[CHIPBridgedActions alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPBridgedActionsClusterStartActionWithDurationParams alloc] init];
+
         params.actionID = [NSNumber numberWithUnsignedShort:mActionID];
+
         params.invokeID = [NSNumber numberWithUnsignedInt:mInvokeID];
+
         params.duration = [NSNumber numberWithUnsignedInt:mDuration];
         [cluster startActionWithDurationWithParams:params
                                  completionHandler:^(NSError * _Nullable error) {
-                                     err = [CHIPError errorToCHIPErrorCode:error];
-                                     ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                                     SetCommandExitStatus(err);
+                                     chipError = [CHIPError errorToCHIPErrorCode:error];
+                                     ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                                     SetCommandExitStatus(chipError);
                                  }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -8569,17 +8868,19 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPBridgedActions * cluster = [[CHIPBridgedActions alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPBridgedActionsClusterStopActionParams alloc] init];
+
         params.actionID = [NSNumber numberWithUnsignedShort:mActionID];
+
         params.invokeID = [NSNumber numberWithUnsignedInt:mInvokeID];
         [cluster stopActionWithParams:params
                     completionHandler:^(NSError * _Nullable error) {
-                        err = [CHIPError errorToCHIPErrorCode:error];
-                        ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                        SetCommandExitStatus(err);
+                        chipError = [CHIPError errorToCHIPErrorCode:error];
+                        ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                        SetCommandExitStatus(chipError);
                     }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -9458,7 +9759,7 @@ public:
         CHIPBridgedDeviceBasic * cluster = [[CHIPBridgedDeviceBasic alloc] initWithDevice:device
                                                                                  endpoint:endpointId
                                                                                     queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSString * _Nonnull value = [[NSString alloc] initWithBytes:mValue.data()
                                                              length:mValue.size()
@@ -9466,11 +9767,11 @@ public:
 
         [cluster writeAttributeNodeLabelWithValue:value
                                 completionHandler:^(NSError * _Nullable error) {
-                                    err = [CHIPError errorToCHIPErrorCode:error];
-                                    ChipLogError(chipTool, "BridgedDeviceBasic NodeLabel Error: %s", chip::ErrorStr(err));
-                                    SetCommandExitStatus(err);
+                                    chipError = [CHIPError errorToCHIPErrorCode:error];
+                                    ChipLogError(chipTool, "BridgedDeviceBasic NodeLabel Error: %s", chip::ErrorStr(chipError));
+                                    SetCommandExitStatus(chipError);
                                 }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -10786,18 +11087,19 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPChannel * cluster = [[CHIPChannel alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPChannelClusterChangeChannelParams alloc] init];
+
         params.match = [[NSString alloc] initWithBytes:mMatch.data() length:mMatch.size() encoding:NSUTF8StringEncoding];
         [cluster
             changeChannelWithParams:params
                   completionHandler:^(CHIPChannelClusterChangeChannelResponseParams * _Nullable values, NSError * _Nullable error) {
                       NSLog(@"Values: %@", values);
-                      err = [CHIPError errorToCHIPErrorCode:error];
-                      ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                      SetCommandExitStatus(err);
+                      chipError = [CHIPError errorToCHIPErrorCode:error];
+                      ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                      SetCommandExitStatus(chipError);
                   }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -10823,17 +11125,19 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPChannel * cluster = [[CHIPChannel alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPChannelClusterChangeChannelByNumberParams alloc] init];
+
         params.majorNumber = [NSNumber numberWithUnsignedShort:mMajorNumber];
+
         params.minorNumber = [NSNumber numberWithUnsignedShort:mMinorNumber];
         [cluster changeChannelByNumberWithParams:params
                                completionHandler:^(NSError * _Nullable error) {
-                                   err = [CHIPError errorToCHIPErrorCode:error];
-                                   ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                                   SetCommandExitStatus(err);
+                                   chipError = [CHIPError errorToCHIPErrorCode:error];
+                                   ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                                   SetCommandExitStatus(chipError);
                                }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -10859,16 +11163,17 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPChannel * cluster = [[CHIPChannel alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPChannelClusterSkipChannelParams alloc] init];
+
         params.count = [NSNumber numberWithUnsignedShort:mCount];
         [cluster skipChannelWithParams:params
                      completionHandler:^(NSError * _Nullable error) {
-                         err = [CHIPError errorToCHIPErrorCode:error];
-                         ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                         SetCommandExitStatus(err);
+                         chipError = [CHIPError errorToCHIPErrorCode:error];
+                         ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                         SetCommandExitStatus(chipError);
                      }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -11529,22 +11834,29 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPColorControl * cluster = [[CHIPColorControl alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPColorControlClusterColorLoopSetParams alloc] init];
+
         params.updateFlags = [NSNumber numberWithUnsignedChar:mUpdateFlags];
+
         params.action = [NSNumber numberWithUnsignedChar:mAction];
+
         params.direction = [NSNumber numberWithUnsignedChar:mDirection];
+
         params.time = [NSNumber numberWithUnsignedShort:mTime];
+
         params.startHue = [NSNumber numberWithUnsignedShort:mStartHue];
+
         params.optionsMask = [NSNumber numberWithUnsignedChar:mOptionsMask];
+
         params.optionsOverride = [NSNumber numberWithUnsignedChar:mOptionsOverride];
         [cluster colorLoopSetWithParams:params
                       completionHandler:^(NSError * _Nullable error) {
-                          err = [CHIPError errorToCHIPErrorCode:error];
-                          ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                          SetCommandExitStatus(err);
+                          chipError = [CHIPError errorToCHIPErrorCode:error];
+                          ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                          SetCommandExitStatus(chipError);
                       }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -11578,19 +11890,23 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPColorControl * cluster = [[CHIPColorControl alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPColorControlClusterEnhancedMoveHueParams alloc] init];
+
         params.moveMode = [NSNumber numberWithUnsignedChar:mMoveMode];
+
         params.rate = [NSNumber numberWithUnsignedShort:mRate];
+
         params.optionsMask = [NSNumber numberWithUnsignedChar:mOptionsMask];
+
         params.optionsOverride = [NSNumber numberWithUnsignedChar:mOptionsOverride];
         [cluster enhancedMoveHueWithParams:params
                          completionHandler:^(NSError * _Nullable error) {
-                             err = [CHIPError errorToCHIPErrorCode:error];
-                             ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                             SetCommandExitStatus(err);
+                             chipError = [CHIPError errorToCHIPErrorCode:error];
+                             ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                             SetCommandExitStatus(chipError);
                          }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -11622,20 +11938,25 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPColorControl * cluster = [[CHIPColorControl alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPColorControlClusterEnhancedMoveToHueParams alloc] init];
+
         params.enhancedHue = [NSNumber numberWithUnsignedShort:mEnhancedHue];
+
         params.direction = [NSNumber numberWithUnsignedChar:mDirection];
+
         params.transitionTime = [NSNumber numberWithUnsignedShort:mTransitionTime];
+
         params.optionsMask = [NSNumber numberWithUnsignedChar:mOptionsMask];
+
         params.optionsOverride = [NSNumber numberWithUnsignedChar:mOptionsOverride];
         [cluster enhancedMoveToHueWithParams:params
                            completionHandler:^(NSError * _Nullable error) {
-                               err = [CHIPError errorToCHIPErrorCode:error];
-                               ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                               SetCommandExitStatus(err);
+                               chipError = [CHIPError errorToCHIPErrorCode:error];
+                               ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                               SetCommandExitStatus(chipError);
                            }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -11668,20 +11989,25 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPColorControl * cluster = [[CHIPColorControl alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPColorControlClusterEnhancedMoveToHueAndSaturationParams alloc] init];
+
         params.enhancedHue = [NSNumber numberWithUnsignedShort:mEnhancedHue];
+
         params.saturation = [NSNumber numberWithUnsignedChar:mSaturation];
+
         params.transitionTime = [NSNumber numberWithUnsignedShort:mTransitionTime];
+
         params.optionsMask = [NSNumber numberWithUnsignedChar:mOptionsMask];
+
         params.optionsOverride = [NSNumber numberWithUnsignedChar:mOptionsOverride];
         [cluster enhancedMoveToHueAndSaturationWithParams:params
                                         completionHandler:^(NSError * _Nullable error) {
-                                            err = [CHIPError errorToCHIPErrorCode:error];
-                                            ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                                            SetCommandExitStatus(err);
+                                            chipError = [CHIPError errorToCHIPErrorCode:error];
+                                            ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                                            SetCommandExitStatus(chipError);
                                         }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -11714,20 +12040,25 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPColorControl * cluster = [[CHIPColorControl alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPColorControlClusterEnhancedStepHueParams alloc] init];
+
         params.stepMode = [NSNumber numberWithUnsignedChar:mStepMode];
+
         params.stepSize = [NSNumber numberWithUnsignedShort:mStepSize];
+
         params.transitionTime = [NSNumber numberWithUnsignedShort:mTransitionTime];
+
         params.optionsMask = [NSNumber numberWithUnsignedChar:mOptionsMask];
+
         params.optionsOverride = [NSNumber numberWithUnsignedChar:mOptionsOverride];
         [cluster enhancedStepHueWithParams:params
                          completionHandler:^(NSError * _Nullable error) {
-                             err = [CHIPError errorToCHIPErrorCode:error];
-                             ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                             SetCommandExitStatus(err);
+                             chipError = [CHIPError errorToCHIPErrorCode:error];
+                             ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                             SetCommandExitStatus(chipError);
                          }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -11759,19 +12090,23 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPColorControl * cluster = [[CHIPColorControl alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPColorControlClusterMoveColorParams alloc] init];
+
         params.rateX = [NSNumber numberWithShort:mRateX];
+
         params.rateY = [NSNumber numberWithShort:mRateY];
+
         params.optionsMask = [NSNumber numberWithUnsignedChar:mOptionsMask];
+
         params.optionsOverride = [NSNumber numberWithUnsignedChar:mOptionsOverride];
         [cluster moveColorWithParams:params
                    completionHandler:^(NSError * _Nullable error) {
-                       err = [CHIPError errorToCHIPErrorCode:error];
-                       ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                       SetCommandExitStatus(err);
+                       chipError = [CHIPError errorToCHIPErrorCode:error];
+                       ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                       SetCommandExitStatus(chipError);
                    }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -11804,21 +12139,27 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPColorControl * cluster = [[CHIPColorControl alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPColorControlClusterMoveColorTemperatureParams alloc] init];
+
         params.moveMode = [NSNumber numberWithUnsignedChar:mMoveMode];
+
         params.rate = [NSNumber numberWithUnsignedShort:mRate];
+
         params.colorTemperatureMinimum = [NSNumber numberWithUnsignedShort:mColorTemperatureMinimum];
+
         params.colorTemperatureMaximum = [NSNumber numberWithUnsignedShort:mColorTemperatureMaximum];
+
         params.optionsMask = [NSNumber numberWithUnsignedChar:mOptionsMask];
+
         params.optionsOverride = [NSNumber numberWithUnsignedChar:mOptionsOverride];
         [cluster moveColorTemperatureWithParams:params
                               completionHandler:^(NSError * _Nullable error) {
-                                  err = [CHIPError errorToCHIPErrorCode:error];
-                                  ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                                  SetCommandExitStatus(err);
+                                  chipError = [CHIPError errorToCHIPErrorCode:error];
+                                  ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                                  SetCommandExitStatus(chipError);
                               }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -11851,19 +12192,23 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPColorControl * cluster = [[CHIPColorControl alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPColorControlClusterMoveHueParams alloc] init];
+
         params.moveMode = [NSNumber numberWithUnsignedChar:mMoveMode];
+
         params.rate = [NSNumber numberWithUnsignedChar:mRate];
+
         params.optionsMask = [NSNumber numberWithUnsignedChar:mOptionsMask];
+
         params.optionsOverride = [NSNumber numberWithUnsignedChar:mOptionsOverride];
         [cluster moveHueWithParams:params
                  completionHandler:^(NSError * _Nullable error) {
-                     err = [CHIPError errorToCHIPErrorCode:error];
-                     ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                     SetCommandExitStatus(err);
+                     chipError = [CHIPError errorToCHIPErrorCode:error];
+                     ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                     SetCommandExitStatus(chipError);
                  }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -11894,19 +12239,23 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPColorControl * cluster = [[CHIPColorControl alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPColorControlClusterMoveSaturationParams alloc] init];
+
         params.moveMode = [NSNumber numberWithUnsignedChar:mMoveMode];
+
         params.rate = [NSNumber numberWithUnsignedChar:mRate];
+
         params.optionsMask = [NSNumber numberWithUnsignedChar:mOptionsMask];
+
         params.optionsOverride = [NSNumber numberWithUnsignedChar:mOptionsOverride];
         [cluster moveSaturationWithParams:params
                         completionHandler:^(NSError * _Nullable error) {
-                            err = [CHIPError errorToCHIPErrorCode:error];
-                            ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                            SetCommandExitStatus(err);
+                            chipError = [CHIPError errorToCHIPErrorCode:error];
+                            ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                            SetCommandExitStatus(chipError);
                         }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -11938,20 +12287,25 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPColorControl * cluster = [[CHIPColorControl alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPColorControlClusterMoveToColorParams alloc] init];
+
         params.colorX = [NSNumber numberWithUnsignedShort:mColorX];
+
         params.colorY = [NSNumber numberWithUnsignedShort:mColorY];
+
         params.transitionTime = [NSNumber numberWithUnsignedShort:mTransitionTime];
+
         params.optionsMask = [NSNumber numberWithUnsignedChar:mOptionsMask];
+
         params.optionsOverride = [NSNumber numberWithUnsignedChar:mOptionsOverride];
         [cluster moveToColorWithParams:params
                      completionHandler:^(NSError * _Nullable error) {
-                         err = [CHIPError errorToCHIPErrorCode:error];
-                         ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                         SetCommandExitStatus(err);
+                         chipError = [CHIPError errorToCHIPErrorCode:error];
+                         ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                         SetCommandExitStatus(chipError);
                      }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -11983,19 +12337,23 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPColorControl * cluster = [[CHIPColorControl alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPColorControlClusterMoveToColorTemperatureParams alloc] init];
+
         params.colorTemperature = [NSNumber numberWithUnsignedShort:mColorTemperature];
+
         params.transitionTime = [NSNumber numberWithUnsignedShort:mTransitionTime];
+
         params.optionsMask = [NSNumber numberWithUnsignedChar:mOptionsMask];
+
         params.optionsOverride = [NSNumber numberWithUnsignedChar:mOptionsOverride];
         [cluster moveToColorTemperatureWithParams:params
                                 completionHandler:^(NSError * _Nullable error) {
-                                    err = [CHIPError errorToCHIPErrorCode:error];
-                                    ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                                    SetCommandExitStatus(err);
+                                    chipError = [CHIPError errorToCHIPErrorCode:error];
+                                    ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                                    SetCommandExitStatus(chipError);
                                 }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -12027,20 +12385,25 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPColorControl * cluster = [[CHIPColorControl alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPColorControlClusterMoveToHueParams alloc] init];
+
         params.hue = [NSNumber numberWithUnsignedChar:mHue];
+
         params.direction = [NSNumber numberWithUnsignedChar:mDirection];
+
         params.transitionTime = [NSNumber numberWithUnsignedShort:mTransitionTime];
+
         params.optionsMask = [NSNumber numberWithUnsignedChar:mOptionsMask];
+
         params.optionsOverride = [NSNumber numberWithUnsignedChar:mOptionsOverride];
         [cluster moveToHueWithParams:params
                    completionHandler:^(NSError * _Nullable error) {
-                       err = [CHIPError errorToCHIPErrorCode:error];
-                       ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                       SetCommandExitStatus(err);
+                       chipError = [CHIPError errorToCHIPErrorCode:error];
+                       ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                       SetCommandExitStatus(chipError);
                    }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -12073,20 +12436,25 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPColorControl * cluster = [[CHIPColorControl alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPColorControlClusterMoveToHueAndSaturationParams alloc] init];
+
         params.hue = [NSNumber numberWithUnsignedChar:mHue];
+
         params.saturation = [NSNumber numberWithUnsignedChar:mSaturation];
+
         params.transitionTime = [NSNumber numberWithUnsignedShort:mTransitionTime];
+
         params.optionsMask = [NSNumber numberWithUnsignedChar:mOptionsMask];
+
         params.optionsOverride = [NSNumber numberWithUnsignedChar:mOptionsOverride];
         [cluster moveToHueAndSaturationWithParams:params
                                 completionHandler:^(NSError * _Nullable error) {
-                                    err = [CHIPError errorToCHIPErrorCode:error];
-                                    ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                                    SetCommandExitStatus(err);
+                                    chipError = [CHIPError errorToCHIPErrorCode:error];
+                                    ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                                    SetCommandExitStatus(chipError);
                                 }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -12118,19 +12486,23 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPColorControl * cluster = [[CHIPColorControl alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPColorControlClusterMoveToSaturationParams alloc] init];
+
         params.saturation = [NSNumber numberWithUnsignedChar:mSaturation];
+
         params.transitionTime = [NSNumber numberWithUnsignedShort:mTransitionTime];
+
         params.optionsMask = [NSNumber numberWithUnsignedChar:mOptionsMask];
+
         params.optionsOverride = [NSNumber numberWithUnsignedChar:mOptionsOverride];
         [cluster moveToSaturationWithParams:params
                           completionHandler:^(NSError * _Nullable error) {
-                              err = [CHIPError errorToCHIPErrorCode:error];
-                              ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                              SetCommandExitStatus(err);
+                              chipError = [CHIPError errorToCHIPErrorCode:error];
+                              ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                              SetCommandExitStatus(chipError);
                           }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -12162,20 +12534,25 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPColorControl * cluster = [[CHIPColorControl alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPColorControlClusterStepColorParams alloc] init];
+
         params.stepX = [NSNumber numberWithShort:mStepX];
+
         params.stepY = [NSNumber numberWithShort:mStepY];
+
         params.transitionTime = [NSNumber numberWithUnsignedShort:mTransitionTime];
+
         params.optionsMask = [NSNumber numberWithUnsignedChar:mOptionsMask];
+
         params.optionsOverride = [NSNumber numberWithUnsignedChar:mOptionsOverride];
         [cluster stepColorWithParams:params
                    completionHandler:^(NSError * _Nullable error) {
-                       err = [CHIPError errorToCHIPErrorCode:error];
-                       ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                       SetCommandExitStatus(err);
+                       chipError = [CHIPError errorToCHIPErrorCode:error];
+                       ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                       SetCommandExitStatus(chipError);
                    }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -12210,22 +12587,29 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPColorControl * cluster = [[CHIPColorControl alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPColorControlClusterStepColorTemperatureParams alloc] init];
+
         params.stepMode = [NSNumber numberWithUnsignedChar:mStepMode];
+
         params.stepSize = [NSNumber numberWithUnsignedShort:mStepSize];
+
         params.transitionTime = [NSNumber numberWithUnsignedShort:mTransitionTime];
+
         params.colorTemperatureMinimum = [NSNumber numberWithUnsignedShort:mColorTemperatureMinimum];
+
         params.colorTemperatureMaximum = [NSNumber numberWithUnsignedShort:mColorTemperatureMaximum];
+
         params.optionsMask = [NSNumber numberWithUnsignedChar:mOptionsMask];
+
         params.optionsOverride = [NSNumber numberWithUnsignedChar:mOptionsOverride];
         [cluster stepColorTemperatureWithParams:params
                               completionHandler:^(NSError * _Nullable error) {
-                                  err = [CHIPError errorToCHIPErrorCode:error];
-                                  ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                                  SetCommandExitStatus(err);
+                                  chipError = [CHIPError errorToCHIPErrorCode:error];
+                                  ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                                  SetCommandExitStatus(chipError);
                               }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -12260,20 +12644,25 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPColorControl * cluster = [[CHIPColorControl alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPColorControlClusterStepHueParams alloc] init];
+
         params.stepMode = [NSNumber numberWithUnsignedChar:mStepMode];
+
         params.stepSize = [NSNumber numberWithUnsignedChar:mStepSize];
+
         params.transitionTime = [NSNumber numberWithUnsignedChar:mTransitionTime];
+
         params.optionsMask = [NSNumber numberWithUnsignedChar:mOptionsMask];
+
         params.optionsOverride = [NSNumber numberWithUnsignedChar:mOptionsOverride];
         [cluster stepHueWithParams:params
                  completionHandler:^(NSError * _Nullable error) {
-                     err = [CHIPError errorToCHIPErrorCode:error];
-                     ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                     SetCommandExitStatus(err);
+                     chipError = [CHIPError errorToCHIPErrorCode:error];
+                     ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                     SetCommandExitStatus(chipError);
                  }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -12306,20 +12695,25 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPColorControl * cluster = [[CHIPColorControl alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPColorControlClusterStepSaturationParams alloc] init];
+
         params.stepMode = [NSNumber numberWithUnsignedChar:mStepMode];
+
         params.stepSize = [NSNumber numberWithUnsignedChar:mStepSize];
+
         params.transitionTime = [NSNumber numberWithUnsignedChar:mTransitionTime];
+
         params.optionsMask = [NSNumber numberWithUnsignedChar:mOptionsMask];
+
         params.optionsOverride = [NSNumber numberWithUnsignedChar:mOptionsOverride];
         [cluster stepSaturationWithParams:params
                         completionHandler:^(NSError * _Nullable error) {
-                            err = [CHIPError errorToCHIPErrorCode:error];
-                            ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                            SetCommandExitStatus(err);
+                            chipError = [CHIPError errorToCHIPErrorCode:error];
+                            ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                            SetCommandExitStatus(chipError);
                         }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -12349,17 +12743,19 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPColorControl * cluster = [[CHIPColorControl alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPColorControlClusterStopMoveStepParams alloc] init];
+
         params.optionsMask = [NSNumber numberWithUnsignedChar:mOptionsMask];
+
         params.optionsOverride = [NSNumber numberWithUnsignedChar:mOptionsOverride];
         [cluster stopMoveStepWithParams:params
                       completionHandler:^(NSError * _Nullable error) {
-                          err = [CHIPError errorToCHIPErrorCode:error];
-                          ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                          SetCommandExitStatus(err);
+                          chipError = [CHIPError errorToCHIPErrorCode:error];
+                          ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                          SetCommandExitStatus(chipError);
                       }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -13109,18 +13505,18 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x00000300) WriteAttribute (0x0000000F) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPColorControl * cluster = [[CHIPColorControl alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nonnull value = [NSNumber numberWithUnsignedChar:mValue];
 
-        [cluster
-            writeAttributeColorControlOptionsWithValue:value
-                                     completionHandler:^(NSError * _Nullable error) {
-                                         err = [CHIPError errorToCHIPErrorCode:error];
-                                         ChipLogError(chipTool, "ColorControl ColorControlOptions Error: %s", chip::ErrorStr(err));
-                                         SetCommandExitStatus(err);
-                                     }];
-        return err;
+        [cluster writeAttributeColorControlOptionsWithValue:value
+                                          completionHandler:^(NSError * _Nullable error) {
+                                              chipError = [CHIPError errorToCHIPErrorCode:error];
+                                              ChipLogError(chipTool, "ColorControl ColorControlOptions Error: %s",
+                                                  chip::ErrorStr(chipError));
+                                              SetCommandExitStatus(chipError);
+                                          }];
+        return chipError;
     }
 
 private:
@@ -14685,17 +15081,17 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x00000300) WriteAttribute (0x00000030) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPColorControl * cluster = [[CHIPColorControl alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nonnull value = [NSNumber numberWithUnsignedShort:mValue];
 
         [cluster writeAttributeWhitePointXWithValue:value
                                   completionHandler:^(NSError * _Nullable error) {
-                                      err = [CHIPError errorToCHIPErrorCode:error];
-                                      ChipLogError(chipTool, "ColorControl WhitePointX Error: %s", chip::ErrorStr(err));
-                                      SetCommandExitStatus(err);
+                                      chipError = [CHIPError errorToCHIPErrorCode:error];
+                                      ChipLogError(chipTool, "ColorControl WhitePointX Error: %s", chip::ErrorStr(chipError));
+                                      SetCommandExitStatus(chipError);
                                   }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -14796,17 +15192,17 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x00000300) WriteAttribute (0x00000031) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPColorControl * cluster = [[CHIPColorControl alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nonnull value = [NSNumber numberWithUnsignedShort:mValue];
 
         [cluster writeAttributeWhitePointYWithValue:value
                                   completionHandler:^(NSError * _Nullable error) {
-                                      err = [CHIPError errorToCHIPErrorCode:error];
-                                      ChipLogError(chipTool, "ColorControl WhitePointY Error: %s", chip::ErrorStr(err));
-                                      SetCommandExitStatus(err);
+                                      chipError = [CHIPError errorToCHIPErrorCode:error];
+                                      ChipLogError(chipTool, "ColorControl WhitePointY Error: %s", chip::ErrorStr(chipError));
+                                      SetCommandExitStatus(chipError);
                                   }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -14907,17 +15303,17 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x00000300) WriteAttribute (0x00000032) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPColorControl * cluster = [[CHIPColorControl alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nonnull value = [NSNumber numberWithUnsignedShort:mValue];
 
         [cluster writeAttributeColorPointRXWithValue:value
                                    completionHandler:^(NSError * _Nullable error) {
-                                       err = [CHIPError errorToCHIPErrorCode:error];
-                                       ChipLogError(chipTool, "ColorControl ColorPointRX Error: %s", chip::ErrorStr(err));
-                                       SetCommandExitStatus(err);
+                                       chipError = [CHIPError errorToCHIPErrorCode:error];
+                                       ChipLogError(chipTool, "ColorControl ColorPointRX Error: %s", chip::ErrorStr(chipError));
+                                       SetCommandExitStatus(chipError);
                                    }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -15018,17 +15414,17 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x00000300) WriteAttribute (0x00000033) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPColorControl * cluster = [[CHIPColorControl alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nonnull value = [NSNumber numberWithUnsignedShort:mValue];
 
         [cluster writeAttributeColorPointRYWithValue:value
                                    completionHandler:^(NSError * _Nullable error) {
-                                       err = [CHIPError errorToCHIPErrorCode:error];
-                                       ChipLogError(chipTool, "ColorControl ColorPointRY Error: %s", chip::ErrorStr(err));
-                                       SetCommandExitStatus(err);
+                                       chipError = [CHIPError errorToCHIPErrorCode:error];
+                                       ChipLogError(chipTool, "ColorControl ColorPointRY Error: %s", chip::ErrorStr(chipError));
+                                       SetCommandExitStatus(chipError);
                                    }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -15129,18 +15525,18 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x00000300) WriteAttribute (0x00000034) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPColorControl * cluster = [[CHIPColorControl alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nonnull value = [NSNumber numberWithUnsignedChar:mValue];
 
         [cluster writeAttributeColorPointRIntensityWithValue:value
                                            completionHandler:^(NSError * _Nullable error) {
-                                               err = [CHIPError errorToCHIPErrorCode:error];
-                                               ChipLogError(
-                                                   chipTool, "ColorControl ColorPointRIntensity Error: %s", chip::ErrorStr(err));
-                                               SetCommandExitStatus(err);
+                                               chipError = [CHIPError errorToCHIPErrorCode:error];
+                                               ChipLogError(chipTool, "ColorControl ColorPointRIntensity Error: %s",
+                                                   chip::ErrorStr(chipError));
+                                               SetCommandExitStatus(chipError);
                                            }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -15242,17 +15638,17 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x00000300) WriteAttribute (0x00000036) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPColorControl * cluster = [[CHIPColorControl alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nonnull value = [NSNumber numberWithUnsignedShort:mValue];
 
         [cluster writeAttributeColorPointGXWithValue:value
                                    completionHandler:^(NSError * _Nullable error) {
-                                       err = [CHIPError errorToCHIPErrorCode:error];
-                                       ChipLogError(chipTool, "ColorControl ColorPointGX Error: %s", chip::ErrorStr(err));
-                                       SetCommandExitStatus(err);
+                                       chipError = [CHIPError errorToCHIPErrorCode:error];
+                                       ChipLogError(chipTool, "ColorControl ColorPointGX Error: %s", chip::ErrorStr(chipError));
+                                       SetCommandExitStatus(chipError);
                                    }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -15353,17 +15749,17 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x00000300) WriteAttribute (0x00000037) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPColorControl * cluster = [[CHIPColorControl alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nonnull value = [NSNumber numberWithUnsignedShort:mValue];
 
         [cluster writeAttributeColorPointGYWithValue:value
                                    completionHandler:^(NSError * _Nullable error) {
-                                       err = [CHIPError errorToCHIPErrorCode:error];
-                                       ChipLogError(chipTool, "ColorControl ColorPointGY Error: %s", chip::ErrorStr(err));
-                                       SetCommandExitStatus(err);
+                                       chipError = [CHIPError errorToCHIPErrorCode:error];
+                                       ChipLogError(chipTool, "ColorControl ColorPointGY Error: %s", chip::ErrorStr(chipError));
+                                       SetCommandExitStatus(chipError);
                                    }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -15464,18 +15860,18 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x00000300) WriteAttribute (0x00000038) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPColorControl * cluster = [[CHIPColorControl alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nonnull value = [NSNumber numberWithUnsignedChar:mValue];
 
         [cluster writeAttributeColorPointGIntensityWithValue:value
                                            completionHandler:^(NSError * _Nullable error) {
-                                               err = [CHIPError errorToCHIPErrorCode:error];
-                                               ChipLogError(
-                                                   chipTool, "ColorControl ColorPointGIntensity Error: %s", chip::ErrorStr(err));
-                                               SetCommandExitStatus(err);
+                                               chipError = [CHIPError errorToCHIPErrorCode:error];
+                                               ChipLogError(chipTool, "ColorControl ColorPointGIntensity Error: %s",
+                                                   chip::ErrorStr(chipError));
+                                               SetCommandExitStatus(chipError);
                                            }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -15577,17 +15973,17 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x00000300) WriteAttribute (0x0000003A) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPColorControl * cluster = [[CHIPColorControl alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nonnull value = [NSNumber numberWithUnsignedShort:mValue];
 
         [cluster writeAttributeColorPointBXWithValue:value
                                    completionHandler:^(NSError * _Nullable error) {
-                                       err = [CHIPError errorToCHIPErrorCode:error];
-                                       ChipLogError(chipTool, "ColorControl ColorPointBX Error: %s", chip::ErrorStr(err));
-                                       SetCommandExitStatus(err);
+                                       chipError = [CHIPError errorToCHIPErrorCode:error];
+                                       ChipLogError(chipTool, "ColorControl ColorPointBX Error: %s", chip::ErrorStr(chipError));
+                                       SetCommandExitStatus(chipError);
                                    }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -15688,17 +16084,17 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x00000300) WriteAttribute (0x0000003B) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPColorControl * cluster = [[CHIPColorControl alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nonnull value = [NSNumber numberWithUnsignedShort:mValue];
 
         [cluster writeAttributeColorPointBYWithValue:value
                                    completionHandler:^(NSError * _Nullable error) {
-                                       err = [CHIPError errorToCHIPErrorCode:error];
-                                       ChipLogError(chipTool, "ColorControl ColorPointBY Error: %s", chip::ErrorStr(err));
-                                       SetCommandExitStatus(err);
+                                       chipError = [CHIPError errorToCHIPErrorCode:error];
+                                       ChipLogError(chipTool, "ColorControl ColorPointBY Error: %s", chip::ErrorStr(chipError));
+                                       SetCommandExitStatus(chipError);
                                    }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -15799,18 +16195,18 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x00000300) WriteAttribute (0x0000003C) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPColorControl * cluster = [[CHIPColorControl alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nonnull value = [NSNumber numberWithUnsignedChar:mValue];
 
         [cluster writeAttributeColorPointBIntensityWithValue:value
                                            completionHandler:^(NSError * _Nullable error) {
-                                               err = [CHIPError errorToCHIPErrorCode:error];
-                                               ChipLogError(
-                                                   chipTool, "ColorControl ColorPointBIntensity Error: %s", chip::ErrorStr(err));
-                                               SetCommandExitStatus(err);
+                                               chipError = [CHIPError errorToCHIPErrorCode:error];
+                                               ChipLogError(chipTool, "ColorControl ColorPointBIntensity Error: %s",
+                                                   chip::ErrorStr(chipError));
+                                               SetCommandExitStatus(chipError);
                                            }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -16775,19 +17171,19 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x00000300) WriteAttribute (0x00004010) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPColorControl * cluster = [[CHIPColorControl alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nonnull value = [NSNumber numberWithUnsignedShort:mValue];
 
         [cluster
             writeAttributeStartUpColorTemperatureMiredsWithValue:value
                                                completionHandler:^(NSError * _Nullable error) {
-                                                   err = [CHIPError errorToCHIPErrorCode:error];
+                                                   chipError = [CHIPError errorToCHIPErrorCode:error];
                                                    ChipLogError(chipTool, "ColorControl StartUpColorTemperatureMireds Error: %s",
-                                                       chip::ErrorStr(err));
-                                                   SetCommandExitStatus(err);
+                                                       chip::ErrorStr(chipError));
+                                                   SetCommandExitStatus(chipError);
                                                }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -17178,7 +17574,9 @@ class ContentLauncherLaunchContent : public ModelCommand {
 public:
     ContentLauncherLaunchContent()
         : ModelCommand("launch-content")
+        , mComplex_Search(&mRequest.search)
     {
+        AddArgument("Search", &mComplex_Search);
         AddArgument("AutoPlay", 0, 1, &mAutoPlay);
         AddArgument("Data", &mData);
         ModelCommand::AddArguments();
@@ -17190,23 +17588,62 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPContentLauncher * cluster = [[CHIPContentLauncher alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPContentLauncherClusterLaunchContentParams alloc] init];
-        // search Struct parsing is not supported yet
+
+        params.search = [CHIPContentLauncherClusterContentSearch new];
+        { // Scope for our temporary variables
+            auto * array_1 = [NSMutableArray new];
+            for (chip::ListIndex index_1 = 0; index_1 < mRequest.search.parameterList.size(); index_1++) {
+                auto & entry_1 = mRequest.search.parameterList.data()[index_1];
+                CHIPContentLauncherClusterParameter * newElement_1;
+                newElement_1 = [CHIPContentLauncherClusterParameter new];
+                newElement_1.type = [NSNumber numberWithUnsignedChar:chip::to_underlying(entry_1.type)];
+                newElement_1.value = [[NSString alloc] initWithBytes:entry_1.value.data()
+                                                              length:entry_1.value.size()
+                                                            encoding:NSUTF8StringEncoding];
+                if (entry_1.externalIDList.HasValue()) {
+                    { // Scope for our temporary variables
+                        auto * array_4 = [NSMutableArray new];
+                        for (chip::ListIndex index_4 = 0; index_4 < entry_1.externalIDList.Value().size(); index_4++) {
+                            auto & entry_4 = entry_1.externalIDList.Value().data()[index_4];
+                            CHIPContentLauncherClusterAdditionalInfo * newElement_4;
+                            newElement_4 = [CHIPContentLauncherClusterAdditionalInfo new];
+                            newElement_4.name = [[NSString alloc] initWithBytes:entry_4.name.data()
+                                                                         length:entry_4.name.size()
+                                                                       encoding:NSUTF8StringEncoding];
+                            newElement_4.value = [[NSString alloc] initWithBytes:entry_4.value.data()
+                                                                          length:entry_4.value.size()
+                                                                        encoding:NSUTF8StringEncoding];
+                            [array_4 addObject:newElement_4];
+                        }
+                        newElement_1.externalIDList = array_4;
+                    }
+                } else {
+                    newElement_1.externalIDList = nil;
+                }
+                [array_1 addObject:newElement_1];
+            }
+            params.search.parameterList = array_1;
+        }
+
         params.autoPlay = [NSNumber numberWithBool:mAutoPlay];
+
         params.data = [[NSString alloc] initWithBytes:mData.data() length:mData.size() encoding:NSUTF8StringEncoding];
         [cluster launchContentWithParams:params
                        completionHandler:^(
                            CHIPContentLauncherClusterLaunchResponseParams * _Nullable values, NSError * _Nullable error) {
                            NSLog(@"Values: %@", values);
-                           err = [CHIPError errorToCHIPErrorCode:error];
-                           ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                           SetCommandExitStatus(err);
+                           chipError = [CHIPError errorToCHIPErrorCode:error];
+                           ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                           SetCommandExitStatus(chipError);
                        }];
-        return err;
+        return chipError;
     }
 
 private:
+    chip::app::Clusters::ContentLauncher::Commands::LaunchContent::Type mRequest;
+    TypedComplexArgument<chip::app::Clusters::ContentLauncher::Structs::ContentSearch::Type> mComplex_Search;
     bool mAutoPlay;
     chip::ByteSpan mData;
 };
@@ -17218,9 +17655,11 @@ class ContentLauncherLaunchURL : public ModelCommand {
 public:
     ContentLauncherLaunchURL()
         : ModelCommand("launch-url")
+        , mComplex_BrandingInformation(&mRequest.brandingInformation)
     {
         AddArgument("ContentURL", &mContentURL);
         AddArgument("DisplayString", &mDisplayString);
+        AddArgument("BrandingInformation", &mComplex_BrandingInformation);
         ModelCommand::AddArguments();
     }
 
@@ -17230,29 +17669,208 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPContentLauncher * cluster = [[CHIPContentLauncher alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPContentLauncherClusterLaunchURLParams alloc] init];
+
         params.contentURL = [[NSString alloc] initWithBytes:mContentURL.data()
                                                      length:mContentURL.size()
                                                    encoding:NSUTF8StringEncoding];
+
         params.displayString = [[NSString alloc] initWithBytes:mDisplayString.data()
                                                         length:mDisplayString.size()
                                                       encoding:NSUTF8StringEncoding];
-        // brandingInformation Struct parsing is not supported yet
+
+        if (mRequest.brandingInformation.HasValue()) {
+            params.brandingInformation = [CHIPContentLauncherClusterBrandingInformation new];
+            params.brandingInformation.providerName =
+                [[NSString alloc] initWithBytes:mRequest.brandingInformation.Value().providerName.data()
+                                         length:mRequest.brandingInformation.Value().providerName.size()
+                                       encoding:NSUTF8StringEncoding];
+            if (mRequest.brandingInformation.Value().background.HasValue()) {
+                params.brandingInformation.background = [CHIPContentLauncherClusterStyleInformation new];
+                if (mRequest.brandingInformation.Value().background.Value().imageUrl.HasValue()) {
+                    params.brandingInformation.background.imageUrl = [[NSString alloc]
+                        initWithBytes:mRequest.brandingInformation.Value().background.Value().imageUrl.Value().data()
+                               length:mRequest.brandingInformation.Value().background.Value().imageUrl.Value().size()
+                             encoding:NSUTF8StringEncoding];
+                } else {
+                    params.brandingInformation.background.imageUrl = nil;
+                }
+                if (mRequest.brandingInformation.Value().background.Value().color.HasValue()) {
+                    params.brandingInformation.background.color =
+                        [[NSString alloc] initWithBytes:mRequest.brandingInformation.Value().background.Value().color.Value().data()
+                                                 length:mRequest.brandingInformation.Value().background.Value().color.Value().size()
+                                               encoding:NSUTF8StringEncoding];
+                } else {
+                    params.brandingInformation.background.color = nil;
+                }
+                if (mRequest.brandingInformation.Value().background.Value().size.HasValue()) {
+                    params.brandingInformation.background.size = [CHIPContentLauncherClusterDimension new];
+                    params.brandingInformation.background.size.width =
+                        [NSNumber numberWithDouble:mRequest.brandingInformation.Value().background.Value().size.Value().width];
+                    params.brandingInformation.background.size.height =
+                        [NSNumber numberWithDouble:mRequest.brandingInformation.Value().background.Value().size.Value().height];
+                    params.brandingInformation.background.size.metric = [NSNumber
+                        numberWithUnsignedChar:chip::to_underlying(
+                                                   mRequest.brandingInformation.Value().background.Value().size.Value().metric)];
+                } else {
+                    params.brandingInformation.background.size = nil;
+                }
+            } else {
+                params.brandingInformation.background = nil;
+            }
+            if (mRequest.brandingInformation.Value().logo.HasValue()) {
+                params.brandingInformation.logo = [CHIPContentLauncherClusterStyleInformation new];
+                if (mRequest.brandingInformation.Value().logo.Value().imageUrl.HasValue()) {
+                    params.brandingInformation.logo.imageUrl =
+                        [[NSString alloc] initWithBytes:mRequest.brandingInformation.Value().logo.Value().imageUrl.Value().data()
+                                                 length:mRequest.brandingInformation.Value().logo.Value().imageUrl.Value().size()
+                                               encoding:NSUTF8StringEncoding];
+                } else {
+                    params.brandingInformation.logo.imageUrl = nil;
+                }
+                if (mRequest.brandingInformation.Value().logo.Value().color.HasValue()) {
+                    params.brandingInformation.logo.color =
+                        [[NSString alloc] initWithBytes:mRequest.brandingInformation.Value().logo.Value().color.Value().data()
+                                                 length:mRequest.brandingInformation.Value().logo.Value().color.Value().size()
+                                               encoding:NSUTF8StringEncoding];
+                } else {
+                    params.brandingInformation.logo.color = nil;
+                }
+                if (mRequest.brandingInformation.Value().logo.Value().size.HasValue()) {
+                    params.brandingInformation.logo.size = [CHIPContentLauncherClusterDimension new];
+                    params.brandingInformation.logo.size.width =
+                        [NSNumber numberWithDouble:mRequest.brandingInformation.Value().logo.Value().size.Value().width];
+                    params.brandingInformation.logo.size.height =
+                        [NSNumber numberWithDouble:mRequest.brandingInformation.Value().logo.Value().size.Value().height];
+                    params.brandingInformation.logo.size.metric = [NSNumber
+                        numberWithUnsignedChar:chip::to_underlying(
+                                                   mRequest.brandingInformation.Value().logo.Value().size.Value().metric)];
+                } else {
+                    params.brandingInformation.logo.size = nil;
+                }
+            } else {
+                params.brandingInformation.logo = nil;
+            }
+            if (mRequest.brandingInformation.Value().progressBar.HasValue()) {
+                params.brandingInformation.progressBar = [CHIPContentLauncherClusterStyleInformation new];
+                if (mRequest.brandingInformation.Value().progressBar.Value().imageUrl.HasValue()) {
+                    params.brandingInformation.progressBar.imageUrl = [[NSString alloc]
+                        initWithBytes:mRequest.brandingInformation.Value().progressBar.Value().imageUrl.Value().data()
+                               length:mRequest.brandingInformation.Value().progressBar.Value().imageUrl.Value().size()
+                             encoding:NSUTF8StringEncoding];
+                } else {
+                    params.brandingInformation.progressBar.imageUrl = nil;
+                }
+                if (mRequest.brandingInformation.Value().progressBar.Value().color.HasValue()) {
+                    params.brandingInformation.progressBar.color = [[NSString alloc]
+                        initWithBytes:mRequest.brandingInformation.Value().progressBar.Value().color.Value().data()
+                               length:mRequest.brandingInformation.Value().progressBar.Value().color.Value().size()
+                             encoding:NSUTF8StringEncoding];
+                } else {
+                    params.brandingInformation.progressBar.color = nil;
+                }
+                if (mRequest.brandingInformation.Value().progressBar.Value().size.HasValue()) {
+                    params.brandingInformation.progressBar.size = [CHIPContentLauncherClusterDimension new];
+                    params.brandingInformation.progressBar.size.width =
+                        [NSNumber numberWithDouble:mRequest.brandingInformation.Value().progressBar.Value().size.Value().width];
+                    params.brandingInformation.progressBar.size.height =
+                        [NSNumber numberWithDouble:mRequest.brandingInformation.Value().progressBar.Value().size.Value().height];
+                    params.brandingInformation.progressBar.size.metric = [NSNumber
+                        numberWithUnsignedChar:chip::to_underlying(
+                                                   mRequest.brandingInformation.Value().progressBar.Value().size.Value().metric)];
+                } else {
+                    params.brandingInformation.progressBar.size = nil;
+                }
+            } else {
+                params.brandingInformation.progressBar = nil;
+            }
+            if (mRequest.brandingInformation.Value().splash.HasValue()) {
+                params.brandingInformation.splash = [CHIPContentLauncherClusterStyleInformation new];
+                if (mRequest.brandingInformation.Value().splash.Value().imageUrl.HasValue()) {
+                    params.brandingInformation.splash.imageUrl =
+                        [[NSString alloc] initWithBytes:mRequest.brandingInformation.Value().splash.Value().imageUrl.Value().data()
+                                                 length:mRequest.brandingInformation.Value().splash.Value().imageUrl.Value().size()
+                                               encoding:NSUTF8StringEncoding];
+                } else {
+                    params.brandingInformation.splash.imageUrl = nil;
+                }
+                if (mRequest.brandingInformation.Value().splash.Value().color.HasValue()) {
+                    params.brandingInformation.splash.color =
+                        [[NSString alloc] initWithBytes:mRequest.brandingInformation.Value().splash.Value().color.Value().data()
+                                                 length:mRequest.brandingInformation.Value().splash.Value().color.Value().size()
+                                               encoding:NSUTF8StringEncoding];
+                } else {
+                    params.brandingInformation.splash.color = nil;
+                }
+                if (mRequest.brandingInformation.Value().splash.Value().size.HasValue()) {
+                    params.brandingInformation.splash.size = [CHIPContentLauncherClusterDimension new];
+                    params.brandingInformation.splash.size.width =
+                        [NSNumber numberWithDouble:mRequest.brandingInformation.Value().splash.Value().size.Value().width];
+                    params.brandingInformation.splash.size.height =
+                        [NSNumber numberWithDouble:mRequest.brandingInformation.Value().splash.Value().size.Value().height];
+                    params.brandingInformation.splash.size.metric = [NSNumber
+                        numberWithUnsignedChar:chip::to_underlying(
+                                                   mRequest.brandingInformation.Value().splash.Value().size.Value().metric)];
+                } else {
+                    params.brandingInformation.splash.size = nil;
+                }
+            } else {
+                params.brandingInformation.splash = nil;
+            }
+            if (mRequest.brandingInformation.Value().waterMark.HasValue()) {
+                params.brandingInformation.waterMark = [CHIPContentLauncherClusterStyleInformation new];
+                if (mRequest.brandingInformation.Value().waterMark.Value().imageUrl.HasValue()) {
+                    params.brandingInformation.waterMark.imageUrl = [[NSString alloc]
+                        initWithBytes:mRequest.brandingInformation.Value().waterMark.Value().imageUrl.Value().data()
+                               length:mRequest.brandingInformation.Value().waterMark.Value().imageUrl.Value().size()
+                             encoding:NSUTF8StringEncoding];
+                } else {
+                    params.brandingInformation.waterMark.imageUrl = nil;
+                }
+                if (mRequest.brandingInformation.Value().waterMark.Value().color.HasValue()) {
+                    params.brandingInformation.waterMark.color =
+                        [[NSString alloc] initWithBytes:mRequest.brandingInformation.Value().waterMark.Value().color.Value().data()
+                                                 length:mRequest.brandingInformation.Value().waterMark.Value().color.Value().size()
+                                               encoding:NSUTF8StringEncoding];
+                } else {
+                    params.brandingInformation.waterMark.color = nil;
+                }
+                if (mRequest.brandingInformation.Value().waterMark.Value().size.HasValue()) {
+                    params.brandingInformation.waterMark.size = [CHIPContentLauncherClusterDimension new];
+                    params.brandingInformation.waterMark.size.width =
+                        [NSNumber numberWithDouble:mRequest.brandingInformation.Value().waterMark.Value().size.Value().width];
+                    params.brandingInformation.waterMark.size.height =
+                        [NSNumber numberWithDouble:mRequest.brandingInformation.Value().waterMark.Value().size.Value().height];
+                    params.brandingInformation.waterMark.size.metric = [NSNumber
+                        numberWithUnsignedChar:chip::to_underlying(
+                                                   mRequest.brandingInformation.Value().waterMark.Value().size.Value().metric)];
+                } else {
+                    params.brandingInformation.waterMark.size = nil;
+                }
+            } else {
+                params.brandingInformation.waterMark = nil;
+            }
+        } else {
+            params.brandingInformation = nil;
+        }
         [cluster
             launchURLWithParams:params
               completionHandler:^(CHIPContentLauncherClusterLaunchResponseParams * _Nullable values, NSError * _Nullable error) {
                   NSLog(@"Values: %@", values);
-                  err = [CHIPError errorToCHIPErrorCode:error];
-                  ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                  SetCommandExitStatus(err);
+                  chipError = [CHIPError errorToCHIPErrorCode:error];
+                  ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                  SetCommandExitStatus(chipError);
               }];
-        return err;
+        return chipError;
     }
 
 private:
     chip::ByteSpan mContentURL;
     chip::ByteSpan mDisplayString;
+    chip::app::Clusters::ContentLauncher::Commands::LaunchURL::Type mRequest;
+    TypedComplexArgument<chip::Optional<chip::app::Clusters::ContentLauncher::Structs::BrandingInformation::Type>>
+        mComplex_BrandingInformation;
 };
 
 /*
@@ -17382,19 +18000,19 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x0000050A) WriteAttribute (0x00000001) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPContentLauncher * cluster = [[CHIPContentLauncher alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nonnull value = [NSNumber numberWithUnsignedInt:mValue];
 
         [cluster
             writeAttributeSupportedStreamingProtocolsWithValue:value
                                              completionHandler:^(NSError * _Nullable error) {
-                                                 err = [CHIPError errorToCHIPErrorCode:error];
+                                                 chipError = [CHIPError errorToCHIPErrorCode:error];
                                                  ChipLogError(chipTool, "ContentLauncher SupportedStreamingProtocols Error: %s",
-                                                     chip::ErrorStr(err));
-                                                 SetCommandExitStatus(err);
+                                                     chip::ErrorStr(chipError));
+                                                 SetCommandExitStatus(chipError);
                                              }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -18431,21 +19049,24 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPDiagnosticLogs * cluster = [[CHIPDiagnosticLogs alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPDiagnosticLogsClusterRetrieveLogsRequestParams alloc] init];
+
         params.intent = [NSNumber numberWithUnsignedChar:mIntent];
+
         params.requestedProtocol = [NSNumber numberWithUnsignedChar:mRequestedProtocol];
+
         params.transferFileDesignator = [[NSData alloc] initWithBytes:mTransferFileDesignator.data()
                                                                length:mTransferFileDesignator.size()];
         [cluster retrieveLogsRequestWithParams:params
                              completionHandler:^(CHIPDiagnosticLogsClusterRetrieveLogsResponseParams * _Nullable values,
                                  NSError * _Nullable error) {
                                  NSLog(@"Values: %@", values);
-                                 err = [CHIPError errorToCHIPErrorCode:error];
-                                 ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                                 SetCommandExitStatus(err);
+                                 chipError = [CHIPError errorToCHIPErrorCode:error];
+                                 ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                                 SetCommandExitStatus(chipError);
                              }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -18790,7 +19411,9 @@ class DoorLockClearCredential : public ModelCommand {
 public:
     DoorLockClearCredential()
         : ModelCommand("clear-credential")
+        , mComplex_Credential(&mRequest.credential)
     {
+        AddArgument("Credential", &mComplex_Credential);
         ModelCommand::AddArguments();
     }
 
@@ -18800,19 +19423,30 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPDoorLock * cluster = [[CHIPDoorLock alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPDoorLockClusterClearCredentialParams alloc] init];
-        // credential Struct parsing is not supported yet
+
+        if (mRequest.credential.IsNull()) {
+            params.credential = nil;
+        } else {
+            params.credential = [CHIPDoorLockClusterDlCredential new];
+            params.credential.credentialType =
+                [NSNumber numberWithUnsignedChar:chip::to_underlying(mRequest.credential.Value().credentialType)];
+            params.credential.credentialIndex = [NSNumber numberWithUnsignedShort:mRequest.credential.Value().credentialIndex];
+        }
         [cluster clearCredentialWithParams:params
                          completionHandler:^(NSError * _Nullable error) {
-                             err = [CHIPError errorToCHIPErrorCode:error];
-                             ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                             SetCommandExitStatus(err);
+                             chipError = [CHIPError errorToCHIPErrorCode:error];
+                             ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                             SetCommandExitStatus(chipError);
                          }];
-        return err;
+        return chipError;
     }
 
 private:
+    chip::app::Clusters::DoorLock::Commands::ClearCredential::Type mRequest;
+    TypedComplexArgument<chip::app::DataModel::Nullable<chip::app::Clusters::DoorLock::Structs::DlCredential::Type>>
+        mComplex_Credential;
 };
 
 /*
@@ -18833,16 +19467,17 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPDoorLock * cluster = [[CHIPDoorLock alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPDoorLockClusterClearUserParams alloc] init];
+
         params.userIndex = [NSNumber numberWithUnsignedShort:mUserIndex];
         [cluster clearUserWithParams:params
                    completionHandler:^(NSError * _Nullable error) {
-                       err = [CHIPError errorToCHIPErrorCode:error];
-                       ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                       SetCommandExitStatus(err);
+                       chipError = [CHIPError errorToCHIPErrorCode:error];
+                       ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                       SetCommandExitStatus(chipError);
                    }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -18868,17 +19503,19 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPDoorLock * cluster = [[CHIPDoorLock alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPDoorLockClusterClearWeekDayScheduleParams alloc] init];
+
         params.weekDayIndex = [NSNumber numberWithUnsignedChar:mWeekDayIndex];
+
         params.userIndex = [NSNumber numberWithUnsignedShort:mUserIndex];
         [cluster clearWeekDayScheduleWithParams:params
                               completionHandler:^(NSError * _Nullable error) {
-                                  err = [CHIPError errorToCHIPErrorCode:error];
-                                  ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                                  SetCommandExitStatus(err);
+                                  chipError = [CHIPError errorToCHIPErrorCode:error];
+                                  ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                                  SetCommandExitStatus(chipError);
                               }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -18905,17 +19542,19 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPDoorLock * cluster = [[CHIPDoorLock alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPDoorLockClusterClearYearDayScheduleParams alloc] init];
+
         params.yearDayIndex = [NSNumber numberWithUnsignedChar:mYearDayIndex];
+
         params.userIndex = [NSNumber numberWithUnsignedShort:mUserIndex];
         [cluster clearYearDayScheduleWithParams:params
                               completionHandler:^(NSError * _Nullable error) {
-                                  err = [CHIPError errorToCHIPErrorCode:error];
-                                  ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                                  SetCommandExitStatus(err);
+                                  chipError = [CHIPError errorToCHIPErrorCode:error];
+                                  ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                                  SetCommandExitStatus(chipError);
                               }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -18930,7 +19569,9 @@ class DoorLockGetCredentialStatus : public ModelCommand {
 public:
     DoorLockGetCredentialStatus()
         : ModelCommand("get-credential-status")
+        , mComplex_Credential(&mRequest.credential)
     {
+        AddArgument("Credential", &mComplex_Credential);
         ModelCommand::AddArguments();
     }
 
@@ -18940,21 +19581,27 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPDoorLock * cluster = [[CHIPDoorLock alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPDoorLockClusterGetCredentialStatusParams alloc] init];
-        // credential Struct parsing is not supported yet
+
+        params.credential = [CHIPDoorLockClusterDlCredential new];
+        params.credential.credentialType =
+            [NSNumber numberWithUnsignedChar:chip::to_underlying(mRequest.credential.credentialType)];
+        params.credential.credentialIndex = [NSNumber numberWithUnsignedShort:mRequest.credential.credentialIndex];
         [cluster getCredentialStatusWithParams:params
                              completionHandler:^(CHIPDoorLockClusterGetCredentialStatusResponseParams * _Nullable values,
                                  NSError * _Nullable error) {
                                  NSLog(@"Values: %@", values);
-                                 err = [CHIPError errorToCHIPErrorCode:error];
-                                 ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                                 SetCommandExitStatus(err);
+                                 chipError = [CHIPError errorToCHIPErrorCode:error];
+                                 ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                                 SetCommandExitStatus(chipError);
                              }];
-        return err;
+        return chipError;
     }
 
 private:
+    chip::app::Clusters::DoorLock::Commands::GetCredentialStatus::Type mRequest;
+    TypedComplexArgument<chip::app::Clusters::DoorLock::Structs::DlCredential::Type> mComplex_Credential;
 };
 
 /*
@@ -18975,17 +19622,18 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPDoorLock * cluster = [[CHIPDoorLock alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPDoorLockClusterGetUserParams alloc] init];
+
         params.userIndex = [NSNumber numberWithUnsignedShort:mUserIndex];
         [cluster getUserWithParams:params
                  completionHandler:^(CHIPDoorLockClusterGetUserResponseParams * _Nullable values, NSError * _Nullable error) {
                      NSLog(@"Values: %@", values);
-                     err = [CHIPError errorToCHIPErrorCode:error];
-                     ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                     SetCommandExitStatus(err);
+                     chipError = [CHIPError errorToCHIPErrorCode:error];
+                     ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                     SetCommandExitStatus(chipError);
                  }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -19011,19 +19659,21 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPDoorLock * cluster = [[CHIPDoorLock alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPDoorLockClusterGetWeekDayScheduleParams alloc] init];
+
         params.weekDayIndex = [NSNumber numberWithUnsignedChar:mWeekDayIndex];
+
         params.userIndex = [NSNumber numberWithUnsignedShort:mUserIndex];
         [cluster getWeekDayScheduleWithParams:params
                             completionHandler:^(
                                 CHIPDoorLockClusterGetWeekDayScheduleResponseParams * _Nullable values, NSError * _Nullable error) {
                                 NSLog(@"Values: %@", values);
-                                err = [CHIPError errorToCHIPErrorCode:error];
-                                ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                                SetCommandExitStatus(err);
+                                chipError = [CHIPError errorToCHIPErrorCode:error];
+                                ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                                SetCommandExitStatus(chipError);
                             }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -19050,19 +19700,21 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPDoorLock * cluster = [[CHIPDoorLock alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPDoorLockClusterGetYearDayScheduleParams alloc] init];
+
         params.yearDayIndex = [NSNumber numberWithUnsignedChar:mYearDayIndex];
+
         params.userIndex = [NSNumber numberWithUnsignedShort:mUserIndex];
         [cluster getYearDayScheduleWithParams:params
                             completionHandler:^(
                                 CHIPDoorLockClusterGetYearDayScheduleResponseParams * _Nullable values, NSError * _Nullable error) {
                                 NSLog(@"Values: %@", values);
-                                err = [CHIPError errorToCHIPErrorCode:error];
-                                ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                                SetCommandExitStatus(err);
+                                chipError = [CHIPError errorToCHIPErrorCode:error];
+                                ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                                SetCommandExitStatus(chipError);
                             }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -19088,16 +19740,17 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPDoorLock * cluster = [[CHIPDoorLock alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPDoorLockClusterLockDoorParams alloc] init];
+
         params.pinCode = [[NSData alloc] initWithBytes:mPinCode.data() length:mPinCode.size()];
         [cluster lockDoorWithParams:params
                   completionHandler:^(NSError * _Nullable error) {
-                      err = [CHIPError errorToCHIPErrorCode:error];
-                      ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                      SetCommandExitStatus(err);
+                      chipError = [CHIPError errorToCHIPErrorCode:error];
+                      ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                      SetCommandExitStatus(chipError);
                   }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -19111,8 +19764,10 @@ class DoorLockSetCredential : public ModelCommand {
 public:
     DoorLockSetCredential()
         : ModelCommand("set-credential")
+        , mComplex_Credential(&mRequest.credential)
     {
         AddArgument("OperationType", 0, UINT8_MAX, &mOperationType);
+        AddArgument("Credential", &mComplex_Credential);
         AddArgument("CredentialData", &mCredentialData);
         AddArgument("UserIndex", 0, UINT16_MAX, &mUserIndex);
         AddArgument("UserStatus", 0, UINT8_MAX, &mUserStatus);
@@ -19126,27 +19781,38 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPDoorLock * cluster = [[CHIPDoorLock alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPDoorLockClusterSetCredentialParams alloc] init];
+
         params.operationType = [NSNumber numberWithUnsignedChar:mOperationType];
-        // credential Struct parsing is not supported yet
+
+        params.credential = [CHIPDoorLockClusterDlCredential new];
+        params.credential.credentialType =
+            [NSNumber numberWithUnsignedChar:chip::to_underlying(mRequest.credential.credentialType)];
+        params.credential.credentialIndex = [NSNumber numberWithUnsignedShort:mRequest.credential.credentialIndex];
+
         params.credentialData = [[NSData alloc] initWithBytes:mCredentialData.data() length:mCredentialData.size()];
+
         params.userIndex = [NSNumber numberWithUnsignedShort:mUserIndex];
+
         params.userStatus = [NSNumber numberWithUnsignedChar:mUserStatus];
+
         params.userType = [NSNumber numberWithUnsignedChar:mUserType];
         [cluster setCredentialWithParams:params
                        completionHandler:^(
                            CHIPDoorLockClusterSetCredentialResponseParams * _Nullable values, NSError * _Nullable error) {
                            NSLog(@"Values: %@", values);
-                           err = [CHIPError errorToCHIPErrorCode:error];
-                           ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                           SetCommandExitStatus(err);
+                           chipError = [CHIPError errorToCHIPErrorCode:error];
+                           ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                           SetCommandExitStatus(chipError);
                        }];
-        return err;
+        return chipError;
     }
 
 private:
     uint8_t mOperationType;
+    chip::app::Clusters::DoorLock::Commands::SetCredential::Type mRequest;
+    TypedComplexArgument<chip::app::Clusters::DoorLock::Structs::DlCredential::Type> mComplex_Credential;
     chip::ByteSpan mCredentialData;
     uint16_t mUserIndex;
     uint8_t mUserStatus;
@@ -19177,22 +19843,29 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPDoorLock * cluster = [[CHIPDoorLock alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPDoorLockClusterSetUserParams alloc] init];
+
         params.operationType = [NSNumber numberWithUnsignedChar:mOperationType];
+
         params.userIndex = [NSNumber numberWithUnsignedShort:mUserIndex];
+
         params.userName = [[NSString alloc] initWithBytes:mUserName.data() length:mUserName.size() encoding:NSUTF8StringEncoding];
+
         params.userUniqueId = [NSNumber numberWithUnsignedInt:mUserUniqueId];
+
         params.userStatus = [NSNumber numberWithUnsignedChar:mUserStatus];
+
         params.userType = [NSNumber numberWithUnsignedChar:mUserType];
+
         params.credentialRule = [NSNumber numberWithUnsignedChar:mCredentialRule];
         [cluster setUserWithParams:params
                  completionHandler:^(NSError * _Nullable error) {
-                     err = [CHIPError errorToCHIPErrorCode:error];
-                     ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                     SetCommandExitStatus(err);
+                     chipError = [CHIPError errorToCHIPErrorCode:error];
+                     ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                     SetCommandExitStatus(chipError);
                  }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -19229,22 +19902,29 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPDoorLock * cluster = [[CHIPDoorLock alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPDoorLockClusterSetWeekDayScheduleParams alloc] init];
+
         params.weekDayIndex = [NSNumber numberWithUnsignedChar:mWeekDayIndex];
+
         params.userIndex = [NSNumber numberWithUnsignedShort:mUserIndex];
+
         params.daysMask = [NSNumber numberWithUnsignedChar:mDaysMask];
+
         params.startHour = [NSNumber numberWithUnsignedChar:mStartHour];
+
         params.startMinute = [NSNumber numberWithUnsignedChar:mStartMinute];
+
         params.endHour = [NSNumber numberWithUnsignedChar:mEndHour];
+
         params.endMinute = [NSNumber numberWithUnsignedChar:mEndMinute];
         [cluster setWeekDayScheduleWithParams:params
                             completionHandler:^(NSError * _Nullable error) {
-                                err = [CHIPError errorToCHIPErrorCode:error];
-                                ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                                SetCommandExitStatus(err);
+                                chipError = [CHIPError errorToCHIPErrorCode:error];
+                                ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                                SetCommandExitStatus(chipError);
                             }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -19278,19 +19958,23 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPDoorLock * cluster = [[CHIPDoorLock alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPDoorLockClusterSetYearDayScheduleParams alloc] init];
+
         params.yearDayIndex = [NSNumber numberWithUnsignedChar:mYearDayIndex];
+
         params.userIndex = [NSNumber numberWithUnsignedShort:mUserIndex];
+
         params.localStartTime = [NSNumber numberWithUnsignedInt:mLocalStartTime];
+
         params.localEndTime = [NSNumber numberWithUnsignedInt:mLocalEndTime];
         [cluster setYearDayScheduleWithParams:params
                             completionHandler:^(NSError * _Nullable error) {
-                                err = [CHIPError errorToCHIPErrorCode:error];
-                                ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                                SetCommandExitStatus(err);
+                                chipError = [CHIPError errorToCHIPErrorCode:error];
+                                ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                                SetCommandExitStatus(chipError);
                             }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -19318,16 +20002,17 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPDoorLock * cluster = [[CHIPDoorLock alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPDoorLockClusterUnlockDoorParams alloc] init];
+
         params.pinCode = [[NSData alloc] initWithBytes:mPinCode.data() length:mPinCode.size()];
         [cluster unlockDoorWithParams:params
                     completionHandler:^(NSError * _Nullable error) {
-                        err = [CHIPError errorToCHIPErrorCode:error];
-                        ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                        SetCommandExitStatus(err);
+                        chipError = [CHIPError errorToCHIPErrorCode:error];
+                        ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                        SetCommandExitStatus(chipError);
                     }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -19353,17 +20038,19 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPDoorLock * cluster = [[CHIPDoorLock alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPDoorLockClusterUnlockWithTimeoutParams alloc] init];
+
         params.timeout = [NSNumber numberWithUnsignedShort:mTimeout];
+
         params.pinCode = [[NSData alloc] initWithBytes:mPinCode.data() length:mPinCode.size()];
         [cluster unlockWithTimeoutWithParams:params
                            completionHandler:^(NSError * _Nullable error) {
-                               err = [CHIPError errorToCHIPErrorCode:error];
-                               ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                               SetCommandExitStatus(err);
+                               chipError = [CHIPError errorToCHIPErrorCode:error];
+                               ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                               SetCommandExitStatus(chipError);
                            }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -20444,7 +21131,7 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x00000101) WriteAttribute (0x00000021) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPDoorLock * cluster = [[CHIPDoorLock alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSString * _Nonnull value = [[NSString alloc] initWithBytes:mValue.data()
                                                              length:mValue.size()
@@ -20452,11 +21139,11 @@ public:
 
         [cluster writeAttributeLanguageWithValue:value
                                completionHandler:^(NSError * _Nullable error) {
-                                   err = [CHIPError errorToCHIPErrorCode:error];
-                                   ChipLogError(chipTool, "DoorLock Language Error: %s", chip::ErrorStr(err));
-                                   SetCommandExitStatus(err);
+                                   chipError = [CHIPError errorToCHIPErrorCode:error];
+                                   ChipLogError(chipTool, "DoorLock Language Error: %s", chip::ErrorStr(chipError));
+                                   SetCommandExitStatus(chipError);
                                }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -20557,17 +21244,17 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x00000101) WriteAttribute (0x00000023) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPDoorLock * cluster = [[CHIPDoorLock alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nonnull value = [NSNumber numberWithUnsignedInt:mValue];
 
         [cluster writeAttributeAutoRelockTimeWithValue:value
                                      completionHandler:^(NSError * _Nullable error) {
-                                         err = [CHIPError errorToCHIPErrorCode:error];
-                                         ChipLogError(chipTool, "DoorLock AutoRelockTime Error: %s", chip::ErrorStr(err));
-                                         SetCommandExitStatus(err);
+                                         chipError = [CHIPError errorToCHIPErrorCode:error];
+                                         ChipLogError(chipTool, "DoorLock AutoRelockTime Error: %s", chip::ErrorStr(chipError));
+                                         SetCommandExitStatus(chipError);
                                      }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -20668,17 +21355,17 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x00000101) WriteAttribute (0x00000024) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPDoorLock * cluster = [[CHIPDoorLock alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nonnull value = [NSNumber numberWithUnsignedChar:mValue];
 
         [cluster writeAttributeSoundVolumeWithValue:value
                                   completionHandler:^(NSError * _Nullable error) {
-                                      err = [CHIPError errorToCHIPErrorCode:error];
-                                      ChipLogError(chipTool, "DoorLock SoundVolume Error: %s", chip::ErrorStr(err));
-                                      SetCommandExitStatus(err);
+                                      chipError = [CHIPError errorToCHIPErrorCode:error];
+                                      ChipLogError(chipTool, "DoorLock SoundVolume Error: %s", chip::ErrorStr(chipError));
+                                      SetCommandExitStatus(chipError);
                                   }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -20779,17 +21466,17 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x00000101) WriteAttribute (0x00000025) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPDoorLock * cluster = [[CHIPDoorLock alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nonnull value = [NSNumber numberWithUnsignedChar:mValue];
 
         [cluster writeAttributeOperatingModeWithValue:value
                                     completionHandler:^(NSError * _Nullable error) {
-                                        err = [CHIPError errorToCHIPErrorCode:error];
-                                        ChipLogError(chipTool, "DoorLock OperatingMode Error: %s", chip::ErrorStr(err));
-                                        SetCommandExitStatus(err);
+                                        chipError = [CHIPError errorToCHIPErrorCode:error];
+                                        ChipLogError(chipTool, "DoorLock OperatingMode Error: %s", chip::ErrorStr(chipError));
+                                        SetCommandExitStatus(chipError);
                                     }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -20969,18 +21656,18 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x00000101) WriteAttribute (0x00000029) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPDoorLock * cluster = [[CHIPDoorLock alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nonnull value = [NSNumber numberWithBool:mValue];
 
-        [cluster
-            writeAttributeEnableOneTouchLockingWithValue:value
-                                       completionHandler:^(NSError * _Nullable error) {
-                                           err = [CHIPError errorToCHIPErrorCode:error];
-                                           ChipLogError(chipTool, "DoorLock EnableOneTouchLocking Error: %s", chip::ErrorStr(err));
-                                           SetCommandExitStatus(err);
-                                       }];
-        return err;
+        [cluster writeAttributeEnableOneTouchLockingWithValue:value
+                                            completionHandler:^(NSError * _Nullable error) {
+                                                chipError = [CHIPError errorToCHIPErrorCode:error];
+                                                ChipLogError(chipTool, "DoorLock EnableOneTouchLocking Error: %s",
+                                                    chip::ErrorStr(chipError));
+                                                SetCommandExitStatus(chipError);
+                                            }];
+        return chipError;
     }
 
 private:
@@ -21083,18 +21770,18 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x00000101) WriteAttribute (0x0000002B) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPDoorLock * cluster = [[CHIPDoorLock alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nonnull value = [NSNumber numberWithBool:mValue];
 
         [cluster writeAttributeEnablePrivacyModeButtonWithValue:value
                                               completionHandler:^(NSError * _Nullable error) {
-                                                  err = [CHIPError errorToCHIPErrorCode:error];
-                                                  ChipLogError(
-                                                      chipTool, "DoorLock EnablePrivacyModeButton Error: %s", chip::ErrorStr(err));
-                                                  SetCommandExitStatus(err);
+                                                  chipError = [CHIPError errorToCHIPErrorCode:error];
+                                                  ChipLogError(chipTool, "DoorLock EnablePrivacyModeButton Error: %s",
+                                                      chip::ErrorStr(chipError));
+                                                  SetCommandExitStatus(chipError);
                                               }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -21196,17 +21883,18 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x00000101) WriteAttribute (0x00000030) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPDoorLock * cluster = [[CHIPDoorLock alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nonnull value = [NSNumber numberWithUnsignedChar:mValue];
 
         [cluster writeAttributeWrongCodeEntryLimitWithValue:value
                                           completionHandler:^(NSError * _Nullable error) {
-                                              err = [CHIPError errorToCHIPErrorCode:error];
-                                              ChipLogError(chipTool, "DoorLock WrongCodeEntryLimit Error: %s", chip::ErrorStr(err));
-                                              SetCommandExitStatus(err);
+                                              chipError = [CHIPError errorToCHIPErrorCode:error];
+                                              ChipLogError(
+                                                  chipTool, "DoorLock WrongCodeEntryLimit Error: %s", chip::ErrorStr(chipError));
+                                              SetCommandExitStatus(chipError);
                                           }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -22983,13 +23671,13 @@ public:
         CHIPEthernetNetworkDiagnostics * cluster = [[CHIPEthernetNetworkDiagnostics alloc] initWithDevice:device
                                                                                                  endpoint:endpointId
                                                                                                     queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         [cluster resetCountsWithCompletionHandler:^(NSError * _Nullable error) {
-            err = [CHIPError errorToCHIPErrorCode:error];
-            ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-            SetCommandExitStatus(err);
+            chipError = [CHIPError errorToCHIPErrorCode:error];
+            ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+            SetCommandExitStatus(chipError);
         }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -24205,17 +24893,17 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x00000202) WriteAttribute (0x00000000) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPFanControl * cluster = [[CHIPFanControl alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nonnull value = [NSNumber numberWithUnsignedChar:mValue];
 
         [cluster writeAttributeFanModeWithValue:value
                               completionHandler:^(NSError * _Nullable error) {
-                                  err = [CHIPError errorToCHIPErrorCode:error];
-                                  ChipLogError(chipTool, "FanControl FanMode Error: %s", chip::ErrorStr(err));
-                                  SetCommandExitStatus(err);
+                                  chipError = [CHIPError errorToCHIPErrorCode:error];
+                                  ChipLogError(chipTool, "FanControl FanMode Error: %s", chip::ErrorStr(chipError));
+                                  SetCommandExitStatus(chipError);
                               }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -24316,17 +25004,17 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x00000202) WriteAttribute (0x00000001) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPFanControl * cluster = [[CHIPFanControl alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nonnull value = [NSNumber numberWithUnsignedChar:mValue];
 
         [cluster writeAttributeFanModeSequenceWithValue:value
                                       completionHandler:^(NSError * _Nullable error) {
-                                          err = [CHIPError errorToCHIPErrorCode:error];
-                                          ChipLogError(chipTool, "FanControl FanModeSequence Error: %s", chip::ErrorStr(err));
-                                          SetCommandExitStatus(err);
+                                          chipError = [CHIPError errorToCHIPErrorCode:error];
+                                          ChipLogError(chipTool, "FanControl FanModeSequence Error: %s", chip::ErrorStr(chipError));
+                                          SetCommandExitStatus(chipError);
                                       }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -25851,20 +26539,23 @@ public:
         CHIPGeneralCommissioning * cluster = [[CHIPGeneralCommissioning alloc] initWithDevice:device
                                                                                      endpoint:endpointId
                                                                                         queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPGeneralCommissioningClusterArmFailSafeParams alloc] init];
+
         params.expiryLengthSeconds = [NSNumber numberWithUnsignedShort:mExpiryLengthSeconds];
+
         params.breadcrumb = [NSNumber numberWithUnsignedLongLong:mBreadcrumb];
+
         params.timeoutMs = [NSNumber numberWithUnsignedInt:mTimeoutMs];
         [cluster armFailSafeWithParams:params
                      completionHandler:^(
                          CHIPGeneralCommissioningClusterArmFailSafeResponseParams * _Nullable values, NSError * _Nullable error) {
                          NSLog(@"Values: %@", values);
-                         err = [CHIPError errorToCHIPErrorCode:error];
-                         ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                         SetCommandExitStatus(err);
+                         chipError = [CHIPError errorToCHIPErrorCode:error];
+                         ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                         SetCommandExitStatus(chipError);
                      }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -25892,15 +26583,15 @@ public:
         CHIPGeneralCommissioning * cluster = [[CHIPGeneralCommissioning alloc] initWithDevice:device
                                                                                      endpoint:endpointId
                                                                                         queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         [cluster commissioningCompleteWithCompletionHandler:^(
             CHIPGeneralCommissioningClusterCommissioningCompleteResponseParams * _Nullable values, NSError * _Nullable error) {
             NSLog(@"Values: %@", values);
-            err = [CHIPError errorToCHIPErrorCode:error];
-            ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-            SetCommandExitStatus(err);
+            chipError = [CHIPError errorToCHIPErrorCode:error];
+            ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+            SetCommandExitStatus(chipError);
         }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -25929,24 +26620,28 @@ public:
         CHIPGeneralCommissioning * cluster = [[CHIPGeneralCommissioning alloc] initWithDevice:device
                                                                                      endpoint:endpointId
                                                                                         queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPGeneralCommissioningClusterSetRegulatoryConfigParams alloc] init];
+
         params.location = [NSNumber numberWithUnsignedChar:mLocation];
+
         params.countryCode = [[NSString alloc] initWithBytes:mCountryCode.data()
                                                       length:mCountryCode.size()
                                                     encoding:NSUTF8StringEncoding];
+
         params.breadcrumb = [NSNumber numberWithUnsignedLongLong:mBreadcrumb];
+
         params.timeoutMs = [NSNumber numberWithUnsignedInt:mTimeoutMs];
         [cluster
             setRegulatoryConfigWithParams:params
                         completionHandler:^(CHIPGeneralCommissioningClusterSetRegulatoryConfigResponseParams * _Nullable values,
                             NSError * _Nullable error) {
                             NSLog(@"Values: %@", values);
-                            err = [CHIPError errorToCHIPErrorCode:error];
-                            ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                            SetCommandExitStatus(err);
+                            chipError = [CHIPError errorToCHIPErrorCode:error];
+                            ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                            SetCommandExitStatus(chipError);
                         }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -26009,17 +26704,17 @@ public:
         CHIPGeneralCommissioning * cluster = [[CHIPGeneralCommissioning alloc] initWithDevice:device
                                                                                      endpoint:endpointId
                                                                                         queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nonnull value = [NSNumber numberWithUnsignedLongLong:mValue];
 
         [cluster writeAttributeBreadcrumbWithValue:value
                                  completionHandler:^(NSError * _Nullable error) {
-                                     err = [CHIPError errorToCHIPErrorCode:error];
-                                     ChipLogError(chipTool, "GeneralCommissioning Breadcrumb Error: %s", chip::ErrorStr(err));
-                                     SetCommandExitStatus(err);
+                                     chipError = [CHIPError errorToCHIPErrorCode:error];
+                                     ChipLogError(chipTool, "GeneralCommissioning Breadcrumb Error: %s", chip::ErrorStr(chipError));
+                                     SetCommandExitStatus(chipError);
                                  }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -27700,18 +28395,19 @@ public:
         CHIPGroupKeyManagement * cluster = [[CHIPGroupKeyManagement alloc] initWithDevice:device
                                                                                  endpoint:endpointId
                                                                                     queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPGroupKeyManagementClusterKeySetReadParams alloc] init];
+
         params.groupKeySetID = [NSNumber numberWithUnsignedShort:mGroupKeySetID];
         [cluster keySetReadWithParams:params
                     completionHandler:^(
                         CHIPGroupKeyManagementClusterKeySetReadResponseParams * _Nullable values, NSError * _Nullable error) {
                         NSLog(@"Values: %@", values);
-                        err = [CHIPError errorToCHIPErrorCode:error];
-                        ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                        SetCommandExitStatus(err);
+                        chipError = [CHIPError errorToCHIPErrorCode:error];
+                        ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                        SetCommandExitStatus(chipError);
                     }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -27725,7 +28421,9 @@ class GroupKeyManagementKeySetReadAllIndices : public ModelCommand {
 public:
     GroupKeyManagementKeySetReadAllIndices()
         : ModelCommand("key-set-read-all-indices")
+        , mComplex_GroupKeySetIDs(&mRequest.groupKeySetIDs)
     {
+        AddArgument("GroupKeySetIDs", &mComplex_GroupKeySetIDs);
         ModelCommand::AddArguments();
     }
 
@@ -27737,22 +28435,34 @@ public:
         CHIPGroupKeyManagement * cluster = [[CHIPGroupKeyManagement alloc] initWithDevice:device
                                                                                  endpoint:endpointId
                                                                                     queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPGroupKeyManagementClusterKeySetReadAllIndicesParams alloc] init];
-        // GroupKeySetIDs Array parsing is not supported yet
+
+        { // Scope for our temporary variables
+            auto * array_0 = [NSMutableArray new];
+            for (chip::ListIndex index_0 = 0; index_0 < mRequest.groupKeySetIDs.size(); index_0++) {
+                auto & entry_0 = mRequest.groupKeySetIDs.data()[index_0];
+                NSNumber * newElement_0;
+                newElement_0 = [NSNumber numberWithUnsignedShort:entry_0];
+                [array_0 addObject:newElement_0];
+            }
+            params.groupKeySetIDs = array_0;
+        }
         [cluster
             keySetReadAllIndicesWithParams:params
                          completionHandler:^(CHIPGroupKeyManagementClusterKeySetReadAllIndicesResponseParams * _Nullable values,
                              NSError * _Nullable error) {
                              NSLog(@"Values: %@", values);
-                             err = [CHIPError errorToCHIPErrorCode:error];
-                             ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                             SetCommandExitStatus(err);
+                             chipError = [CHIPError errorToCHIPErrorCode:error];
+                             ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                             SetCommandExitStatus(chipError);
                          }];
-        return err;
+        return chipError;
     }
 
 private:
+    chip::app::Clusters::GroupKeyManagement::Commands::KeySetReadAllIndices::Type mRequest;
+    TypedComplexArgument<chip::app::DataModel::List<const uint16_t>> mComplex_GroupKeySetIDs;
 };
 
 /*
@@ -27775,16 +28485,17 @@ public:
         CHIPGroupKeyManagement * cluster = [[CHIPGroupKeyManagement alloc] initWithDevice:device
                                                                                  endpoint:endpointId
                                                                                     queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPGroupKeyManagementClusterKeySetRemoveParams alloc] init];
+
         params.groupKeySetID = [NSNumber numberWithUnsignedShort:mGroupKeySetID];
         [cluster keySetRemoveWithParams:params
                       completionHandler:^(NSError * _Nullable error) {
-                          err = [CHIPError errorToCHIPErrorCode:error];
-                          ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                          SetCommandExitStatus(err);
+                          chipError = [CHIPError errorToCHIPErrorCode:error];
+                          ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                          SetCommandExitStatus(chipError);
                       }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -27798,7 +28509,9 @@ class GroupKeyManagementKeySetWrite : public ModelCommand {
 public:
     GroupKeyManagementKeySetWrite()
         : ModelCommand("key-set-write")
+        , mComplex_GroupKeySet(&mRequest.groupKeySet)
     {
+        AddArgument("GroupKeySet", &mComplex_GroupKeySet);
         ModelCommand::AddArguments();
     }
 
@@ -27810,19 +28523,58 @@ public:
         CHIPGroupKeyManagement * cluster = [[CHIPGroupKeyManagement alloc] initWithDevice:device
                                                                                  endpoint:endpointId
                                                                                     queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPGroupKeyManagementClusterKeySetWriteParams alloc] init];
-        // GroupKeySet Struct parsing is not supported yet
+
+        params.groupKeySet = [CHIPGroupKeyManagementClusterGroupKeySetStruct new];
+        params.groupKeySet.groupKeySetID = [NSNumber numberWithUnsignedShort:mRequest.groupKeySet.groupKeySetID];
+        params.groupKeySet.groupKeySecurityPolicy =
+            [NSNumber numberWithUnsignedChar:chip::to_underlying(mRequest.groupKeySet.groupKeySecurityPolicy)];
+        if (mRequest.groupKeySet.epochKey0.IsNull()) {
+            params.groupKeySet.epochKey0 = nil;
+        } else {
+            params.groupKeySet.epochKey0 = [NSData dataWithBytes:mRequest.groupKeySet.epochKey0.Value().data()
+                                                          length:mRequest.groupKeySet.epochKey0.Value().size()];
+        }
+        if (mRequest.groupKeySet.epochStartTime0.IsNull()) {
+            params.groupKeySet.epochStartTime0 = nil;
+        } else {
+            params.groupKeySet.epochStartTime0 = [NSNumber numberWithUnsignedLongLong:mRequest.groupKeySet.epochStartTime0.Value()];
+        }
+        if (mRequest.groupKeySet.epochKey1.IsNull()) {
+            params.groupKeySet.epochKey1 = nil;
+        } else {
+            params.groupKeySet.epochKey1 = [NSData dataWithBytes:mRequest.groupKeySet.epochKey1.Value().data()
+                                                          length:mRequest.groupKeySet.epochKey1.Value().size()];
+        }
+        if (mRequest.groupKeySet.epochStartTime1.IsNull()) {
+            params.groupKeySet.epochStartTime1 = nil;
+        } else {
+            params.groupKeySet.epochStartTime1 = [NSNumber numberWithUnsignedLongLong:mRequest.groupKeySet.epochStartTime1.Value()];
+        }
+        if (mRequest.groupKeySet.epochKey2.IsNull()) {
+            params.groupKeySet.epochKey2 = nil;
+        } else {
+            params.groupKeySet.epochKey2 = [NSData dataWithBytes:mRequest.groupKeySet.epochKey2.Value().data()
+                                                          length:mRequest.groupKeySet.epochKey2.Value().size()];
+        }
+        if (mRequest.groupKeySet.epochStartTime2.IsNull()) {
+            params.groupKeySet.epochStartTime2 = nil;
+        } else {
+            params.groupKeySet.epochStartTime2 = [NSNumber numberWithUnsignedLongLong:mRequest.groupKeySet.epochStartTime2.Value()];
+        }
         [cluster keySetWriteWithParams:params
                      completionHandler:^(NSError * _Nullable error) {
-                         err = [CHIPError errorToCHIPErrorCode:error];
-                         ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                         SetCommandExitStatus(err);
+                         chipError = [CHIPError errorToCHIPErrorCode:error];
+                         ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                         SetCommandExitStatus(chipError);
                      }];
-        return err;
+        return chipError;
     }
 
 private:
+    chip::app::Clusters::GroupKeyManagement::Commands::KeySetWrite::Type mRequest;
+    TypedComplexArgument<chip::app::Clusters::GroupKeyManagement::Structs::GroupKeySetStruct::Type> mComplex_GroupKeySet;
 };
 
 /*
@@ -27859,6 +28611,59 @@ public:
                                   }];
         return err;
     }
+};
+
+class WriteGroupKeyManagementGroupKeyMap : public ModelCommand {
+public:
+    WriteGroupKeyManagementGroupKeyMap()
+        : ModelCommand("write")
+        , mComplex(&mValue)
+    {
+        AddArgument("attr-name", "group-key-map");
+        AddArgument("attr-value", &mComplex);
+        ModelCommand::AddArguments();
+    }
+
+    ~WriteGroupKeyManagementGroupKeyMap() {}
+
+    CHIP_ERROR SendCommand(CHIPDevice * device, chip::EndpointId endpointId) override
+    {
+        ChipLogProgress(chipTool, "Sending cluster (0x0000003F) WriteAttribute (0x00000000) on endpoint %" PRIu16, endpointId);
+        dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
+        CHIPGroupKeyManagement * cluster = [[CHIPGroupKeyManagement alloc] initWithDevice:device
+                                                                                 endpoint:endpointId
+                                                                                    queue:callbackQueue];
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
+
+        NSArray * _Nonnull value;
+        { // Scope for our temporary variables
+            auto * array_0 = [NSMutableArray new];
+            for (chip::ListIndex index_0 = 0; index_0 < mValue.size(); index_0++) {
+                auto & entry_0 = mValue.data()[index_0];
+                CHIPGroupKeyManagementClusterGroupKeyMapStruct * newElement_0;
+                newElement_0 = [CHIPGroupKeyManagementClusterGroupKeyMapStruct new];
+                newElement_0.groupId = [NSNumber numberWithUnsignedShort:entry_0.groupId];
+                newElement_0.groupKeySetID = [NSNumber numberWithUnsignedShort:entry_0.groupKeySetID];
+                newElement_0.fabricIndex = [NSNumber numberWithUnsignedChar:entry_0.fabricIndex];
+                [array_0 addObject:newElement_0];
+            }
+            value = array_0;
+        }
+
+        [cluster writeAttributeGroupKeyMapWithValue:value
+                                  completionHandler:^(NSError * _Nullable error) {
+                                      chipError = [CHIPError errorToCHIPErrorCode:error];
+                                      ChipLogError(chipTool, "GroupKeyManagement GroupKeyMap Error: %s", chip::ErrorStr(chipError));
+                                      SetCommandExitStatus(chipError);
+                                  }];
+        return chipError;
+    }
+
+private:
+    chip::app::DataModel::List<const chip::app::Clusters::GroupKeyManagement::Structs::GroupKeyMapStruct::Type> mValue;
+    TypedComplexArgument<
+        chip::app::DataModel::List<const chip::app::Clusters::GroupKeyManagement::Structs::GroupKeyMapStruct::Type>>
+        mComplex;
 };
 
 class SubscribeAttributeGroupKeyManagementGroupKeyMap : public ModelCommand {
@@ -28523,20 +29328,22 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPGroups * cluster = [[CHIPGroups alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPGroupsClusterAddGroupParams alloc] init];
+
         params.groupId = [NSNumber numberWithUnsignedShort:mGroupId];
+
         params.groupName = [[NSString alloc] initWithBytes:mGroupName.data()
                                                     length:mGroupName.size()
                                                   encoding:NSUTF8StringEncoding];
         [cluster addGroupWithParams:params
                   completionHandler:^(CHIPGroupsClusterAddGroupResponseParams * _Nullable values, NSError * _Nullable error) {
                       NSLog(@"Values: %@", values);
-                      err = [CHIPError errorToCHIPErrorCode:error];
-                      ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                      SetCommandExitStatus(err);
+                      chipError = [CHIPError errorToCHIPErrorCode:error];
+                      ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                      SetCommandExitStatus(chipError);
                   }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -28563,19 +29370,21 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPGroups * cluster = [[CHIPGroups alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPGroupsClusterAddGroupIfIdentifyingParams alloc] init];
+
         params.groupId = [NSNumber numberWithUnsignedShort:mGroupId];
+
         params.groupName = [[NSString alloc] initWithBytes:mGroupName.data()
                                                     length:mGroupName.size()
                                                   encoding:NSUTF8StringEncoding];
         [cluster addGroupIfIdentifyingWithParams:params
                                completionHandler:^(NSError * _Nullable error) {
-                                   err = [CHIPError errorToCHIPErrorCode:error];
-                                   ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                                   SetCommandExitStatus(err);
+                                   chipError = [CHIPError errorToCHIPErrorCode:error];
+                                   ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                                   SetCommandExitStatus(chipError);
                                }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -28590,7 +29399,9 @@ class GroupsGetGroupMembership : public ModelCommand {
 public:
     GroupsGetGroupMembership()
         : ModelCommand("get-group-membership")
+        , mComplex_GroupList(&mRequest.groupList)
     {
+        AddArgument("GroupList", &mComplex_GroupList);
         ModelCommand::AddArguments();
     }
 
@@ -28600,21 +29411,33 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPGroups * cluster = [[CHIPGroups alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPGroupsClusterGetGroupMembershipParams alloc] init];
-        // groupList Array parsing is not supported yet
+
+        { // Scope for our temporary variables
+            auto * array_0 = [NSMutableArray new];
+            for (chip::ListIndex index_0 = 0; index_0 < mRequest.groupList.size(); index_0++) {
+                auto & entry_0 = mRequest.groupList.data()[index_0];
+                NSNumber * newElement_0;
+                newElement_0 = [NSNumber numberWithUnsignedShort:entry_0];
+                [array_0 addObject:newElement_0];
+            }
+            params.groupList = array_0;
+        }
         [cluster getGroupMembershipWithParams:params
                             completionHandler:^(
                                 CHIPGroupsClusterGetGroupMembershipResponseParams * _Nullable values, NSError * _Nullable error) {
                                 NSLog(@"Values: %@", values);
-                                err = [CHIPError errorToCHIPErrorCode:error];
-                                ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                                SetCommandExitStatus(err);
+                                chipError = [CHIPError errorToCHIPErrorCode:error];
+                                ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                                SetCommandExitStatus(chipError);
                             }];
-        return err;
+        return chipError;
     }
 
 private:
+    chip::app::Clusters::Groups::Commands::GetGroupMembership::Type mRequest;
+    TypedComplexArgument<chip::app::DataModel::List<const chip::GroupId>> mComplex_GroupList;
 };
 
 /*
@@ -28634,13 +29457,13 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPGroups * cluster = [[CHIPGroups alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         [cluster removeAllGroupsWithCompletionHandler:^(NSError * _Nullable error) {
-            err = [CHIPError errorToCHIPErrorCode:error];
-            ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-            SetCommandExitStatus(err);
+            chipError = [CHIPError errorToCHIPErrorCode:error];
+            ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+            SetCommandExitStatus(chipError);
         }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -28664,17 +29487,18 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPGroups * cluster = [[CHIPGroups alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPGroupsClusterRemoveGroupParams alloc] init];
+
         params.groupId = [NSNumber numberWithUnsignedShort:mGroupId];
         [cluster removeGroupWithParams:params
                      completionHandler:^(CHIPGroupsClusterRemoveGroupResponseParams * _Nullable values, NSError * _Nullable error) {
                          NSLog(@"Values: %@", values);
-                         err = [CHIPError errorToCHIPErrorCode:error];
-                         ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                         SetCommandExitStatus(err);
+                         chipError = [CHIPError errorToCHIPErrorCode:error];
+                         ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                         SetCommandExitStatus(chipError);
                      }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -28699,17 +29523,18 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPGroups * cluster = [[CHIPGroups alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPGroupsClusterViewGroupParams alloc] init];
+
         params.groupId = [NSNumber numberWithUnsignedShort:mGroupId];
         [cluster viewGroupWithParams:params
                    completionHandler:^(CHIPGroupsClusterViewGroupResponseParams * _Nullable values, NSError * _Nullable error) {
                        NSLog(@"Values: %@", values);
-                       err = [CHIPError errorToCHIPErrorCode:error];
-                       ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                       SetCommandExitStatus(err);
+                       chipError = [CHIPError errorToCHIPErrorCode:error];
+                       ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                       SetCommandExitStatus(chipError);
                    }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -29139,16 +29964,17 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPIdentify * cluster = [[CHIPIdentify alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPIdentifyClusterIdentifyParams alloc] init];
+
         params.identifyTime = [NSNumber numberWithUnsignedShort:mIdentifyTime];
         [cluster identifyWithParams:params
                   completionHandler:^(NSError * _Nullable error) {
-                      err = [CHIPError errorToCHIPErrorCode:error];
-                      ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                      SetCommandExitStatus(err);
+                      chipError = [CHIPError errorToCHIPErrorCode:error];
+                      ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                      SetCommandExitStatus(chipError);
                   }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -29172,15 +29998,15 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPIdentify * cluster = [[CHIPIdentify alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         [cluster identifyQueryWithCompletionHandler:^(
             CHIPIdentifyClusterIdentifyQueryResponseParams * _Nullable values, NSError * _Nullable error) {
             NSLog(@"Values: %@", values);
-            err = [CHIPError errorToCHIPErrorCode:error];
-            ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-            SetCommandExitStatus(err);
+            chipError = [CHIPError errorToCHIPErrorCode:error];
+            ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+            SetCommandExitStatus(chipError);
         }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -29205,17 +30031,19 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPIdentify * cluster = [[CHIPIdentify alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPIdentifyClusterTriggerEffectParams alloc] init];
+
         params.effectIdentifier = [NSNumber numberWithUnsignedChar:mEffectIdentifier];
+
         params.effectVariant = [NSNumber numberWithUnsignedChar:mEffectVariant];
         [cluster triggerEffectWithParams:params
                        completionHandler:^(NSError * _Nullable error) {
-                           err = [CHIPError errorToCHIPErrorCode:error];
-                           ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                           SetCommandExitStatus(err);
+                           chipError = [CHIPError errorToCHIPErrorCode:error];
+                           ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                           SetCommandExitStatus(chipError);
                        }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -29272,17 +30100,17 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x00000003) WriteAttribute (0x00000000) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPIdentify * cluster = [[CHIPIdentify alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nonnull value = [NSNumber numberWithUnsignedShort:mValue];
 
         [cluster writeAttributeIdentifyTimeWithValue:value
                                    completionHandler:^(NSError * _Nullable error) {
-                                       err = [CHIPError errorToCHIPErrorCode:error];
-                                       ChipLogError(chipTool, "Identify IdentifyTime Error: %s", chip::ErrorStr(err));
-                                       SetCommandExitStatus(err);
+                                       chipError = [CHIPError errorToCHIPErrorCode:error];
+                                       ChipLogError(chipTool, "Identify IdentifyTime Error: %s", chip::ErrorStr(chipError));
+                                       SetCommandExitStatus(chipError);
                                    }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -30511,17 +31339,18 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPKeypadInput * cluster = [[CHIPKeypadInput alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPKeypadInputClusterSendKeyParams alloc] init];
+
         params.keyCode = [NSNumber numberWithUnsignedChar:mKeyCode];
         [cluster sendKeyWithParams:params
                  completionHandler:^(CHIPKeypadInputClusterSendKeyResponseParams * _Nullable values, NSError * _Nullable error) {
                      NSLog(@"Values: %@", values);
-                     err = [CHIPError errorToCHIPErrorCode:error];
-                     ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                     SetCommandExitStatus(err);
+                     chipError = [CHIPError errorToCHIPErrorCode:error];
+                     ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                     SetCommandExitStatus(chipError);
                  }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -30896,19 +31725,23 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPLevelControl * cluster = [[CHIPLevelControl alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPLevelControlClusterMoveParams alloc] init];
+
         params.moveMode = [NSNumber numberWithUnsignedChar:mMoveMode];
+
         params.rate = [NSNumber numberWithUnsignedChar:mRate];
+
         params.optionMask = [NSNumber numberWithUnsignedChar:mOptionMask];
+
         params.optionOverride = [NSNumber numberWithUnsignedChar:mOptionOverride];
         [cluster moveWithParams:params
               completionHandler:^(NSError * _Nullable error) {
-                  err = [CHIPError errorToCHIPErrorCode:error];
-                  ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                  SetCommandExitStatus(err);
+                  chipError = [CHIPError errorToCHIPErrorCode:error];
+                  ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                  SetCommandExitStatus(chipError);
               }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -30939,19 +31772,23 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPLevelControl * cluster = [[CHIPLevelControl alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPLevelControlClusterMoveToLevelParams alloc] init];
+
         params.level = [NSNumber numberWithUnsignedChar:mLevel];
+
         params.transitionTime = [NSNumber numberWithUnsignedShort:mTransitionTime];
+
         params.optionMask = [NSNumber numberWithUnsignedChar:mOptionMask];
+
         params.optionOverride = [NSNumber numberWithUnsignedChar:mOptionOverride];
         [cluster moveToLevelWithParams:params
                      completionHandler:^(NSError * _Nullable error) {
-                         err = [CHIPError errorToCHIPErrorCode:error];
-                         ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                         SetCommandExitStatus(err);
+                         chipError = [CHIPError errorToCHIPErrorCode:error];
+                         ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                         SetCommandExitStatus(chipError);
                      }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -30980,17 +31817,19 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPLevelControl * cluster = [[CHIPLevelControl alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPLevelControlClusterMoveToLevelWithOnOffParams alloc] init];
+
         params.level = [NSNumber numberWithUnsignedChar:mLevel];
+
         params.transitionTime = [NSNumber numberWithUnsignedShort:mTransitionTime];
         [cluster moveToLevelWithOnOffWithParams:params
                               completionHandler:^(NSError * _Nullable error) {
-                                  err = [CHIPError errorToCHIPErrorCode:error];
-                                  ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                                  SetCommandExitStatus(err);
+                                  chipError = [CHIPError errorToCHIPErrorCode:error];
+                                  ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                                  SetCommandExitStatus(chipError);
                               }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -31017,17 +31856,19 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPLevelControl * cluster = [[CHIPLevelControl alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPLevelControlClusterMoveWithOnOffParams alloc] init];
+
         params.moveMode = [NSNumber numberWithUnsignedChar:mMoveMode];
+
         params.rate = [NSNumber numberWithUnsignedChar:mRate];
         [cluster moveWithOnOffWithParams:params
                        completionHandler:^(NSError * _Nullable error) {
-                           err = [CHIPError errorToCHIPErrorCode:error];
-                           ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                           SetCommandExitStatus(err);
+                           chipError = [CHIPError errorToCHIPErrorCode:error];
+                           ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                           SetCommandExitStatus(chipError);
                        }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -31057,20 +31898,25 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPLevelControl * cluster = [[CHIPLevelControl alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPLevelControlClusterStepParams alloc] init];
+
         params.stepMode = [NSNumber numberWithUnsignedChar:mStepMode];
+
         params.stepSize = [NSNumber numberWithUnsignedChar:mStepSize];
+
         params.transitionTime = [NSNumber numberWithUnsignedShort:mTransitionTime];
+
         params.optionMask = [NSNumber numberWithUnsignedChar:mOptionMask];
+
         params.optionOverride = [NSNumber numberWithUnsignedChar:mOptionOverride];
         [cluster stepWithParams:params
               completionHandler:^(NSError * _Nullable error) {
-                  err = [CHIPError errorToCHIPErrorCode:error];
-                  ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                  SetCommandExitStatus(err);
+                  chipError = [CHIPError errorToCHIPErrorCode:error];
+                  ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                  SetCommandExitStatus(chipError);
               }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -31101,18 +31947,21 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPLevelControl * cluster = [[CHIPLevelControl alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPLevelControlClusterStepWithOnOffParams alloc] init];
+
         params.stepMode = [NSNumber numberWithUnsignedChar:mStepMode];
+
         params.stepSize = [NSNumber numberWithUnsignedChar:mStepSize];
+
         params.transitionTime = [NSNumber numberWithUnsignedShort:mTransitionTime];
         [cluster stepWithOnOffWithParams:params
                        completionHandler:^(NSError * _Nullable error) {
-                           err = [CHIPError errorToCHIPErrorCode:error];
-                           ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                           SetCommandExitStatus(err);
+                           chipError = [CHIPError errorToCHIPErrorCode:error];
+                           ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                           SetCommandExitStatus(chipError);
                        }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -31140,17 +31989,19 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPLevelControl * cluster = [[CHIPLevelControl alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPLevelControlClusterStopParams alloc] init];
+
         params.optionMask = [NSNumber numberWithUnsignedChar:mOptionMask];
+
         params.optionOverride = [NSNumber numberWithUnsignedChar:mOptionOverride];
         [cluster stopWithParams:params
               completionHandler:^(NSError * _Nullable error) {
-                  err = [CHIPError errorToCHIPErrorCode:error];
-                  ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                  SetCommandExitStatus(err);
+                  chipError = [CHIPError errorToCHIPErrorCode:error];
+                  ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                  SetCommandExitStatus(chipError);
               }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -31175,13 +32026,13 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPLevelControl * cluster = [[CHIPLevelControl alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         [cluster stopWithOnOffWithCompletionHandler:^(NSError * _Nullable error) {
-            err = [CHIPError errorToCHIPErrorCode:error];
-            ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-            SetCommandExitStatus(err);
+            chipError = [CHIPError errorToCHIPErrorCode:error];
+            ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+            SetCommandExitStatus(chipError);
         }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -31775,17 +32626,17 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x00000008) WriteAttribute (0x0000000F) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPLevelControl * cluster = [[CHIPLevelControl alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nonnull value = [NSNumber numberWithUnsignedChar:mValue];
 
         [cluster writeAttributeOptionsWithValue:value
                               completionHandler:^(NSError * _Nullable error) {
-                                  err = [CHIPError errorToCHIPErrorCode:error];
-                                  ChipLogError(chipTool, "LevelControl Options Error: %s", chip::ErrorStr(err));
-                                  SetCommandExitStatus(err);
+                                  chipError = [CHIPError errorToCHIPErrorCode:error];
+                                  ChipLogError(chipTool, "LevelControl Options Error: %s", chip::ErrorStr(chipError));
+                                  SetCommandExitStatus(chipError);
                               }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -31886,18 +32737,18 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x00000008) WriteAttribute (0x00000010) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPLevelControl * cluster = [[CHIPLevelControl alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nonnull value = [NSNumber numberWithUnsignedShort:mValue];
 
-        [cluster
-            writeAttributeOnOffTransitionTimeWithValue:value
-                                     completionHandler:^(NSError * _Nullable error) {
-                                         err = [CHIPError errorToCHIPErrorCode:error];
-                                         ChipLogError(chipTool, "LevelControl OnOffTransitionTime Error: %s", chip::ErrorStr(err));
-                                         SetCommandExitStatus(err);
-                                     }];
-        return err;
+        [cluster writeAttributeOnOffTransitionTimeWithValue:value
+                                          completionHandler:^(NSError * _Nullable error) {
+                                              chipError = [CHIPError errorToCHIPErrorCode:error];
+                                              ChipLogError(chipTool, "LevelControl OnOffTransitionTime Error: %s",
+                                                  chip::ErrorStr(chipError));
+                                              SetCommandExitStatus(chipError);
+                                          }];
+        return chipError;
     }
 
 private:
@@ -31999,17 +32850,17 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x00000008) WriteAttribute (0x00000011) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPLevelControl * cluster = [[CHIPLevelControl alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nullable value = [NSNumber numberWithUnsignedChar:mValue];
 
         [cluster writeAttributeOnLevelWithValue:value
                               completionHandler:^(NSError * _Nullable error) {
-                                  err = [CHIPError errorToCHIPErrorCode:error];
-                                  ChipLogError(chipTool, "LevelControl OnLevel Error: %s", chip::ErrorStr(err));
-                                  SetCommandExitStatus(err);
+                                  chipError = [CHIPError errorToCHIPErrorCode:error];
+                                  ChipLogError(chipTool, "LevelControl OnLevel Error: %s", chip::ErrorStr(chipError));
+                                  SetCommandExitStatus(chipError);
                               }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -32110,17 +32961,18 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x00000008) WriteAttribute (0x00000012) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPLevelControl * cluster = [[CHIPLevelControl alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nullable value = [NSNumber numberWithUnsignedShort:mValue];
 
-        [cluster writeAttributeOnTransitionTimeWithValue:value
-                                       completionHandler:^(NSError * _Nullable error) {
-                                           err = [CHIPError errorToCHIPErrorCode:error];
-                                           ChipLogError(chipTool, "LevelControl OnTransitionTime Error: %s", chip::ErrorStr(err));
-                                           SetCommandExitStatus(err);
-                                       }];
-        return err;
+        [cluster
+            writeAttributeOnTransitionTimeWithValue:value
+                                  completionHandler:^(NSError * _Nullable error) {
+                                      chipError = [CHIPError errorToCHIPErrorCode:error];
+                                      ChipLogError(chipTool, "LevelControl OnTransitionTime Error: %s", chip::ErrorStr(chipError));
+                                      SetCommandExitStatus(chipError);
+                                  }];
+        return chipError;
     }
 
 private:
@@ -32221,17 +33073,18 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x00000008) WriteAttribute (0x00000013) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPLevelControl * cluster = [[CHIPLevelControl alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nullable value = [NSNumber numberWithUnsignedShort:mValue];
 
         [cluster writeAttributeOffTransitionTimeWithValue:value
                                         completionHandler:^(NSError * _Nullable error) {
-                                            err = [CHIPError errorToCHIPErrorCode:error];
-                                            ChipLogError(chipTool, "LevelControl OffTransitionTime Error: %s", chip::ErrorStr(err));
-                                            SetCommandExitStatus(err);
+                                            chipError = [CHIPError errorToCHIPErrorCode:error];
+                                            ChipLogError(
+                                                chipTool, "LevelControl OffTransitionTime Error: %s", chip::ErrorStr(chipError));
+                                            SetCommandExitStatus(chipError);
                                         }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -32332,17 +33185,18 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x00000008) WriteAttribute (0x00000014) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPLevelControl * cluster = [[CHIPLevelControl alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nullable value = [NSNumber numberWithUnsignedChar:mValue];
 
-        [cluster writeAttributeDefaultMoveRateWithValue:value
-                                      completionHandler:^(NSError * _Nullable error) {
-                                          err = [CHIPError errorToCHIPErrorCode:error];
-                                          ChipLogError(chipTool, "LevelControl DefaultMoveRate Error: %s", chip::ErrorStr(err));
-                                          SetCommandExitStatus(err);
-                                      }];
-        return err;
+        [cluster
+            writeAttributeDefaultMoveRateWithValue:value
+                                 completionHandler:^(NSError * _Nullable error) {
+                                     chipError = [CHIPError errorToCHIPErrorCode:error];
+                                     ChipLogError(chipTool, "LevelControl DefaultMoveRate Error: %s", chip::ErrorStr(chipError));
+                                     SetCommandExitStatus(chipError);
+                                 }];
+        return chipError;
     }
 
 private:
@@ -32443,18 +33297,18 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x00000008) WriteAttribute (0x00004000) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPLevelControl * cluster = [[CHIPLevelControl alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nullable value = [NSNumber numberWithUnsignedChar:mValue];
 
-        [cluster
-            writeAttributeStartUpCurrentLevelWithValue:value
-                                     completionHandler:^(NSError * _Nullable error) {
-                                         err = [CHIPError errorToCHIPErrorCode:error];
-                                         ChipLogError(chipTool, "LevelControl StartUpCurrentLevel Error: %s", chip::ErrorStr(err));
-                                         SetCommandExitStatus(err);
-                                     }];
-        return err;
+        [cluster writeAttributeStartUpCurrentLevelWithValue:value
+                                          completionHandler:^(NSError * _Nullable error) {
+                                              chipError = [CHIPError errorToCHIPErrorCode:error];
+                                              ChipLogError(chipTool, "LevelControl StartUpCurrentLevel Error: %s",
+                                                  chip::ErrorStr(chipError));
+                                              SetCommandExitStatus(chipError);
+                                          }];
+        return chipError;
     }
 
 private:
@@ -32964,20 +33818,20 @@ public:
         CHIPLocalizationConfiguration * cluster = [[CHIPLocalizationConfiguration alloc] initWithDevice:device
                                                                                                endpoint:endpointId
                                                                                                   queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSString * _Nonnull value = [[NSString alloc] initWithBytes:mValue.data()
                                                              length:mValue.size()
                                                            encoding:NSUTF8StringEncoding];
 
-        [cluster
-            writeAttributeActiveLocaleWithValue:value
-                              completionHandler:^(NSError * _Nullable error) {
-                                  err = [CHIPError errorToCHIPErrorCode:error];
-                                  ChipLogError(chipTool, "LocalizationConfiguration ActiveLocale Error: %s", chip::ErrorStr(err));
-                                  SetCommandExitStatus(err);
-                              }];
-        return err;
+        [cluster writeAttributeActiveLocaleWithValue:value
+                                   completionHandler:^(NSError * _Nullable error) {
+                                       chipError = [CHIPError errorToCHIPErrorCode:error];
+                                       ChipLogError(
+                                           chipTool, "LocalizationConfiguration ActiveLocale Error: %s", chip::ErrorStr(chipError));
+                                       SetCommandExitStatus(chipError);
+                                   }];
+        return chipError;
     }
 
 private:
@@ -33393,13 +34247,13 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPLowPower * cluster = [[CHIPLowPower alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         [cluster sleepWithCompletionHandler:^(NSError * _Nullable error) {
-            err = [CHIPError errorToCHIPErrorCode:error];
-            ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-            SetCommandExitStatus(err);
+            chipError = [CHIPError errorToCHIPErrorCode:error];
+            ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+            SetCommandExitStatus(chipError);
         }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -33752,13 +34606,13 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPMediaInput * cluster = [[CHIPMediaInput alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         [cluster hideInputStatusWithCompletionHandler:^(NSError * _Nullable error) {
-            err = [CHIPError errorToCHIPErrorCode:error];
-            ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-            SetCommandExitStatus(err);
+            chipError = [CHIPError errorToCHIPErrorCode:error];
+            ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+            SetCommandExitStatus(chipError);
         }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -33783,17 +34637,19 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPMediaInput * cluster = [[CHIPMediaInput alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPMediaInputClusterRenameInputParams alloc] init];
+
         params.index = [NSNumber numberWithUnsignedChar:mIndex];
+
         params.name = [[NSString alloc] initWithBytes:mName.data() length:mName.size() encoding:NSUTF8StringEncoding];
         [cluster renameInputWithParams:params
                      completionHandler:^(NSError * _Nullable error) {
-                         err = [CHIPError errorToCHIPErrorCode:error];
-                         ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                         SetCommandExitStatus(err);
+                         chipError = [CHIPError errorToCHIPErrorCode:error];
+                         ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                         SetCommandExitStatus(chipError);
                      }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -33819,16 +34675,17 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPMediaInput * cluster = [[CHIPMediaInput alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPMediaInputClusterSelectInputParams alloc] init];
+
         params.index = [NSNumber numberWithUnsignedChar:mIndex];
         [cluster selectInputWithParams:params
                      completionHandler:^(NSError * _Nullable error) {
-                         err = [CHIPError errorToCHIPErrorCode:error];
-                         ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                         SetCommandExitStatus(err);
+                         chipError = [CHIPError errorToCHIPErrorCode:error];
+                         ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                         SetCommandExitStatus(chipError);
                      }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -33852,13 +34709,13 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPMediaInput * cluster = [[CHIPMediaInput alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         [cluster showInputStatusWithCompletionHandler:^(NSError * _Nullable error) {
-            err = [CHIPError errorToCHIPErrorCode:error];
-            ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-            SetCommandExitStatus(err);
+            chipError = [CHIPError errorToCHIPErrorCode:error];
+            ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+            SetCommandExitStatus(chipError);
         }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -34378,15 +35235,15 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPMediaPlayback * cluster = [[CHIPMediaPlayback alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         [cluster fastForwardWithCompletionHandler:^(
             CHIPMediaPlaybackClusterPlaybackResponseParams * _Nullable values, NSError * _Nullable error) {
             NSLog(@"Values: %@", values);
-            err = [CHIPError errorToCHIPErrorCode:error];
-            ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-            SetCommandExitStatus(err);
+            chipError = [CHIPError errorToCHIPErrorCode:error];
+            ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+            SetCommandExitStatus(chipError);
         }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -34409,15 +35266,15 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPMediaPlayback * cluster = [[CHIPMediaPlayback alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         [cluster nextWithCompletionHandler:^(
             CHIPMediaPlaybackClusterPlaybackResponseParams * _Nullable values, NSError * _Nullable error) {
             NSLog(@"Values: %@", values);
-            err = [CHIPError errorToCHIPErrorCode:error];
-            ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-            SetCommandExitStatus(err);
+            chipError = [CHIPError errorToCHIPErrorCode:error];
+            ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+            SetCommandExitStatus(chipError);
         }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -34440,15 +35297,15 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPMediaPlayback * cluster = [[CHIPMediaPlayback alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         [cluster pauseWithCompletionHandler:^(
             CHIPMediaPlaybackClusterPlaybackResponseParams * _Nullable values, NSError * _Nullable error) {
             NSLog(@"Values: %@", values);
-            err = [CHIPError errorToCHIPErrorCode:error];
-            ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-            SetCommandExitStatus(err);
+            chipError = [CHIPError errorToCHIPErrorCode:error];
+            ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+            SetCommandExitStatus(chipError);
         }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -34471,15 +35328,15 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPMediaPlayback * cluster = [[CHIPMediaPlayback alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         [cluster playWithCompletionHandler:^(
             CHIPMediaPlaybackClusterPlaybackResponseParams * _Nullable values, NSError * _Nullable error) {
             NSLog(@"Values: %@", values);
-            err = [CHIPError errorToCHIPErrorCode:error];
-            ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-            SetCommandExitStatus(err);
+            chipError = [CHIPError errorToCHIPErrorCode:error];
+            ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+            SetCommandExitStatus(chipError);
         }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -34502,15 +35359,15 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPMediaPlayback * cluster = [[CHIPMediaPlayback alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         [cluster previousWithCompletionHandler:^(
             CHIPMediaPlaybackClusterPlaybackResponseParams * _Nullable values, NSError * _Nullable error) {
             NSLog(@"Values: %@", values);
-            err = [CHIPError errorToCHIPErrorCode:error];
-            ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-            SetCommandExitStatus(err);
+            chipError = [CHIPError errorToCHIPErrorCode:error];
+            ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+            SetCommandExitStatus(chipError);
         }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -34533,15 +35390,15 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPMediaPlayback * cluster = [[CHIPMediaPlayback alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         [cluster rewindWithCompletionHandler:^(
             CHIPMediaPlaybackClusterPlaybackResponseParams * _Nullable values, NSError * _Nullable error) {
             NSLog(@"Values: %@", values);
-            err = [CHIPError errorToCHIPErrorCode:error];
-            ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-            SetCommandExitStatus(err);
+            chipError = [CHIPError errorToCHIPErrorCode:error];
+            ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+            SetCommandExitStatus(chipError);
         }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -34565,17 +35422,18 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPMediaPlayback * cluster = [[CHIPMediaPlayback alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPMediaPlaybackClusterSeekParams alloc] init];
+
         params.position = [NSNumber numberWithUnsignedLongLong:mPosition];
         [cluster seekWithParams:params
               completionHandler:^(CHIPMediaPlaybackClusterPlaybackResponseParams * _Nullable values, NSError * _Nullable error) {
                   NSLog(@"Values: %@", values);
-                  err = [CHIPError errorToCHIPErrorCode:error];
-                  ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                  SetCommandExitStatus(err);
+                  chipError = [CHIPError errorToCHIPErrorCode:error];
+                  ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                  SetCommandExitStatus(chipError);
               }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -34600,18 +35458,19 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPMediaPlayback * cluster = [[CHIPMediaPlayback alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPMediaPlaybackClusterSkipBackwardParams alloc] init];
+
         params.deltaPositionMilliseconds = [NSNumber numberWithUnsignedLongLong:mDeltaPositionMilliseconds];
         [cluster
             skipBackwardWithParams:params
                  completionHandler:^(CHIPMediaPlaybackClusterPlaybackResponseParams * _Nullable values, NSError * _Nullable error) {
                      NSLog(@"Values: %@", values);
-                     err = [CHIPError errorToCHIPErrorCode:error];
-                     ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                     SetCommandExitStatus(err);
+                     chipError = [CHIPError errorToCHIPErrorCode:error];
+                     ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                     SetCommandExitStatus(chipError);
                  }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -34636,18 +35495,19 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPMediaPlayback * cluster = [[CHIPMediaPlayback alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPMediaPlaybackClusterSkipForwardParams alloc] init];
+
         params.deltaPositionMilliseconds = [NSNumber numberWithUnsignedLongLong:mDeltaPositionMilliseconds];
         [cluster
             skipForwardWithParams:params
                 completionHandler:^(CHIPMediaPlaybackClusterPlaybackResponseParams * _Nullable values, NSError * _Nullable error) {
                     NSLog(@"Values: %@", values);
-                    err = [CHIPError errorToCHIPErrorCode:error];
-                    ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                    SetCommandExitStatus(err);
+                    chipError = [CHIPError errorToCHIPErrorCode:error];
+                    ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                    SetCommandExitStatus(chipError);
                 }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -34671,15 +35531,15 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPMediaPlayback * cluster = [[CHIPMediaPlayback alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         [cluster startOverWithCompletionHandler:^(
             CHIPMediaPlaybackClusterPlaybackResponseParams * _Nullable values, NSError * _Nullable error) {
             NSLog(@"Values: %@", values);
-            err = [CHIPError errorToCHIPErrorCode:error];
-            ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-            SetCommandExitStatus(err);
+            chipError = [CHIPError errorToCHIPErrorCode:error];
+            ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+            SetCommandExitStatus(chipError);
         }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -34702,15 +35562,15 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPMediaPlayback * cluster = [[CHIPMediaPlayback alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         [cluster stopPlaybackWithCompletionHandler:^(
             CHIPMediaPlaybackClusterPlaybackResponseParams * _Nullable values, NSError * _Nullable error) {
             NSLog(@"Values: %@", values);
-            err = [CHIPError errorToCHIPErrorCode:error];
-            ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-            SetCommandExitStatus(err);
+            chipError = [CHIPError errorToCHIPErrorCode:error];
+            ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+            SetCommandExitStatus(chipError);
         }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -35607,16 +36467,17 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPModeSelect * cluster = [[CHIPModeSelect alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPModeSelectClusterChangeToModeParams alloc] init];
+
         params.newMode = [NSNumber numberWithUnsignedChar:mNewMode];
         [cluster changeToModeWithParams:params
                       completionHandler:^(NSError * _Nullable error) {
-                          err = [CHIPError errorToCHIPErrorCode:error];
-                          ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                          SetCommandExitStatus(err);
+                          chipError = [CHIPError errorToCHIPErrorCode:error];
+                          ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                          SetCommandExitStatus(chipError);
                       }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -35980,17 +36841,17 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x00000050) WriteAttribute (0x00000004) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPModeSelect * cluster = [[CHIPModeSelect alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nullable value = [NSNumber numberWithUnsignedChar:mValue];
 
         [cluster writeAttributeStartUpModeWithValue:value
                                   completionHandler:^(NSError * _Nullable error) {
-                                      err = [CHIPError errorToCHIPErrorCode:error];
-                                      ChipLogError(chipTool, "ModeSelect StartUpMode Error: %s", chip::ErrorStr(err));
-                                      SetCommandExitStatus(err);
+                                      chipError = [CHIPError errorToCHIPErrorCode:error];
+                                      ChipLogError(chipTool, "ModeSelect StartUpMode Error: %s", chip::ErrorStr(chipError));
+                                      SetCommandExitStatus(chipError);
                                   }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -36091,17 +36952,17 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x00000050) WriteAttribute (0x00000005) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPModeSelect * cluster = [[CHIPModeSelect alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nullable value = [NSNumber numberWithUnsignedChar:mValue];
 
         [cluster writeAttributeOnModeWithValue:value
                              completionHandler:^(NSError * _Nullable error) {
-                                 err = [CHIPError errorToCHIPErrorCode:error];
-                                 ChipLogError(chipTool, "ModeSelect OnMode Error: %s", chip::ErrorStr(err));
-                                 SetCommandExitStatus(err);
+                                 chipError = [CHIPError errorToCHIPErrorCode:error];
+                                 ChipLogError(chipTool, "ModeSelect OnMode Error: %s", chip::ErrorStr(chipError));
+                                 SetCommandExitStatus(chipError);
                              }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -36590,19 +37451,21 @@ public:
         CHIPNetworkCommissioning * cluster = [[CHIPNetworkCommissioning alloc] initWithDevice:device
                                                                                      endpoint:endpointId
                                                                                         queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPNetworkCommissioningClusterAddOrUpdateThreadNetworkParams alloc] init];
+
         params.operationalDataset = [[NSData alloc] initWithBytes:mOperationalDataset.data() length:mOperationalDataset.size()];
+
         params.breadcrumb = [NSNumber numberWithUnsignedLongLong:mBreadcrumb];
         [cluster addOrUpdateThreadNetworkWithParams:params
                                   completionHandler:^(CHIPNetworkCommissioningClusterNetworkConfigResponseParams * _Nullable values,
                                       NSError * _Nullable error) {
                                       NSLog(@"Values: %@", values);
-                                      err = [CHIPError errorToCHIPErrorCode:error];
-                                      ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                                      SetCommandExitStatus(err);
+                                      chipError = [CHIPError errorToCHIPErrorCode:error];
+                                      ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                                      SetCommandExitStatus(chipError);
                                   }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -36632,20 +37495,23 @@ public:
         CHIPNetworkCommissioning * cluster = [[CHIPNetworkCommissioning alloc] initWithDevice:device
                                                                                      endpoint:endpointId
                                                                                         queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPNetworkCommissioningClusterAddOrUpdateWiFiNetworkParams alloc] init];
+
         params.ssid = [[NSData alloc] initWithBytes:mSsid.data() length:mSsid.size()];
+
         params.credentials = [[NSData alloc] initWithBytes:mCredentials.data() length:mCredentials.size()];
+
         params.breadcrumb = [NSNumber numberWithUnsignedLongLong:mBreadcrumb];
         [cluster addOrUpdateWiFiNetworkWithParams:params
                                 completionHandler:^(CHIPNetworkCommissioningClusterNetworkConfigResponseParams * _Nullable values,
                                     NSError * _Nullable error) {
                                     NSLog(@"Values: %@", values);
-                                    err = [CHIPError errorToCHIPErrorCode:error];
-                                    ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                                    SetCommandExitStatus(err);
+                                    chipError = [CHIPError errorToCHIPErrorCode:error];
+                                    ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                                    SetCommandExitStatus(chipError);
                                 }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -36675,19 +37541,21 @@ public:
         CHIPNetworkCommissioning * cluster = [[CHIPNetworkCommissioning alloc] initWithDevice:device
                                                                                      endpoint:endpointId
                                                                                         queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPNetworkCommissioningClusterConnectNetworkParams alloc] init];
+
         params.networkID = [[NSData alloc] initWithBytes:mNetworkID.data() length:mNetworkID.size()];
+
         params.breadcrumb = [NSNumber numberWithUnsignedLongLong:mBreadcrumb];
         [cluster connectNetworkWithParams:params
                         completionHandler:^(CHIPNetworkCommissioningClusterConnectNetworkResponseParams * _Nullable values,
                             NSError * _Nullable error) {
                             NSLog(@"Values: %@", values);
-                            err = [CHIPError errorToCHIPErrorCode:error];
-                            ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                            SetCommandExitStatus(err);
+                            chipError = [CHIPError errorToCHIPErrorCode:error];
+                            ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                            SetCommandExitStatus(chipError);
                         }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -36716,19 +37584,21 @@ public:
         CHIPNetworkCommissioning * cluster = [[CHIPNetworkCommissioning alloc] initWithDevice:device
                                                                                      endpoint:endpointId
                                                                                         queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPNetworkCommissioningClusterRemoveNetworkParams alloc] init];
+
         params.networkID = [[NSData alloc] initWithBytes:mNetworkID.data() length:mNetworkID.size()];
+
         params.breadcrumb = [NSNumber numberWithUnsignedLongLong:mBreadcrumb];
         [cluster removeNetworkWithParams:params
                        completionHandler:^(CHIPNetworkCommissioningClusterNetworkConfigResponseParams * _Nullable values,
                            NSError * _Nullable error) {
                            NSLog(@"Values: %@", values);
-                           err = [CHIPError errorToCHIPErrorCode:error];
-                           ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                           SetCommandExitStatus(err);
+                           chipError = [CHIPError errorToCHIPErrorCode:error];
+                           ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                           SetCommandExitStatus(chipError);
                        }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -36758,20 +37628,23 @@ public:
         CHIPNetworkCommissioning * cluster = [[CHIPNetworkCommissioning alloc] initWithDevice:device
                                                                                      endpoint:endpointId
                                                                                         queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPNetworkCommissioningClusterReorderNetworkParams alloc] init];
+
         params.networkID = [[NSData alloc] initWithBytes:mNetworkID.data() length:mNetworkID.size()];
+
         params.networkIndex = [NSNumber numberWithUnsignedChar:mNetworkIndex];
+
         params.breadcrumb = [NSNumber numberWithUnsignedLongLong:mBreadcrumb];
         [cluster reorderNetworkWithParams:params
                         completionHandler:^(CHIPNetworkCommissioningClusterNetworkConfigResponseParams * _Nullable values,
                             NSError * _Nullable error) {
                             NSLog(@"Values: %@", values);
-                            err = [CHIPError errorToCHIPErrorCode:error];
-                            ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                            SetCommandExitStatus(err);
+                            chipError = [CHIPError errorToCHIPErrorCode:error];
+                            ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                            SetCommandExitStatus(chipError);
                         }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -36801,19 +37674,21 @@ public:
         CHIPNetworkCommissioning * cluster = [[CHIPNetworkCommissioning alloc] initWithDevice:device
                                                                                      endpoint:endpointId
                                                                                         queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPNetworkCommissioningClusterScanNetworksParams alloc] init];
+
         params.ssid = [[NSData alloc] initWithBytes:mSsid.data() length:mSsid.size()];
+
         params.breadcrumb = [NSNumber numberWithUnsignedLongLong:mBreadcrumb];
         [cluster scanNetworksWithParams:params
                       completionHandler:^(
                           CHIPNetworkCommissioningClusterScanNetworksResponseParams * _Nullable values, NSError * _Nullable error) {
                           NSLog(@"Values: %@", values);
-                          err = [CHIPError errorToCHIPErrorCode:error];
-                          ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                          SetCommandExitStatus(err);
+                          chipError = [CHIPError errorToCHIPErrorCode:error];
+                          ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                          SetCommandExitStatus(chipError);
                       }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -37200,18 +38075,18 @@ public:
         CHIPNetworkCommissioning * cluster = [[CHIPNetworkCommissioning alloc] initWithDevice:device
                                                                                      endpoint:endpointId
                                                                                         queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nonnull value = [NSNumber numberWithBool:mValue];
 
         [cluster writeAttributeInterfaceEnabledWithValue:value
                                        completionHandler:^(NSError * _Nullable error) {
-                                           err = [CHIPError errorToCHIPErrorCode:error];
-                                           ChipLogError(
-                                               chipTool, "NetworkCommissioning InterfaceEnabled Error: %s", chip::ErrorStr(err));
-                                           SetCommandExitStatus(err);
+                                           chipError = [CHIPError errorToCHIPErrorCode:error];
+                                           ChipLogError(chipTool, "NetworkCommissioning InterfaceEnabled Error: %s",
+                                               chip::ErrorStr(chipError));
+                                           SetCommandExitStatus(chipError);
                                        }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -37877,19 +38752,21 @@ public:
         CHIPOtaSoftwareUpdateProvider * cluster = [[CHIPOtaSoftwareUpdateProvider alloc] initWithDevice:device
                                                                                                endpoint:endpointId
                                                                                                   queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPOtaSoftwareUpdateProviderClusterApplyUpdateRequestParams alloc] init];
+
         params.updateToken = [[NSData alloc] initWithBytes:mUpdateToken.data() length:mUpdateToken.size()];
+
         params.newVersion = [NSNumber numberWithUnsignedInt:mNewVersion];
         [cluster applyUpdateRequestWithParams:params
                             completionHandler:^(CHIPOtaSoftwareUpdateProviderClusterApplyUpdateResponseParams * _Nullable values,
                                 NSError * _Nullable error) {
                                 NSLog(@"Values: %@", values);
-                                err = [CHIPError errorToCHIPErrorCode:error];
-                                ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                                SetCommandExitStatus(err);
+                                chipError = [CHIPError errorToCHIPErrorCode:error];
+                                ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                                SetCommandExitStatus(chipError);
                             }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -37918,17 +38795,19 @@ public:
         CHIPOtaSoftwareUpdateProvider * cluster = [[CHIPOtaSoftwareUpdateProvider alloc] initWithDevice:device
                                                                                                endpoint:endpointId
                                                                                                   queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPOtaSoftwareUpdateProviderClusterNotifyUpdateAppliedParams alloc] init];
+
         params.updateToken = [[NSData alloc] initWithBytes:mUpdateToken.data() length:mUpdateToken.size()];
+
         params.softwareVersion = [NSNumber numberWithUnsignedInt:mSoftwareVersion];
         [cluster notifyUpdateAppliedWithParams:params
                              completionHandler:^(NSError * _Nullable error) {
-                                 err = [CHIPError errorToCHIPErrorCode:error];
-                                 ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                                 SetCommandExitStatus(err);
+                                 chipError = [CHIPError errorToCHIPErrorCode:error];
+                                 ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                                 SetCommandExitStatus(chipError);
                              }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -37943,10 +38822,12 @@ class OtaSoftwareUpdateProviderQueryImage : public ModelCommand {
 public:
     OtaSoftwareUpdateProviderQueryImage()
         : ModelCommand("query-image")
+        , mComplex_ProtocolsSupported(&mRequest.protocolsSupported)
     {
         AddArgument("VendorId", 0, UINT16_MAX, &mVendorId);
         AddArgument("ProductId", 0, UINT16_MAX, &mProductId);
         AddArgument("SoftwareVersion", 0, UINT32_MAX, &mSoftwareVersion);
+        AddArgument("ProtocolsSupported", &mComplex_ProtocolsSupported);
         AddArgument("HardwareVersion", 0, UINT16_MAX, &mHardwareVersion);
         AddArgument("Location", &mLocation);
         AddArgument("RequestorCanConsent", 0, 1, &mRequestorCanConsent);
@@ -37962,31 +38843,51 @@ public:
         CHIPOtaSoftwareUpdateProvider * cluster = [[CHIPOtaSoftwareUpdateProvider alloc] initWithDevice:device
                                                                                                endpoint:endpointId
                                                                                                   queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPOtaSoftwareUpdateProviderClusterQueryImageParams alloc] init];
+
         params.vendorId = [NSNumber numberWithUnsignedShort:mVendorId];
+
         params.productId = [NSNumber numberWithUnsignedShort:mProductId];
+
         params.softwareVersion = [NSNumber numberWithUnsignedInt:mSoftwareVersion];
-        // protocolsSupported Array parsing is not supported yet
+
+        { // Scope for our temporary variables
+            auto * array_0 = [NSMutableArray new];
+            for (chip::ListIndex index_0 = 0; index_0 < mRequest.protocolsSupported.size(); index_0++) {
+                auto & entry_0 = mRequest.protocolsSupported.data()[index_0];
+                NSNumber * newElement_0;
+                newElement_0 = [NSNumber numberWithUnsignedChar:chip::to_underlying(entry_0)];
+                [array_0 addObject:newElement_0];
+            }
+            params.protocolsSupported = array_0;
+        }
+
         params.hardwareVersion = [NSNumber numberWithUnsignedShort:mHardwareVersion];
+
         params.location = [[NSString alloc] initWithBytes:mLocation.data() length:mLocation.size() encoding:NSUTF8StringEncoding];
+
         params.requestorCanConsent = [NSNumber numberWithBool:mRequestorCanConsent];
+
         params.metadataForProvider = [[NSData alloc] initWithBytes:mMetadataForProvider.data() length:mMetadataForProvider.size()];
         [cluster queryImageWithParams:params
                     completionHandler:^(CHIPOtaSoftwareUpdateProviderClusterQueryImageResponseParams * _Nullable values,
                         NSError * _Nullable error) {
                         NSLog(@"Values: %@", values);
-                        err = [CHIPError errorToCHIPErrorCode:error];
-                        ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                        SetCommandExitStatus(err);
+                        chipError = [CHIPError errorToCHIPErrorCode:error];
+                        ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                        SetCommandExitStatus(chipError);
                     }];
-        return err;
+        return chipError;
     }
 
 private:
     chip::VendorId mVendorId;
     uint16_t mProductId;
     uint32_t mSoftwareVersion;
+    chip::app::Clusters::OtaSoftwareUpdateProvider::Commands::QueryImage::Type mRequest;
+    TypedComplexArgument<chip::app::DataModel::List<const chip::app::Clusters::OtaSoftwareUpdateProvider::OTADownloadProtocol>>
+        mComplex_ProtocolsSupported;
     uint16_t mHardwareVersion;
     chip::ByteSpan mLocation;
     bool mRequestorCanConsent;
@@ -38204,20 +39105,25 @@ public:
         CHIPOtaSoftwareUpdateRequestor * cluster = [[CHIPOtaSoftwareUpdateRequestor alloc] initWithDevice:device
                                                                                                  endpoint:endpointId
                                                                                                     queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPOtaSoftwareUpdateRequestorClusterAnnounceOtaProviderParams alloc] init];
+
         params.providerNodeId = [NSNumber numberWithUnsignedLongLong:mProviderNodeId];
+
         params.vendorId = [NSNumber numberWithUnsignedShort:mVendorId];
+
         params.announcementReason = [NSNumber numberWithUnsignedChar:mAnnouncementReason];
+
         params.metadataForNode = [[NSData alloc] initWithBytes:mMetadataForNode.data() length:mMetadataForNode.size()];
+
         params.endpoint = [NSNumber numberWithUnsignedShort:mEndpoint];
         [cluster announceOtaProviderWithParams:params
                              completionHandler:^(NSError * _Nullable error) {
-                                 err = [CHIPError errorToCHIPErrorCode:error];
-                                 ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                                 SetCommandExitStatus(err);
+                                 chipError = [CHIPError errorToCHIPErrorCode:error];
+                                 ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                                 SetCommandExitStatus(chipError);
                              }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -38264,6 +39170,60 @@ public:
                                      }];
         return err;
     }
+};
+
+class WriteOtaSoftwareUpdateRequestorDefaultOtaProviders : public ModelCommand {
+public:
+    WriteOtaSoftwareUpdateRequestorDefaultOtaProviders()
+        : ModelCommand("write")
+        , mComplex(&mValue)
+    {
+        AddArgument("attr-name", "default-ota-providers");
+        AddArgument("attr-value", &mComplex);
+        ModelCommand::AddArguments();
+    }
+
+    ~WriteOtaSoftwareUpdateRequestorDefaultOtaProviders() {}
+
+    CHIP_ERROR SendCommand(CHIPDevice * device, chip::EndpointId endpointId) override
+    {
+        ChipLogProgress(chipTool, "Sending cluster (0x0000002A) WriteAttribute (0x00000000) on endpoint %" PRIu16, endpointId);
+        dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
+        CHIPOtaSoftwareUpdateRequestor * cluster = [[CHIPOtaSoftwareUpdateRequestor alloc] initWithDevice:device
+                                                                                                 endpoint:endpointId
+                                                                                                    queue:callbackQueue];
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
+
+        NSArray * _Nonnull value;
+        { // Scope for our temporary variables
+            auto * array_0 = [NSMutableArray new];
+            for (chip::ListIndex index_0 = 0; index_0 < mValue.size(); index_0++) {
+                auto & entry_0 = mValue.data()[index_0];
+                CHIPOtaSoftwareUpdateRequestorClusterProviderLocation * newElement_0;
+                newElement_0 = [CHIPOtaSoftwareUpdateRequestorClusterProviderLocation new];
+                newElement_0.providerNodeID = [NSNumber numberWithUnsignedLongLong:entry_0.providerNodeID];
+                newElement_0.endpoint = [NSNumber numberWithUnsignedShort:entry_0.endpoint];
+                newElement_0.fabricIndex = [NSNumber numberWithUnsignedChar:entry_0.fabricIndex];
+                [array_0 addObject:newElement_0];
+            }
+            value = array_0;
+        }
+
+        [cluster writeAttributeDefaultOtaProvidersWithValue:value
+                                          completionHandler:^(NSError * _Nullable error) {
+                                              chipError = [CHIPError errorToCHIPErrorCode:error];
+                                              ChipLogError(chipTool, "OtaSoftwareUpdateRequestor DefaultOtaProviders Error: %s",
+                                                  chip::ErrorStr(chipError));
+                                              SetCommandExitStatus(chipError);
+                                          }];
+        return chipError;
+    }
+
+private:
+    chip::app::DataModel::List<const chip::app::Clusters::OtaSoftwareUpdateRequestor::Structs::ProviderLocation::Type> mValue;
+    TypedComplexArgument<
+        chip::app::DataModel::List<const chip::app::Clusters::OtaSoftwareUpdateRequestor::Structs::ProviderLocation::Type>>
+        mComplex;
 };
 
 class SubscribeAttributeOtaSoftwareUpdateRequestorDefaultOtaProviders : public ModelCommand {
@@ -39367,13 +40327,13 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPOnOff * cluster = [[CHIPOnOff alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         [cluster offWithCompletionHandler:^(NSError * _Nullable error) {
-            err = [CHIPError errorToCHIPErrorCode:error];
-            ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-            SetCommandExitStatus(err);
+            chipError = [CHIPError errorToCHIPErrorCode:error];
+            ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+            SetCommandExitStatus(chipError);
         }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -39398,17 +40358,19 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPOnOff * cluster = [[CHIPOnOff alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPOnOffClusterOffWithEffectParams alloc] init];
+
         params.effectId = [NSNumber numberWithUnsignedChar:mEffectId];
+
         params.effectVariant = [NSNumber numberWithUnsignedChar:mEffectVariant];
         [cluster offWithEffectWithParams:params
                        completionHandler:^(NSError * _Nullable error) {
-                           err = [CHIPError errorToCHIPErrorCode:error];
-                           ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                           SetCommandExitStatus(err);
+                           chipError = [CHIPError errorToCHIPErrorCode:error];
+                           ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                           SetCommandExitStatus(chipError);
                        }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -39433,13 +40395,13 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPOnOff * cluster = [[CHIPOnOff alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         [cluster onWithCompletionHandler:^(NSError * _Nullable error) {
-            err = [CHIPError errorToCHIPErrorCode:error];
-            ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-            SetCommandExitStatus(err);
+            chipError = [CHIPError errorToCHIPErrorCode:error];
+            ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+            SetCommandExitStatus(chipError);
         }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -39462,13 +40424,13 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPOnOff * cluster = [[CHIPOnOff alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         [cluster onWithRecallGlobalSceneWithCompletionHandler:^(NSError * _Nullable error) {
-            err = [CHIPError errorToCHIPErrorCode:error];
-            ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-            SetCommandExitStatus(err);
+            chipError = [CHIPError errorToCHIPErrorCode:error];
+            ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+            SetCommandExitStatus(chipError);
         }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -39494,18 +40456,21 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPOnOff * cluster = [[CHIPOnOff alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPOnOffClusterOnWithTimedOffParams alloc] init];
+
         params.onOffControl = [NSNumber numberWithUnsignedChar:mOnOffControl];
+
         params.onTime = [NSNumber numberWithUnsignedShort:mOnTime];
+
         params.offWaitTime = [NSNumber numberWithUnsignedShort:mOffWaitTime];
         [cluster onWithTimedOffWithParams:params
                         completionHandler:^(NSError * _Nullable error) {
-                            err = [CHIPError errorToCHIPErrorCode:error];
-                            ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                            SetCommandExitStatus(err);
+                            chipError = [CHIPError errorToCHIPErrorCode:error];
+                            ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                            SetCommandExitStatus(chipError);
                         }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -39531,13 +40496,13 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPOnOff * cluster = [[CHIPOnOff alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         [cluster toggleWithCompletionHandler:^(NSError * _Nullable error) {
-            err = [CHIPError errorToCHIPErrorCode:error];
-            ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-            SetCommandExitStatus(err);
+            chipError = [CHIPError errorToCHIPErrorCode:error];
+            ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+            SetCommandExitStatus(chipError);
         }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -39746,17 +40711,17 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x00000006) WriteAttribute (0x00004001) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPOnOff * cluster = [[CHIPOnOff alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nonnull value = [NSNumber numberWithUnsignedShort:mValue];
 
         [cluster writeAttributeOnTimeWithValue:value
                              completionHandler:^(NSError * _Nullable error) {
-                                 err = [CHIPError errorToCHIPErrorCode:error];
-                                 ChipLogError(chipTool, "OnOff OnTime Error: %s", chip::ErrorStr(err));
-                                 SetCommandExitStatus(err);
+                                 chipError = [CHIPError errorToCHIPErrorCode:error];
+                                 ChipLogError(chipTool, "OnOff OnTime Error: %s", chip::ErrorStr(chipError));
+                                 SetCommandExitStatus(chipError);
                              }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -39857,17 +40822,17 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x00000006) WriteAttribute (0x00004002) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPOnOff * cluster = [[CHIPOnOff alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nonnull value = [NSNumber numberWithUnsignedShort:mValue];
 
         [cluster writeAttributeOffWaitTimeWithValue:value
                                   completionHandler:^(NSError * _Nullable error) {
-                                      err = [CHIPError errorToCHIPErrorCode:error];
-                                      ChipLogError(chipTool, "OnOff OffWaitTime Error: %s", chip::ErrorStr(err));
-                                      SetCommandExitStatus(err);
+                                      chipError = [CHIPError errorToCHIPErrorCode:error];
+                                      ChipLogError(chipTool, "OnOff OffWaitTime Error: %s", chip::ErrorStr(chipError));
+                                      SetCommandExitStatus(chipError);
                                   }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -39968,17 +40933,17 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x00000006) WriteAttribute (0x00004003) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPOnOff * cluster = [[CHIPOnOff alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nullable value = [NSNumber numberWithUnsignedChar:mValue];
 
         [cluster writeAttributeStartUpOnOffWithValue:value
                                    completionHandler:^(NSError * _Nullable error) {
-                                       err = [CHIPError errorToCHIPErrorCode:error];
-                                       ChipLogError(chipTool, "OnOff StartUpOnOff Error: %s", chip::ErrorStr(err));
-                                       SetCommandExitStatus(err);
+                                       chipError = [CHIPError errorToCHIPErrorCode:error];
+                                       ChipLogError(chipTool, "OnOff StartUpOnOff Error: %s", chip::ErrorStr(chipError));
+                                       SetCommandExitStatus(chipError);
                                    }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -40566,18 +41531,18 @@ public:
         CHIPOnOffSwitchConfiguration * cluster = [[CHIPOnOffSwitchConfiguration alloc] initWithDevice:device
                                                                                              endpoint:endpointId
                                                                                                 queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nonnull value = [NSNumber numberWithUnsignedChar:mValue];
 
-        [cluster
-            writeAttributeSwitchActionsWithValue:value
-                               completionHandler:^(NSError * _Nullable error) {
-                                   err = [CHIPError errorToCHIPErrorCode:error];
-                                   ChipLogError(chipTool, "OnOffSwitchConfiguration SwitchActions Error: %s", chip::ErrorStr(err));
-                                   SetCommandExitStatus(err);
-                               }];
-        return err;
+        [cluster writeAttributeSwitchActionsWithValue:value
+                                    completionHandler:^(NSError * _Nullable error) {
+                                        chipError = [CHIPError errorToCHIPErrorCode:error];
+                                        ChipLogError(chipTool, "OnOffSwitchConfiguration SwitchActions Error: %s",
+                                            chip::ErrorStr(chipError));
+                                        SetCommandExitStatus(chipError);
+                                    }];
+        return chipError;
     }
 
 private:
@@ -41014,22 +41979,27 @@ public:
         CHIPOperationalCredentials * cluster = [[CHIPOperationalCredentials alloc] initWithDevice:device
                                                                                          endpoint:endpointId
                                                                                             queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPOperationalCredentialsClusterAddNOCParams alloc] init];
+
         params.nocValue = [[NSData alloc] initWithBytes:mNOCValue.data() length:mNOCValue.size()];
+
         params.icacValue = [[NSData alloc] initWithBytes:mICACValue.data() length:mICACValue.size()];
+
         params.ipkValue = [[NSData alloc] initWithBytes:mIPKValue.data() length:mIPKValue.size()];
+
         params.caseAdminNode = [NSNumber numberWithUnsignedLongLong:mCaseAdminNode];
+
         params.adminVendorId = [NSNumber numberWithUnsignedShort:mAdminVendorId];
         [cluster
              addNOCWithParams:params
             completionHandler:^(CHIPOperationalCredentialsClusterNOCResponseParams * _Nullable values, NSError * _Nullable error) {
                 NSLog(@"Values: %@", values);
-                err = [CHIPError errorToCHIPErrorCode:error];
-                ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                SetCommandExitStatus(err);
+                chipError = [CHIPError errorToCHIPErrorCode:error];
+                ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                SetCommandExitStatus(chipError);
             }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -41060,16 +42030,17 @@ public:
         CHIPOperationalCredentials * cluster = [[CHIPOperationalCredentials alloc] initWithDevice:device
                                                                                          endpoint:endpointId
                                                                                             queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPOperationalCredentialsClusterAddTrustedRootCertificateParams alloc] init];
+
         params.rootCertificate = [[NSData alloc] initWithBytes:mRootCertificate.data() length:mRootCertificate.size()];
         [cluster addTrustedRootCertificateWithParams:params
                                    completionHandler:^(NSError * _Nullable error) {
-                                       err = [CHIPError errorToCHIPErrorCode:error];
-                                       ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                                       SetCommandExitStatus(err);
+                                       chipError = [CHIPError errorToCHIPErrorCode:error];
+                                       ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                                       SetCommandExitStatus(chipError);
                                    }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -41096,18 +42067,19 @@ public:
         CHIPOperationalCredentials * cluster = [[CHIPOperationalCredentials alloc] initWithDevice:device
                                                                                          endpoint:endpointId
                                                                                             queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPOperationalCredentialsClusterAttestationRequestParams alloc] init];
+
         params.attestationNonce = [[NSData alloc] initWithBytes:mAttestationNonce.data() length:mAttestationNonce.size()];
         [cluster attestationRequestWithParams:params
                             completionHandler:^(CHIPOperationalCredentialsClusterAttestationResponseParams * _Nullable values,
                                 NSError * _Nullable error) {
                                 NSLog(@"Values: %@", values);
-                                err = [CHIPError errorToCHIPErrorCode:error];
-                                ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                                SetCommandExitStatus(err);
+                                chipError = [CHIPError errorToCHIPErrorCode:error];
+                                ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                                SetCommandExitStatus(chipError);
                             }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -41134,18 +42106,19 @@ public:
         CHIPOperationalCredentials * cluster = [[CHIPOperationalCredentials alloc] initWithDevice:device
                                                                                          endpoint:endpointId
                                                                                             queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPOperationalCredentialsClusterCSRRequestParams alloc] init];
+
         params.csrNonce = [[NSData alloc] initWithBytes:mCSRNonce.data() length:mCSRNonce.size()];
         [cluster CSRRequestWithParams:params
                     completionHandler:^(
                         CHIPOperationalCredentialsClusterCSRResponseParams * _Nullable values, NSError * _Nullable error) {
                         NSLog(@"Values: %@", values);
-                        err = [CHIPError errorToCHIPErrorCode:error];
-                        ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                        SetCommandExitStatus(err);
+                        chipError = [CHIPError errorToCHIPErrorCode:error];
+                        ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                        SetCommandExitStatus(chipError);
                     }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -41172,19 +42145,20 @@ public:
         CHIPOperationalCredentials * cluster = [[CHIPOperationalCredentials alloc] initWithDevice:device
                                                                                          endpoint:endpointId
                                                                                             queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPOperationalCredentialsClusterCertificateChainRequestParams alloc] init];
+
         params.certificateType = [NSNumber numberWithUnsignedChar:mCertificateType];
         [cluster
             certificateChainRequestWithParams:params
                             completionHandler:^(CHIPOperationalCredentialsClusterCertificateChainResponseParams * _Nullable values,
                                 NSError * _Nullable error) {
                                 NSLog(@"Values: %@", values);
-                                err = [CHIPError errorToCHIPErrorCode:error];
-                                ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                                SetCommandExitStatus(err);
+                                chipError = [CHIPError errorToCHIPErrorCode:error];
+                                ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                                SetCommandExitStatus(chipError);
                             }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -41211,18 +42185,19 @@ public:
         CHIPOperationalCredentials * cluster = [[CHIPOperationalCredentials alloc] initWithDevice:device
                                                                                          endpoint:endpointId
                                                                                             queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPOperationalCredentialsClusterRemoveFabricParams alloc] init];
+
         params.fabricIndex = [NSNumber numberWithUnsignedChar:mFabricIndex];
         [cluster removeFabricWithParams:params
                       completionHandler:^(
                           CHIPOperationalCredentialsClusterNOCResponseParams * _Nullable values, NSError * _Nullable error) {
                           NSLog(@"Values: %@", values);
-                          err = [CHIPError errorToCHIPErrorCode:error];
-                          ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                          SetCommandExitStatus(err);
+                          chipError = [CHIPError errorToCHIPErrorCode:error];
+                          ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                          SetCommandExitStatus(chipError);
                       }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -41249,17 +42224,18 @@ public:
         CHIPOperationalCredentials * cluster = [[CHIPOperationalCredentials alloc] initWithDevice:device
                                                                                          endpoint:endpointId
                                                                                             queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPOperationalCredentialsClusterRemoveTrustedRootCertificateParams alloc] init];
+
         params.trustedRootIdentifier = [[NSData alloc] initWithBytes:mTrustedRootIdentifier.data()
                                                               length:mTrustedRootIdentifier.size()];
         [cluster removeTrustedRootCertificateWithParams:params
                                       completionHandler:^(NSError * _Nullable error) {
-                                          err = [CHIPError errorToCHIPErrorCode:error];
-                                          ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                                          SetCommandExitStatus(err);
+                                          chipError = [CHIPError errorToCHIPErrorCode:error];
+                                          ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                                          SetCommandExitStatus(chipError);
                                       }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -41286,18 +42262,19 @@ public:
         CHIPOperationalCredentials * cluster = [[CHIPOperationalCredentials alloc] initWithDevice:device
                                                                                          endpoint:endpointId
                                                                                             queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPOperationalCredentialsClusterUpdateFabricLabelParams alloc] init];
+
         params.label = [[NSString alloc] initWithBytes:mLabel.data() length:mLabel.size() encoding:NSUTF8StringEncoding];
         [cluster updateFabricLabelWithParams:params
                            completionHandler:^(
                                CHIPOperationalCredentialsClusterNOCResponseParams * _Nullable values, NSError * _Nullable error) {
                                NSLog(@"Values: %@", values);
-                               err = [CHIPError errorToCHIPErrorCode:error];
-                               ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                               SetCommandExitStatus(err);
+                               chipError = [CHIPError errorToCHIPErrorCode:error];
+                               ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                               SetCommandExitStatus(chipError);
                            }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -41325,19 +42302,21 @@ public:
         CHIPOperationalCredentials * cluster = [[CHIPOperationalCredentials alloc] initWithDevice:device
                                                                                          endpoint:endpointId
                                                                                             queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPOperationalCredentialsClusterUpdateNOCParams alloc] init];
+
         params.nocValue = [[NSData alloc] initWithBytes:mNOCValue.data() length:mNOCValue.size()];
+
         params.icacValue = [[NSData alloc] initWithBytes:mICACValue.data() length:mICACValue.size()];
         [cluster updateNOCWithParams:params
                    completionHandler:^(
                        CHIPOperationalCredentialsClusterNOCResponseParams * _Nullable values, NSError * _Nullable error) {
                        NSLog(@"Values: %@", values);
-                       err = [CHIPError errorToCHIPErrorCode:error];
-                       ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                       SetCommandExitStatus(err);
+                       chipError = [CHIPError errorToCHIPErrorCode:error];
+                       ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                       SetCommandExitStatus(chipError);
                    }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -45738,18 +46717,18 @@ public:
         CHIPPumpConfigurationAndControl * cluster = [[CHIPPumpConfigurationAndControl alloc] initWithDevice:device
                                                                                                    endpoint:endpointId
                                                                                                       queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nullable value = [NSNumber numberWithUnsignedInt:mValue];
 
         [cluster writeAttributeLifetimeRunningHoursWithValue:value
                                            completionHandler:^(NSError * _Nullable error) {
-                                               err = [CHIPError errorToCHIPErrorCode:error];
+                                               chipError = [CHIPError errorToCHIPErrorCode:error];
                                                ChipLogError(chipTool, "PumpConfigurationAndControl LifetimeRunningHours Error: %s",
-                                                   chip::ErrorStr(err));
-                                               SetCommandExitStatus(err);
+                                                   chip::ErrorStr(chipError));
+                                               SetCommandExitStatus(chipError);
                                            }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -45938,19 +46917,19 @@ public:
         CHIPPumpConfigurationAndControl * cluster = [[CHIPPumpConfigurationAndControl alloc] initWithDevice:device
                                                                                                    endpoint:endpointId
                                                                                                       queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nullable value = [NSNumber numberWithUnsignedInt:mValue];
 
         [cluster
             writeAttributeLifetimeEnergyConsumedWithValue:value
                                         completionHandler:^(NSError * _Nullable error) {
-                                            err = [CHIPError errorToCHIPErrorCode:error];
+                                            chipError = [CHIPError errorToCHIPErrorCode:error];
                                             ChipLogError(chipTool, "PumpConfigurationAndControl LifetimeEnergyConsumed Error: %s",
-                                                chip::ErrorStr(err));
-                                            SetCommandExitStatus(err);
+                                                chip::ErrorStr(chipError));
+                                            SetCommandExitStatus(chipError);
                                         }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -46059,18 +47038,18 @@ public:
         CHIPPumpConfigurationAndControl * cluster = [[CHIPPumpConfigurationAndControl alloc] initWithDevice:device
                                                                                                    endpoint:endpointId
                                                                                                       queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nonnull value = [NSNumber numberWithUnsignedChar:mValue];
 
         [cluster writeAttributeOperationModeWithValue:value
                                     completionHandler:^(NSError * _Nullable error) {
-                                        err = [CHIPError errorToCHIPErrorCode:error];
-                                        ChipLogError(
-                                            chipTool, "PumpConfigurationAndControl OperationMode Error: %s", chip::ErrorStr(err));
-                                        SetCommandExitStatus(err);
+                                        chipError = [CHIPError errorToCHIPErrorCode:error];
+                                        ChipLogError(chipTool, "PumpConfigurationAndControl OperationMode Error: %s",
+                                            chip::ErrorStr(chipError));
+                                        SetCommandExitStatus(chipError);
                                     }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -46178,18 +47157,18 @@ public:
         CHIPPumpConfigurationAndControl * cluster = [[CHIPPumpConfigurationAndControl alloc] initWithDevice:device
                                                                                                    endpoint:endpointId
                                                                                                       queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nonnull value = [NSNumber numberWithUnsignedChar:mValue];
 
-        [cluster
-            writeAttributeControlModeWithValue:value
-                             completionHandler:^(NSError * _Nullable error) {
-                                 err = [CHIPError errorToCHIPErrorCode:error];
-                                 ChipLogError(chipTool, "PumpConfigurationAndControl ControlMode Error: %s", chip::ErrorStr(err));
-                                 SetCommandExitStatus(err);
-                             }];
-        return err;
+        [cluster writeAttributeControlModeWithValue:value
+                                  completionHandler:^(NSError * _Nullable error) {
+                                      chipError = [CHIPError errorToCHIPErrorCode:error];
+                                      ChipLogError(
+                                          chipTool, "PumpConfigurationAndControl ControlMode Error: %s", chip::ErrorStr(chipError));
+                                      SetCommandExitStatus(chipError);
+                                  }];
+        return chipError;
     }
 
 private:
@@ -47447,11 +48426,13 @@ class ScenesAddScene : public ModelCommand {
 public:
     ScenesAddScene()
         : ModelCommand("add-scene")
+        , mComplex_ExtensionFieldSets(&mRequest.extensionFieldSets)
     {
         AddArgument("GroupId", 0, UINT16_MAX, &mGroupId);
         AddArgument("SceneId", 0, UINT8_MAX, &mSceneId);
         AddArgument("TransitionTime", 0, UINT16_MAX, &mTransitionTime);
         AddArgument("SceneName", &mSceneName);
+        AddArgument("ExtensionFieldSets", &mComplex_ExtensionFieldSets);
         ModelCommand::AddArguments();
     }
 
@@ -47461,23 +48442,40 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPScenes * cluster = [[CHIPScenes alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPScenesClusterAddSceneParams alloc] init];
+
         params.groupId = [NSNumber numberWithUnsignedShort:mGroupId];
+
         params.sceneId = [NSNumber numberWithUnsignedChar:mSceneId];
+
         params.transitionTime = [NSNumber numberWithUnsignedShort:mTransitionTime];
+
         params.sceneName = [[NSString alloc] initWithBytes:mSceneName.data()
                                                     length:mSceneName.size()
                                                   encoding:NSUTF8StringEncoding];
-        // extensionFieldSets Array parsing is not supported yet
+
+        { // Scope for our temporary variables
+            auto * array_0 = [NSMutableArray new];
+            for (chip::ListIndex index_0 = 0; index_0 < mRequest.extensionFieldSets.size(); index_0++) {
+                auto & entry_0 = mRequest.extensionFieldSets.data()[index_0];
+                CHIPScenesClusterSceneExtensionFieldSet * newElement_0;
+                newElement_0 = [CHIPScenesClusterSceneExtensionFieldSet new];
+                newElement_0.clusterId = [NSNumber numberWithUnsignedInt:entry_0.clusterId];
+                newElement_0.length = [NSNumber numberWithUnsignedChar:entry_0.length];
+                newElement_0.value = [NSNumber numberWithUnsignedChar:entry_0.value];
+                [array_0 addObject:newElement_0];
+            }
+            params.extensionFieldSets = array_0;
+        }
         [cluster addSceneWithParams:params
                   completionHandler:^(CHIPScenesClusterAddSceneResponseParams * _Nullable values, NSError * _Nullable error) {
                       NSLog(@"Values: %@", values);
-                      err = [CHIPError errorToCHIPErrorCode:error];
-                      ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                      SetCommandExitStatus(err);
+                      chipError = [CHIPError errorToCHIPErrorCode:error];
+                      ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                      SetCommandExitStatus(chipError);
                   }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -47485,6 +48483,9 @@ private:
     uint8_t mSceneId;
     uint16_t mTransitionTime;
     chip::ByteSpan mSceneName;
+    chip::app::Clusters::Scenes::Commands::AddScene::Type mRequest;
+    TypedComplexArgument<chip::app::DataModel::List<const chip::app::Clusters::Scenes::Structs::SceneExtensionFieldSet::Type>>
+        mComplex_ExtensionFieldSets;
 };
 
 /*
@@ -47505,18 +48506,19 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPScenes * cluster = [[CHIPScenes alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPScenesClusterGetSceneMembershipParams alloc] init];
+
         params.groupId = [NSNumber numberWithUnsignedShort:mGroupId];
         [cluster getSceneMembershipWithParams:params
                             completionHandler:^(
                                 CHIPScenesClusterGetSceneMembershipResponseParams * _Nullable values, NSError * _Nullable error) {
                                 NSLog(@"Values: %@", values);
-                                err = [CHIPError errorToCHIPErrorCode:error];
-                                ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                                SetCommandExitStatus(err);
+                                chipError = [CHIPError errorToCHIPErrorCode:error];
+                                ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                                SetCommandExitStatus(chipError);
                             }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -47543,18 +48545,21 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPScenes * cluster = [[CHIPScenes alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPScenesClusterRecallSceneParams alloc] init];
+
         params.groupId = [NSNumber numberWithUnsignedShort:mGroupId];
+
         params.sceneId = [NSNumber numberWithUnsignedChar:mSceneId];
+
         params.transitionTime = [NSNumber numberWithUnsignedShort:mTransitionTime];
         [cluster recallSceneWithParams:params
                      completionHandler:^(NSError * _Nullable error) {
-                         err = [CHIPError errorToCHIPErrorCode:error];
-                         ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                         SetCommandExitStatus(err);
+                         chipError = [CHIPError errorToCHIPErrorCode:error];
+                         ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                         SetCommandExitStatus(chipError);
                      }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -47581,18 +48586,19 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPScenes * cluster = [[CHIPScenes alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPScenesClusterRemoveAllScenesParams alloc] init];
+
         params.groupId = [NSNumber numberWithUnsignedShort:mGroupId];
         [cluster removeAllScenesWithParams:params
                          completionHandler:^(
                              CHIPScenesClusterRemoveAllScenesResponseParams * _Nullable values, NSError * _Nullable error) {
                              NSLog(@"Values: %@", values);
-                             err = [CHIPError errorToCHIPErrorCode:error];
-                             ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                             SetCommandExitStatus(err);
+                             chipError = [CHIPError errorToCHIPErrorCode:error];
+                             ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                             SetCommandExitStatus(chipError);
                          }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -47618,18 +48624,20 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPScenes * cluster = [[CHIPScenes alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPScenesClusterRemoveSceneParams alloc] init];
+
         params.groupId = [NSNumber numberWithUnsignedShort:mGroupId];
+
         params.sceneId = [NSNumber numberWithUnsignedChar:mSceneId];
         [cluster removeSceneWithParams:params
                      completionHandler:^(CHIPScenesClusterRemoveSceneResponseParams * _Nullable values, NSError * _Nullable error) {
                          NSLog(@"Values: %@", values);
-                         err = [CHIPError errorToCHIPErrorCode:error];
-                         ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                         SetCommandExitStatus(err);
+                         chipError = [CHIPError errorToCHIPErrorCode:error];
+                         ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                         SetCommandExitStatus(chipError);
                      }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -47656,18 +48664,20 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPScenes * cluster = [[CHIPScenes alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPScenesClusterStoreSceneParams alloc] init];
+
         params.groupId = [NSNumber numberWithUnsignedShort:mGroupId];
+
         params.sceneId = [NSNumber numberWithUnsignedChar:mSceneId];
         [cluster storeSceneWithParams:params
                     completionHandler:^(CHIPScenesClusterStoreSceneResponseParams * _Nullable values, NSError * _Nullable error) {
                         NSLog(@"Values: %@", values);
-                        err = [CHIPError errorToCHIPErrorCode:error];
-                        ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                        SetCommandExitStatus(err);
+                        chipError = [CHIPError errorToCHIPErrorCode:error];
+                        ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                        SetCommandExitStatus(chipError);
                     }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -47694,18 +48704,20 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPScenes * cluster = [[CHIPScenes alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPScenesClusterViewSceneParams alloc] init];
+
         params.groupId = [NSNumber numberWithUnsignedShort:mGroupId];
+
         params.sceneId = [NSNumber numberWithUnsignedChar:mSceneId];
         [cluster viewSceneWithParams:params
                    completionHandler:^(CHIPScenesClusterViewSceneResponseParams * _Nullable values, NSError * _Nullable error) {
                        NSLog(@"Values: %@", values);
-                       err = [CHIPError errorToCHIPErrorCode:error];
-                       ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                       SetCommandExitStatus(err);
+                       chipError = [CHIPError errorToCHIPErrorCode:error];
+                       ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                       SetCommandExitStatus(chipError);
                    }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -48446,13 +49458,13 @@ public:
         CHIPSoftwareDiagnostics * cluster = [[CHIPSoftwareDiagnostics alloc] initWithDevice:device
                                                                                    endpoint:endpointId
                                                                                       queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         [cluster resetWatermarksWithCompletionHandler:^(NSError * _Nullable error) {
-            err = [CHIPError errorToCHIPErrorCode:error];
-            ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-            SetCommandExitStatus(err);
+            chipError = [CHIPError errorToCHIPErrorCode:error];
+            ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+            SetCommandExitStatus(chipError);
         }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -49873,19 +50885,21 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPTargetNavigator * cluster = [[CHIPTargetNavigator alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPTargetNavigatorClusterNavigateTargetParams alloc] init];
+
         params.target = [NSNumber numberWithUnsignedChar:mTarget];
+
         params.data = [[NSString alloc] initWithBytes:mData.data() length:mData.size() encoding:NSUTF8StringEncoding];
         [cluster navigateTargetWithParams:params
                         completionHandler:^(
                             CHIPTargetNavigatorClusterNavigateTargetResponseParams * _Nullable values, NSError * _Nullable error) {
                             NSLog(@"Values: %@", values);
-                            err = [CHIPError errorToCHIPErrorCode:error];
-                            ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                            SetCommandExitStatus(err);
+                            chipError = [CHIPError errorToCHIPErrorCode:error];
+                            ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                            SetCommandExitStatus(chipError);
                         }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -50994,7 +52008,9 @@ class TestClusterSimpleStructEchoRequest : public ModelCommand {
 public:
     TestClusterSimpleStructEchoRequest()
         : ModelCommand("simple-struct-echo-request")
+        , mComplex_Arg1(&mRequest.arg1)
     {
+        AddArgument("Arg1", &mComplex_Arg1);
         ModelCommand::AddArguments();
     }
 
@@ -51004,21 +52020,34 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPTestCluster * cluster = [[CHIPTestCluster alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPTestClusterClusterSimpleStructEchoRequestParams alloc] init];
-        // arg1 Struct parsing is not supported yet
+
+        params.arg1 = [CHIPTestClusterClusterSimpleStruct new];
+        params.arg1.a = [NSNumber numberWithUnsignedChar:mRequest.arg1.a];
+        params.arg1.b = [NSNumber numberWithBool:mRequest.arg1.b];
+        params.arg1.c = [NSNumber numberWithUnsignedChar:chip::to_underlying(mRequest.arg1.c)];
+        params.arg1.d = [NSData dataWithBytes:mRequest.arg1.d.data() length:mRequest.arg1.d.size()];
+        params.arg1.e = [[NSString alloc] initWithBytes:mRequest.arg1.e.data()
+                                                 length:mRequest.arg1.e.size()
+                                               encoding:NSUTF8StringEncoding];
+        params.arg1.f = [NSNumber numberWithUnsignedChar:mRequest.arg1.f.Raw()];
+        params.arg1.g = [NSNumber numberWithFloat:mRequest.arg1.g];
+        params.arg1.h = [NSNumber numberWithDouble:mRequest.arg1.h];
         [cluster simpleStructEchoRequestWithParams:params
                                  completionHandler:^(CHIPTestClusterClusterSimpleStructResponseParams * _Nullable values,
                                      NSError * _Nullable error) {
                                      NSLog(@"Values: %@", values);
-                                     err = [CHIPError errorToCHIPErrorCode:error];
-                                     ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                                     SetCommandExitStatus(err);
+                                     chipError = [CHIPError errorToCHIPErrorCode:error];
+                                     ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                                     SetCommandExitStatus(chipError);
                                  }];
-        return err;
+        return chipError;
     }
 
 private:
+    chip::app::Clusters::TestCluster::Commands::SimpleStructEchoRequest::Type mRequest;
+    TypedComplexArgument<chip::app::Clusters::TestCluster::Structs::SimpleStruct::Type> mComplex_Arg1;
 };
 
 /*
@@ -51038,13 +52067,13 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPTestCluster * cluster = [[CHIPTestCluster alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         [cluster testWithCompletionHandler:^(NSError * _Nullable error) {
-            err = [CHIPError errorToCHIPErrorCode:error];
-            ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-            SetCommandExitStatus(err);
+            chipError = [CHIPError errorToCHIPErrorCode:error];
+            ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+            SetCommandExitStatus(chipError);
         }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -51069,19 +52098,21 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPTestCluster * cluster = [[CHIPTestCluster alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPTestClusterClusterTestAddArgumentsParams alloc] init];
+
         params.arg1 = [NSNumber numberWithUnsignedChar:mArg1];
+
         params.arg2 = [NSNumber numberWithUnsignedChar:mArg2];
         [cluster testAddArgumentsWithParams:params
                           completionHandler:^(
                               CHIPTestClusterClusterTestAddArgumentsResponseParams * _Nullable values, NSError * _Nullable error) {
                               NSLog(@"Values: %@", values);
-                              err = [CHIPError errorToCHIPErrorCode:error];
-                              ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                              SetCommandExitStatus(err);
+                              chipError = [CHIPError errorToCHIPErrorCode:error];
+                              ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                              SetCommandExitStatus(chipError);
                           }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -51109,20 +52140,23 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPTestCluster * cluster = [[CHIPTestCluster alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPTestClusterClusterTestEmitTestEventRequestParams alloc] init];
+
         params.arg1 = [NSNumber numberWithUnsignedChar:mArg1];
+
         params.arg2 = [NSNumber numberWithUnsignedChar:mArg2];
+
         params.arg3 = [NSNumber numberWithBool:mArg3];
         [cluster testEmitTestEventRequestWithParams:params
                                   completionHandler:^(CHIPTestClusterClusterTestEmitTestEventResponseParams * _Nullable values,
                                       NSError * _Nullable error) {
                                       NSLog(@"Values: %@", values);
-                                      err = [CHIPError errorToCHIPErrorCode:error];
-                                      ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                                      SetCommandExitStatus(err);
+                                      chipError = [CHIPError errorToCHIPErrorCode:error];
+                                      ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                                      SetCommandExitStatus(chipError);
                                   }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -51150,19 +52184,21 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPTestCluster * cluster = [[CHIPTestCluster alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPTestClusterClusterTestEnumsRequestParams alloc] init];
+
         params.arg1 = [NSNumber numberWithUnsignedShort:mArg1];
+
         params.arg2 = [NSNumber numberWithUnsignedChar:mArg2];
         [cluster testEnumsRequestWithParams:params
                           completionHandler:^(
                               CHIPTestClusterClusterTestEnumsResponseParams * _Nullable values, NSError * _Nullable error) {
                               NSLog(@"Values: %@", values);
-                              err = [CHIPError errorToCHIPErrorCode:error];
-                              ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                              SetCommandExitStatus(err);
+                              chipError = [CHIPError errorToCHIPErrorCode:error];
+                              ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                              SetCommandExitStatus(chipError);
                           }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -51177,7 +52213,9 @@ class TestClusterTestListInt8UArgumentRequest : public ModelCommand {
 public:
     TestClusterTestListInt8UArgumentRequest()
         : ModelCommand("test-list-int8uargument-request")
+        , mComplex_Arg1(&mRequest.arg1)
     {
+        AddArgument("Arg1", &mComplex_Arg1);
         ModelCommand::AddArguments();
     }
 
@@ -51187,21 +52225,33 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPTestCluster * cluster = [[CHIPTestCluster alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPTestClusterClusterTestListInt8UArgumentRequestParams alloc] init];
-        // arg1 Array parsing is not supported yet
+
+        { // Scope for our temporary variables
+            auto * array_0 = [NSMutableArray new];
+            for (chip::ListIndex index_0 = 0; index_0 < mRequest.arg1.size(); index_0++) {
+                auto & entry_0 = mRequest.arg1.data()[index_0];
+                NSNumber * newElement_0;
+                newElement_0 = [NSNumber numberWithUnsignedChar:entry_0];
+                [array_0 addObject:newElement_0];
+            }
+            params.arg1 = array_0;
+        }
         [cluster testListInt8UArgumentRequestWithParams:params
                                       completionHandler:^(CHIPTestClusterClusterBooleanResponseParams * _Nullable values,
                                           NSError * _Nullable error) {
                                           NSLog(@"Values: %@", values);
-                                          err = [CHIPError errorToCHIPErrorCode:error];
-                                          ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                                          SetCommandExitStatus(err);
+                                          chipError = [CHIPError errorToCHIPErrorCode:error];
+                                          ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                                          SetCommandExitStatus(chipError);
                                       }];
-        return err;
+        return chipError;
     }
 
 private:
+    chip::app::Clusters::TestCluster::Commands::TestListInt8UArgumentRequest::Type mRequest;
+    TypedComplexArgument<chip::app::DataModel::List<const uint8_t>> mComplex_Arg1;
 };
 
 /*
@@ -51211,7 +52261,9 @@ class TestClusterTestListInt8UReverseRequest : public ModelCommand {
 public:
     TestClusterTestListInt8UReverseRequest()
         : ModelCommand("test-list-int8ureverse-request")
+        , mComplex_Arg1(&mRequest.arg1)
     {
+        AddArgument("Arg1", &mComplex_Arg1);
         ModelCommand::AddArguments();
     }
 
@@ -51221,22 +52273,34 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPTestCluster * cluster = [[CHIPTestCluster alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPTestClusterClusterTestListInt8UReverseRequestParams alloc] init];
-        // arg1 Array parsing is not supported yet
+
+        { // Scope for our temporary variables
+            auto * array_0 = [NSMutableArray new];
+            for (chip::ListIndex index_0 = 0; index_0 < mRequest.arg1.size(); index_0++) {
+                auto & entry_0 = mRequest.arg1.data()[index_0];
+                NSNumber * newElement_0;
+                newElement_0 = [NSNumber numberWithUnsignedChar:entry_0];
+                [array_0 addObject:newElement_0];
+            }
+            params.arg1 = array_0;
+        }
         [cluster
             testListInt8UReverseRequestWithParams:params
                                 completionHandler:^(CHIPTestClusterClusterTestListInt8UReverseResponseParams * _Nullable values,
                                     NSError * _Nullable error) {
                                     NSLog(@"Values: %@", values);
-                                    err = [CHIPError errorToCHIPErrorCode:error];
-                                    ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                                    SetCommandExitStatus(err);
+                                    chipError = [CHIPError errorToCHIPErrorCode:error];
+                                    ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                                    SetCommandExitStatus(chipError);
                                 }];
-        return err;
+        return chipError;
     }
 
 private:
+    chip::app::Clusters::TestCluster::Commands::TestListInt8UReverseRequest::Type mRequest;
+    TypedComplexArgument<chip::app::DataModel::List<const uint8_t>> mComplex_Arg1;
 };
 
 /*
@@ -51246,7 +52310,9 @@ class TestClusterTestListNestedStructListArgumentRequest : public ModelCommand {
 public:
     TestClusterTestListNestedStructListArgumentRequest()
         : ModelCommand("test-list-nested-struct-list-argument-request")
+        , mComplex_Arg1(&mRequest.arg1)
     {
+        AddArgument("Arg1", &mComplex_Arg1);
         ModelCommand::AddArguments();
     }
 
@@ -51256,21 +52322,97 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPTestCluster * cluster = [[CHIPTestCluster alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPTestClusterClusterTestListNestedStructListArgumentRequestParams alloc] init];
-        // arg1 Array parsing is not supported yet
+
+        { // Scope for our temporary variables
+            auto * array_0 = [NSMutableArray new];
+            for (chip::ListIndex index_0 = 0; index_0 < mRequest.arg1.size(); index_0++) {
+                auto & entry_0 = mRequest.arg1.data()[index_0];
+                CHIPTestClusterClusterNestedStructList * newElement_0;
+                newElement_0 = [CHIPTestClusterClusterNestedStructList new];
+                newElement_0.a = [NSNumber numberWithUnsignedChar:entry_0.a];
+                newElement_0.b = [NSNumber numberWithBool:entry_0.b];
+                newElement_0.c = [CHIPTestClusterClusterSimpleStruct new];
+                newElement_0.c.a = [NSNumber numberWithUnsignedChar:entry_0.c.a];
+                newElement_0.c.b = [NSNumber numberWithBool:entry_0.c.b];
+                newElement_0.c.c = [NSNumber numberWithUnsignedChar:chip::to_underlying(entry_0.c.c)];
+                newElement_0.c.d = [NSData dataWithBytes:entry_0.c.d.data() length:entry_0.c.d.size()];
+                newElement_0.c.e = [[NSString alloc] initWithBytes:entry_0.c.e.data()
+                                                            length:entry_0.c.e.size()
+                                                          encoding:NSUTF8StringEncoding];
+                newElement_0.c.f = [NSNumber numberWithUnsignedChar:entry_0.c.f.Raw()];
+                newElement_0.c.g = [NSNumber numberWithFloat:entry_0.c.g];
+                newElement_0.c.h = [NSNumber numberWithDouble:entry_0.c.h];
+                { // Scope for our temporary variables
+                    auto * array_2 = [NSMutableArray new];
+                    for (chip::ListIndex index_2 = 0; index_2 < entry_0.d.size(); index_2++) {
+                        auto & entry_2 = entry_0.d.data()[index_2];
+                        CHIPTestClusterClusterSimpleStruct * newElement_2;
+                        newElement_2 = [CHIPTestClusterClusterSimpleStruct new];
+                        newElement_2.a = [NSNumber numberWithUnsignedChar:entry_2.a];
+                        newElement_2.b = [NSNumber numberWithBool:entry_2.b];
+                        newElement_2.c = [NSNumber numberWithUnsignedChar:chip::to_underlying(entry_2.c)];
+                        newElement_2.d = [NSData dataWithBytes:entry_2.d.data() length:entry_2.d.size()];
+                        newElement_2.e = [[NSString alloc] initWithBytes:entry_2.e.data()
+                                                                  length:entry_2.e.size()
+                                                                encoding:NSUTF8StringEncoding];
+                        newElement_2.f = [NSNumber numberWithUnsignedChar:entry_2.f.Raw()];
+                        newElement_2.g = [NSNumber numberWithFloat:entry_2.g];
+                        newElement_2.h = [NSNumber numberWithDouble:entry_2.h];
+                        [array_2 addObject:newElement_2];
+                    }
+                    newElement_0.d = array_2;
+                }
+                { // Scope for our temporary variables
+                    auto * array_2 = [NSMutableArray new];
+                    for (chip::ListIndex index_2 = 0; index_2 < entry_0.e.size(); index_2++) {
+                        auto & entry_2 = entry_0.e.data()[index_2];
+                        NSNumber * newElement_2;
+                        newElement_2 = [NSNumber numberWithUnsignedInt:entry_2];
+                        [array_2 addObject:newElement_2];
+                    }
+                    newElement_0.e = array_2;
+                }
+                { // Scope for our temporary variables
+                    auto * array_2 = [NSMutableArray new];
+                    for (chip::ListIndex index_2 = 0; index_2 < entry_0.f.size(); index_2++) {
+                        auto & entry_2 = entry_0.f.data()[index_2];
+                        NSData * newElement_2;
+                        newElement_2 = [NSData dataWithBytes:entry_2.data() length:entry_2.size()];
+                        [array_2 addObject:newElement_2];
+                    }
+                    newElement_0.f = array_2;
+                }
+                { // Scope for our temporary variables
+                    auto * array_2 = [NSMutableArray new];
+                    for (chip::ListIndex index_2 = 0; index_2 < entry_0.g.size(); index_2++) {
+                        auto & entry_2 = entry_0.g.data()[index_2];
+                        NSNumber * newElement_2;
+                        newElement_2 = [NSNumber numberWithUnsignedChar:entry_2];
+                        [array_2 addObject:newElement_2];
+                    }
+                    newElement_0.g = array_2;
+                }
+                [array_0 addObject:newElement_0];
+            }
+            params.arg1 = array_0;
+        }
         [cluster testListNestedStructListArgumentRequestWithParams:params
                                                  completionHandler:^(CHIPTestClusterClusterBooleanResponseParams * _Nullable values,
                                                      NSError * _Nullable error) {
                                                      NSLog(@"Values: %@", values);
-                                                     err = [CHIPError errorToCHIPErrorCode:error];
-                                                     ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                                                     SetCommandExitStatus(err);
+                                                     chipError = [CHIPError errorToCHIPErrorCode:error];
+                                                     ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                                                     SetCommandExitStatus(chipError);
                                                  }];
-        return err;
+        return chipError;
     }
 
 private:
+    chip::app::Clusters::TestCluster::Commands::TestListNestedStructListArgumentRequest::Type mRequest;
+    TypedComplexArgument<chip::app::DataModel::List<const chip::app::Clusters::TestCluster::Structs::NestedStructList::Type>>
+        mComplex_Arg1;
 };
 
 /*
@@ -51280,7 +52422,9 @@ class TestClusterTestListStructArgumentRequest : public ModelCommand {
 public:
     TestClusterTestListStructArgumentRequest()
         : ModelCommand("test-list-struct-argument-request")
+        , mComplex_Arg1(&mRequest.arg1)
     {
+        AddArgument("Arg1", &mComplex_Arg1);
         ModelCommand::AddArguments();
     }
 
@@ -51290,21 +52434,44 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPTestCluster * cluster = [[CHIPTestCluster alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPTestClusterClusterTestListStructArgumentRequestParams alloc] init];
-        // arg1 Array parsing is not supported yet
+
+        { // Scope for our temporary variables
+            auto * array_0 = [NSMutableArray new];
+            for (chip::ListIndex index_0 = 0; index_0 < mRequest.arg1.size(); index_0++) {
+                auto & entry_0 = mRequest.arg1.data()[index_0];
+                CHIPTestClusterClusterSimpleStruct * newElement_0;
+                newElement_0 = [CHIPTestClusterClusterSimpleStruct new];
+                newElement_0.a = [NSNumber numberWithUnsignedChar:entry_0.a];
+                newElement_0.b = [NSNumber numberWithBool:entry_0.b];
+                newElement_0.c = [NSNumber numberWithUnsignedChar:chip::to_underlying(entry_0.c)];
+                newElement_0.d = [NSData dataWithBytes:entry_0.d.data() length:entry_0.d.size()];
+                newElement_0.e = [[NSString alloc] initWithBytes:entry_0.e.data()
+                                                          length:entry_0.e.size()
+                                                        encoding:NSUTF8StringEncoding];
+                newElement_0.f = [NSNumber numberWithUnsignedChar:entry_0.f.Raw()];
+                newElement_0.g = [NSNumber numberWithFloat:entry_0.g];
+                newElement_0.h = [NSNumber numberWithDouble:entry_0.h];
+                [array_0 addObject:newElement_0];
+            }
+            params.arg1 = array_0;
+        }
         [cluster testListStructArgumentRequestWithParams:params
                                        completionHandler:^(CHIPTestClusterClusterBooleanResponseParams * _Nullable values,
                                            NSError * _Nullable error) {
                                            NSLog(@"Values: %@", values);
-                                           err = [CHIPError errorToCHIPErrorCode:error];
-                                           ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                                           SetCommandExitStatus(err);
+                                           chipError = [CHIPError errorToCHIPErrorCode:error];
+                                           ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                                           SetCommandExitStatus(chipError);
                                        }];
-        return err;
+        return chipError;
     }
 
 private:
+    chip::app::Clusters::TestCluster::Commands::TestListStructArgumentRequest::Type mRequest;
+    TypedComplexArgument<chip::app::DataModel::List<const chip::app::Clusters::TestCluster::Structs::SimpleStruct::Type>>
+        mComplex_Arg1;
 };
 
 /*
@@ -51314,7 +52481,9 @@ class TestClusterTestNestedStructArgumentRequest : public ModelCommand {
 public:
     TestClusterTestNestedStructArgumentRequest()
         : ModelCommand("test-nested-struct-argument-request")
+        , mComplex_Arg1(&mRequest.arg1)
     {
+        AddArgument("Arg1", &mComplex_Arg1);
         ModelCommand::AddArguments();
     }
 
@@ -51324,21 +52493,37 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPTestCluster * cluster = [[CHIPTestCluster alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPTestClusterClusterTestNestedStructArgumentRequestParams alloc] init];
-        // arg1 Struct parsing is not supported yet
+
+        params.arg1 = [CHIPTestClusterClusterNestedStruct new];
+        params.arg1.a = [NSNumber numberWithUnsignedChar:mRequest.arg1.a];
+        params.arg1.b = [NSNumber numberWithBool:mRequest.arg1.b];
+        params.arg1.c = [CHIPTestClusterClusterSimpleStruct new];
+        params.arg1.c.a = [NSNumber numberWithUnsignedChar:mRequest.arg1.c.a];
+        params.arg1.c.b = [NSNumber numberWithBool:mRequest.arg1.c.b];
+        params.arg1.c.c = [NSNumber numberWithUnsignedChar:chip::to_underlying(mRequest.arg1.c.c)];
+        params.arg1.c.d = [NSData dataWithBytes:mRequest.arg1.c.d.data() length:mRequest.arg1.c.d.size()];
+        params.arg1.c.e = [[NSString alloc] initWithBytes:mRequest.arg1.c.e.data()
+                                                   length:mRequest.arg1.c.e.size()
+                                                 encoding:NSUTF8StringEncoding];
+        params.arg1.c.f = [NSNumber numberWithUnsignedChar:mRequest.arg1.c.f.Raw()];
+        params.arg1.c.g = [NSNumber numberWithFloat:mRequest.arg1.c.g];
+        params.arg1.c.h = [NSNumber numberWithDouble:mRequest.arg1.c.h];
         [cluster testNestedStructArgumentRequestWithParams:params
                                          completionHandler:^(CHIPTestClusterClusterBooleanResponseParams * _Nullable values,
                                              NSError * _Nullable error) {
                                              NSLog(@"Values: %@", values);
-                                             err = [CHIPError errorToCHIPErrorCode:error];
-                                             ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                                             SetCommandExitStatus(err);
+                                             chipError = [CHIPError errorToCHIPErrorCode:error];
+                                             ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                                             SetCommandExitStatus(chipError);
                                          }];
-        return err;
+        return chipError;
     }
 
 private:
+    chip::app::Clusters::TestCluster::Commands::TestNestedStructArgumentRequest::Type mRequest;
+    TypedComplexArgument<chip::app::Clusters::TestCluster::Structs::NestedStruct::Type> mComplex_Arg1;
 };
 
 /*
@@ -51348,7 +52533,9 @@ class TestClusterTestNestedStructListArgumentRequest : public ModelCommand {
 public:
     TestClusterTestNestedStructListArgumentRequest()
         : ModelCommand("test-nested-struct-list-argument-request")
+        , mComplex_Arg1(&mRequest.arg1)
     {
+        AddArgument("Arg1", &mComplex_Arg1);
         ModelCommand::AddArguments();
     }
 
@@ -51358,21 +52545,87 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPTestCluster * cluster = [[CHIPTestCluster alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPTestClusterClusterTestNestedStructListArgumentRequestParams alloc] init];
-        // arg1 Struct parsing is not supported yet
+
+        params.arg1 = [CHIPTestClusterClusterNestedStructList new];
+        params.arg1.a = [NSNumber numberWithUnsignedChar:mRequest.arg1.a];
+        params.arg1.b = [NSNumber numberWithBool:mRequest.arg1.b];
+        params.arg1.c = [CHIPTestClusterClusterSimpleStruct new];
+        params.arg1.c.a = [NSNumber numberWithUnsignedChar:mRequest.arg1.c.a];
+        params.arg1.c.b = [NSNumber numberWithBool:mRequest.arg1.c.b];
+        params.arg1.c.c = [NSNumber numberWithUnsignedChar:chip::to_underlying(mRequest.arg1.c.c)];
+        params.arg1.c.d = [NSData dataWithBytes:mRequest.arg1.c.d.data() length:mRequest.arg1.c.d.size()];
+        params.arg1.c.e = [[NSString alloc] initWithBytes:mRequest.arg1.c.e.data()
+                                                   length:mRequest.arg1.c.e.size()
+                                                 encoding:NSUTF8StringEncoding];
+        params.arg1.c.f = [NSNumber numberWithUnsignedChar:mRequest.arg1.c.f.Raw()];
+        params.arg1.c.g = [NSNumber numberWithFloat:mRequest.arg1.c.g];
+        params.arg1.c.h = [NSNumber numberWithDouble:mRequest.arg1.c.h];
+        { // Scope for our temporary variables
+            auto * array_1 = [NSMutableArray new];
+            for (chip::ListIndex index_1 = 0; index_1 < mRequest.arg1.d.size(); index_1++) {
+                auto & entry_1 = mRequest.arg1.d.data()[index_1];
+                CHIPTestClusterClusterSimpleStruct * newElement_1;
+                newElement_1 = [CHIPTestClusterClusterSimpleStruct new];
+                newElement_1.a = [NSNumber numberWithUnsignedChar:entry_1.a];
+                newElement_1.b = [NSNumber numberWithBool:entry_1.b];
+                newElement_1.c = [NSNumber numberWithUnsignedChar:chip::to_underlying(entry_1.c)];
+                newElement_1.d = [NSData dataWithBytes:entry_1.d.data() length:entry_1.d.size()];
+                newElement_1.e = [[NSString alloc] initWithBytes:entry_1.e.data()
+                                                          length:entry_1.e.size()
+                                                        encoding:NSUTF8StringEncoding];
+                newElement_1.f = [NSNumber numberWithUnsignedChar:entry_1.f.Raw()];
+                newElement_1.g = [NSNumber numberWithFloat:entry_1.g];
+                newElement_1.h = [NSNumber numberWithDouble:entry_1.h];
+                [array_1 addObject:newElement_1];
+            }
+            params.arg1.d = array_1;
+        }
+        { // Scope for our temporary variables
+            auto * array_1 = [NSMutableArray new];
+            for (chip::ListIndex index_1 = 0; index_1 < mRequest.arg1.e.size(); index_1++) {
+                auto & entry_1 = mRequest.arg1.e.data()[index_1];
+                NSNumber * newElement_1;
+                newElement_1 = [NSNumber numberWithUnsignedInt:entry_1];
+                [array_1 addObject:newElement_1];
+            }
+            params.arg1.e = array_1;
+        }
+        { // Scope for our temporary variables
+            auto * array_1 = [NSMutableArray new];
+            for (chip::ListIndex index_1 = 0; index_1 < mRequest.arg1.f.size(); index_1++) {
+                auto & entry_1 = mRequest.arg1.f.data()[index_1];
+                NSData * newElement_1;
+                newElement_1 = [NSData dataWithBytes:entry_1.data() length:entry_1.size()];
+                [array_1 addObject:newElement_1];
+            }
+            params.arg1.f = array_1;
+        }
+        { // Scope for our temporary variables
+            auto * array_1 = [NSMutableArray new];
+            for (chip::ListIndex index_1 = 0; index_1 < mRequest.arg1.g.size(); index_1++) {
+                auto & entry_1 = mRequest.arg1.g.data()[index_1];
+                NSNumber * newElement_1;
+                newElement_1 = [NSNumber numberWithUnsignedChar:entry_1];
+                [array_1 addObject:newElement_1];
+            }
+            params.arg1.g = array_1;
+        }
         [cluster testNestedStructListArgumentRequestWithParams:params
                                              completionHandler:^(CHIPTestClusterClusterBooleanResponseParams * _Nullable values,
                                                  NSError * _Nullable error) {
                                                  NSLog(@"Values: %@", values);
-                                                 err = [CHIPError errorToCHIPErrorCode:error];
-                                                 ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                                                 SetCommandExitStatus(err);
+                                                 chipError = [CHIPError errorToCHIPErrorCode:error];
+                                                 ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                                                 SetCommandExitStatus(chipError);
                                              }];
-        return err;
+        return chipError;
     }
 
 private:
+    chip::app::Clusters::TestCluster::Commands::TestNestedStructListArgumentRequest::Type mRequest;
+    TypedComplexArgument<chip::app::Clusters::TestCluster::Structs::NestedStructList::Type> mComplex_Arg1;
 };
 
 /*
@@ -51392,13 +52645,13 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPTestCluster * cluster = [[CHIPTestCluster alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         [cluster testNotHandledWithCompletionHandler:^(NSError * _Nullable error) {
-            err = [CHIPError errorToCHIPErrorCode:error];
-            ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-            SetCommandExitStatus(err);
+            chipError = [CHIPError errorToCHIPErrorCode:error];
+            ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+            SetCommandExitStatus(chipError);
         }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -51422,19 +52675,20 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPTestCluster * cluster = [[CHIPTestCluster alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPTestClusterClusterTestNullableOptionalRequestParams alloc] init];
+
         params.arg1 = [NSNumber numberWithUnsignedChar:mArg1];
         [cluster
             testNullableOptionalRequestWithParams:params
                                 completionHandler:^(CHIPTestClusterClusterTestNullableOptionalResponseParams * _Nullable values,
                                     NSError * _Nullable error) {
                                     NSLog(@"Values: %@", values);
-                                    err = [CHIPError errorToCHIPErrorCode:error];
-                                    ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                                    SetCommandExitStatus(err);
+                                    chipError = [CHIPError errorToCHIPErrorCode:error];
+                                    ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                                    SetCommandExitStatus(chipError);
                                 }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -51459,16 +52713,17 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPTestCluster * cluster = [[CHIPTestCluster alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPTestClusterClusterTestSimpleOptionalArgumentRequestParams alloc] init];
+
         params.arg1 = [NSNumber numberWithBool:mArg1];
         [cluster testSimpleOptionalArgumentRequestWithParams:params
                                            completionHandler:^(NSError * _Nullable error) {
-                                               err = [CHIPError errorToCHIPErrorCode:error];
-                                               ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                                               SetCommandExitStatus(err);
+                                               chipError = [CHIPError errorToCHIPErrorCode:error];
+                                               ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                                               SetCommandExitStatus(chipError);
                                            }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -51492,15 +52747,15 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPTestCluster * cluster = [[CHIPTestCluster alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         [cluster testSpecificWithCompletionHandler:^(
             CHIPTestClusterClusterTestSpecificResponseParams * _Nullable values, NSError * _Nullable error) {
             NSLog(@"Values: %@", values);
-            err = [CHIPError errorToCHIPErrorCode:error];
-            ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-            SetCommandExitStatus(err);
+            chipError = [CHIPError errorToCHIPErrorCode:error];
+            ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+            SetCommandExitStatus(chipError);
         }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -51513,7 +52768,9 @@ class TestClusterTestStructArgumentRequest : public ModelCommand {
 public:
     TestClusterTestStructArgumentRequest()
         : ModelCommand("test-struct-argument-request")
+        , mComplex_Arg1(&mRequest.arg1)
     {
+        AddArgument("Arg1", &mComplex_Arg1);
         ModelCommand::AddArguments();
     }
 
@@ -51523,21 +52780,34 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPTestCluster * cluster = [[CHIPTestCluster alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPTestClusterClusterTestStructArgumentRequestParams alloc] init];
-        // arg1 Struct parsing is not supported yet
+
+        params.arg1 = [CHIPTestClusterClusterSimpleStruct new];
+        params.arg1.a = [NSNumber numberWithUnsignedChar:mRequest.arg1.a];
+        params.arg1.b = [NSNumber numberWithBool:mRequest.arg1.b];
+        params.arg1.c = [NSNumber numberWithUnsignedChar:chip::to_underlying(mRequest.arg1.c)];
+        params.arg1.d = [NSData dataWithBytes:mRequest.arg1.d.data() length:mRequest.arg1.d.size()];
+        params.arg1.e = [[NSString alloc] initWithBytes:mRequest.arg1.e.data()
+                                                 length:mRequest.arg1.e.size()
+                                               encoding:NSUTF8StringEncoding];
+        params.arg1.f = [NSNumber numberWithUnsignedChar:mRequest.arg1.f.Raw()];
+        params.arg1.g = [NSNumber numberWithFloat:mRequest.arg1.g];
+        params.arg1.h = [NSNumber numberWithDouble:mRequest.arg1.h];
         [cluster testStructArgumentRequestWithParams:params
                                    completionHandler:^(
                                        CHIPTestClusterClusterBooleanResponseParams * _Nullable values, NSError * _Nullable error) {
                                        NSLog(@"Values: %@", values);
-                                       err = [CHIPError errorToCHIPErrorCode:error];
-                                       ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                                       SetCommandExitStatus(err);
+                                       chipError = [CHIPError errorToCHIPErrorCode:error];
+                                       ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                                       SetCommandExitStatus(chipError);
                                    }];
-        return err;
+        return chipError;
     }
 
 private:
+    chip::app::Clusters::TestCluster::Commands::TestStructArgumentRequest::Type mRequest;
+    TypedComplexArgument<chip::app::Clusters::TestCluster::Structs::SimpleStruct::Type> mComplex_Arg1;
 };
 
 /*
@@ -51557,13 +52827,13 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPTestCluster * cluster = [[CHIPTestCluster alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         [cluster testUnknownCommandWithCompletionHandler:^(NSError * _Nullable error) {
-            err = [CHIPError errorToCHIPErrorCode:error];
-            ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-            SetCommandExitStatus(err);
+            chipError = [CHIPError errorToCHIPErrorCode:error];
+            ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+            SetCommandExitStatus(chipError);
         }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -51586,13 +52856,13 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPTestCluster * cluster = [[CHIPTestCluster alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         [cluster timedInvokeRequestWithCompletionHandler:^(NSError * _Nullable error) {
-            err = [CHIPError errorToCHIPErrorCode:error];
-            ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-            SetCommandExitStatus(err);
+            chipError = [CHIPError errorToCHIPErrorCode:error];
+            ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+            SetCommandExitStatus(chipError);
         }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -51647,17 +52917,17 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x0000050F) WriteAttribute (0x00000000) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPTestCluster * cluster = [[CHIPTestCluster alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nonnull value = [NSNumber numberWithBool:mValue];
 
         [cluster writeAttributeBooleanWithValue:value
                               completionHandler:^(NSError * _Nullable error) {
-                                  err = [CHIPError errorToCHIPErrorCode:error];
-                                  ChipLogError(chipTool, "TestCluster Boolean Error: %s", chip::ErrorStr(err));
-                                  SetCommandExitStatus(err);
+                                  chipError = [CHIPError errorToCHIPErrorCode:error];
+                                  ChipLogError(chipTool, "TestCluster Boolean Error: %s", chip::ErrorStr(chipError));
+                                  SetCommandExitStatus(chipError);
                               }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -51758,17 +53028,17 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x0000050F) WriteAttribute (0x00000001) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPTestCluster * cluster = [[CHIPTestCluster alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nonnull value = [NSNumber numberWithUnsignedChar:mValue];
 
         [cluster writeAttributeBitmap8WithValue:value
                               completionHandler:^(NSError * _Nullable error) {
-                                  err = [CHIPError errorToCHIPErrorCode:error];
-                                  ChipLogError(chipTool, "TestCluster Bitmap8 Error: %s", chip::ErrorStr(err));
-                                  SetCommandExitStatus(err);
+                                  chipError = [CHIPError errorToCHIPErrorCode:error];
+                                  ChipLogError(chipTool, "TestCluster Bitmap8 Error: %s", chip::ErrorStr(chipError));
+                                  SetCommandExitStatus(chipError);
                               }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -51869,17 +53139,17 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x0000050F) WriteAttribute (0x00000002) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPTestCluster * cluster = [[CHIPTestCluster alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nonnull value = [NSNumber numberWithUnsignedShort:mValue];
 
         [cluster writeAttributeBitmap16WithValue:value
                                completionHandler:^(NSError * _Nullable error) {
-                                   err = [CHIPError errorToCHIPErrorCode:error];
-                                   ChipLogError(chipTool, "TestCluster Bitmap16 Error: %s", chip::ErrorStr(err));
-                                   SetCommandExitStatus(err);
+                                   chipError = [CHIPError errorToCHIPErrorCode:error];
+                                   ChipLogError(chipTool, "TestCluster Bitmap16 Error: %s", chip::ErrorStr(chipError));
+                                   SetCommandExitStatus(chipError);
                                }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -51980,17 +53250,17 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x0000050F) WriteAttribute (0x00000003) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPTestCluster * cluster = [[CHIPTestCluster alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nonnull value = [NSNumber numberWithUnsignedInt:mValue];
 
         [cluster writeAttributeBitmap32WithValue:value
                                completionHandler:^(NSError * _Nullable error) {
-                                   err = [CHIPError errorToCHIPErrorCode:error];
-                                   ChipLogError(chipTool, "TestCluster Bitmap32 Error: %s", chip::ErrorStr(err));
-                                   SetCommandExitStatus(err);
+                                   chipError = [CHIPError errorToCHIPErrorCode:error];
+                                   ChipLogError(chipTool, "TestCluster Bitmap32 Error: %s", chip::ErrorStr(chipError));
+                                   SetCommandExitStatus(chipError);
                                }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -52091,17 +53361,17 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x0000050F) WriteAttribute (0x00000004) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPTestCluster * cluster = [[CHIPTestCluster alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nonnull value = [NSNumber numberWithUnsignedLongLong:mValue];
 
         [cluster writeAttributeBitmap64WithValue:value
                                completionHandler:^(NSError * _Nullable error) {
-                                   err = [CHIPError errorToCHIPErrorCode:error];
-                                   ChipLogError(chipTool, "TestCluster Bitmap64 Error: %s", chip::ErrorStr(err));
-                                   SetCommandExitStatus(err);
+                                   chipError = [CHIPError errorToCHIPErrorCode:error];
+                                   ChipLogError(chipTool, "TestCluster Bitmap64 Error: %s", chip::ErrorStr(chipError));
+                                   SetCommandExitStatus(chipError);
                                }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -52202,17 +53472,17 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x0000050F) WriteAttribute (0x00000005) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPTestCluster * cluster = [[CHIPTestCluster alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nonnull value = [NSNumber numberWithUnsignedChar:mValue];
 
         [cluster writeAttributeInt8uWithValue:value
                             completionHandler:^(NSError * _Nullable error) {
-                                err = [CHIPError errorToCHIPErrorCode:error];
-                                ChipLogError(chipTool, "TestCluster Int8u Error: %s", chip::ErrorStr(err));
-                                SetCommandExitStatus(err);
+                                chipError = [CHIPError errorToCHIPErrorCode:error];
+                                ChipLogError(chipTool, "TestCluster Int8u Error: %s", chip::ErrorStr(chipError));
+                                SetCommandExitStatus(chipError);
                             }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -52313,17 +53583,17 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x0000050F) WriteAttribute (0x00000006) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPTestCluster * cluster = [[CHIPTestCluster alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nonnull value = [NSNumber numberWithUnsignedShort:mValue];
 
         [cluster writeAttributeInt16uWithValue:value
                              completionHandler:^(NSError * _Nullable error) {
-                                 err = [CHIPError errorToCHIPErrorCode:error];
-                                 ChipLogError(chipTool, "TestCluster Int16u Error: %s", chip::ErrorStr(err));
-                                 SetCommandExitStatus(err);
+                                 chipError = [CHIPError errorToCHIPErrorCode:error];
+                                 ChipLogError(chipTool, "TestCluster Int16u Error: %s", chip::ErrorStr(chipError));
+                                 SetCommandExitStatus(chipError);
                              }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -52424,17 +53694,17 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x0000050F) WriteAttribute (0x00000007) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPTestCluster * cluster = [[CHIPTestCluster alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nonnull value = [NSNumber numberWithUnsignedInt:mValue];
 
         [cluster writeAttributeInt24uWithValue:value
                              completionHandler:^(NSError * _Nullable error) {
-                                 err = [CHIPError errorToCHIPErrorCode:error];
-                                 ChipLogError(chipTool, "TestCluster Int24u Error: %s", chip::ErrorStr(err));
-                                 SetCommandExitStatus(err);
+                                 chipError = [CHIPError errorToCHIPErrorCode:error];
+                                 ChipLogError(chipTool, "TestCluster Int24u Error: %s", chip::ErrorStr(chipError));
+                                 SetCommandExitStatus(chipError);
                              }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -52535,17 +53805,17 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x0000050F) WriteAttribute (0x00000008) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPTestCluster * cluster = [[CHIPTestCluster alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nonnull value = [NSNumber numberWithUnsignedInt:mValue];
 
         [cluster writeAttributeInt32uWithValue:value
                              completionHandler:^(NSError * _Nullable error) {
-                                 err = [CHIPError errorToCHIPErrorCode:error];
-                                 ChipLogError(chipTool, "TestCluster Int32u Error: %s", chip::ErrorStr(err));
-                                 SetCommandExitStatus(err);
+                                 chipError = [CHIPError errorToCHIPErrorCode:error];
+                                 ChipLogError(chipTool, "TestCluster Int32u Error: %s", chip::ErrorStr(chipError));
+                                 SetCommandExitStatus(chipError);
                              }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -52646,17 +53916,17 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x0000050F) WriteAttribute (0x00000009) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPTestCluster * cluster = [[CHIPTestCluster alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nonnull value = [NSNumber numberWithUnsignedLongLong:mValue];
 
         [cluster writeAttributeInt40uWithValue:value
                              completionHandler:^(NSError * _Nullable error) {
-                                 err = [CHIPError errorToCHIPErrorCode:error];
-                                 ChipLogError(chipTool, "TestCluster Int40u Error: %s", chip::ErrorStr(err));
-                                 SetCommandExitStatus(err);
+                                 chipError = [CHIPError errorToCHIPErrorCode:error];
+                                 ChipLogError(chipTool, "TestCluster Int40u Error: %s", chip::ErrorStr(chipError));
+                                 SetCommandExitStatus(chipError);
                              }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -52757,17 +54027,17 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x0000050F) WriteAttribute (0x0000000A) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPTestCluster * cluster = [[CHIPTestCluster alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nonnull value = [NSNumber numberWithUnsignedLongLong:mValue];
 
         [cluster writeAttributeInt48uWithValue:value
                              completionHandler:^(NSError * _Nullable error) {
-                                 err = [CHIPError errorToCHIPErrorCode:error];
-                                 ChipLogError(chipTool, "TestCluster Int48u Error: %s", chip::ErrorStr(err));
-                                 SetCommandExitStatus(err);
+                                 chipError = [CHIPError errorToCHIPErrorCode:error];
+                                 ChipLogError(chipTool, "TestCluster Int48u Error: %s", chip::ErrorStr(chipError));
+                                 SetCommandExitStatus(chipError);
                              }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -52868,17 +54138,17 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x0000050F) WriteAttribute (0x0000000B) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPTestCluster * cluster = [[CHIPTestCluster alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nonnull value = [NSNumber numberWithUnsignedLongLong:mValue];
 
         [cluster writeAttributeInt56uWithValue:value
                              completionHandler:^(NSError * _Nullable error) {
-                                 err = [CHIPError errorToCHIPErrorCode:error];
-                                 ChipLogError(chipTool, "TestCluster Int56u Error: %s", chip::ErrorStr(err));
-                                 SetCommandExitStatus(err);
+                                 chipError = [CHIPError errorToCHIPErrorCode:error];
+                                 ChipLogError(chipTool, "TestCluster Int56u Error: %s", chip::ErrorStr(chipError));
+                                 SetCommandExitStatus(chipError);
                              }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -52979,17 +54249,17 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x0000050F) WriteAttribute (0x0000000C) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPTestCluster * cluster = [[CHIPTestCluster alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nonnull value = [NSNumber numberWithUnsignedLongLong:mValue];
 
         [cluster writeAttributeInt64uWithValue:value
                              completionHandler:^(NSError * _Nullable error) {
-                                 err = [CHIPError errorToCHIPErrorCode:error];
-                                 ChipLogError(chipTool, "TestCluster Int64u Error: %s", chip::ErrorStr(err));
-                                 SetCommandExitStatus(err);
+                                 chipError = [CHIPError errorToCHIPErrorCode:error];
+                                 ChipLogError(chipTool, "TestCluster Int64u Error: %s", chip::ErrorStr(chipError));
+                                 SetCommandExitStatus(chipError);
                              }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -53090,17 +54360,17 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x0000050F) WriteAttribute (0x0000000D) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPTestCluster * cluster = [[CHIPTestCluster alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nonnull value = [NSNumber numberWithChar:mValue];
 
         [cluster writeAttributeInt8sWithValue:value
                             completionHandler:^(NSError * _Nullable error) {
-                                err = [CHIPError errorToCHIPErrorCode:error];
-                                ChipLogError(chipTool, "TestCluster Int8s Error: %s", chip::ErrorStr(err));
-                                SetCommandExitStatus(err);
+                                chipError = [CHIPError errorToCHIPErrorCode:error];
+                                ChipLogError(chipTool, "TestCluster Int8s Error: %s", chip::ErrorStr(chipError));
+                                SetCommandExitStatus(chipError);
                             }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -53201,17 +54471,17 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x0000050F) WriteAttribute (0x0000000E) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPTestCluster * cluster = [[CHIPTestCluster alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nonnull value = [NSNumber numberWithShort:mValue];
 
         [cluster writeAttributeInt16sWithValue:value
                              completionHandler:^(NSError * _Nullable error) {
-                                 err = [CHIPError errorToCHIPErrorCode:error];
-                                 ChipLogError(chipTool, "TestCluster Int16s Error: %s", chip::ErrorStr(err));
-                                 SetCommandExitStatus(err);
+                                 chipError = [CHIPError errorToCHIPErrorCode:error];
+                                 ChipLogError(chipTool, "TestCluster Int16s Error: %s", chip::ErrorStr(chipError));
+                                 SetCommandExitStatus(chipError);
                              }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -53312,17 +54582,17 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x0000050F) WriteAttribute (0x0000000F) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPTestCluster * cluster = [[CHIPTestCluster alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nonnull value = [NSNumber numberWithInt:mValue];
 
         [cluster writeAttributeInt24sWithValue:value
                              completionHandler:^(NSError * _Nullable error) {
-                                 err = [CHIPError errorToCHIPErrorCode:error];
-                                 ChipLogError(chipTool, "TestCluster Int24s Error: %s", chip::ErrorStr(err));
-                                 SetCommandExitStatus(err);
+                                 chipError = [CHIPError errorToCHIPErrorCode:error];
+                                 ChipLogError(chipTool, "TestCluster Int24s Error: %s", chip::ErrorStr(chipError));
+                                 SetCommandExitStatus(chipError);
                              }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -53423,17 +54693,17 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x0000050F) WriteAttribute (0x00000010) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPTestCluster * cluster = [[CHIPTestCluster alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nonnull value = [NSNumber numberWithInt:mValue];
 
         [cluster writeAttributeInt32sWithValue:value
                              completionHandler:^(NSError * _Nullable error) {
-                                 err = [CHIPError errorToCHIPErrorCode:error];
-                                 ChipLogError(chipTool, "TestCluster Int32s Error: %s", chip::ErrorStr(err));
-                                 SetCommandExitStatus(err);
+                                 chipError = [CHIPError errorToCHIPErrorCode:error];
+                                 ChipLogError(chipTool, "TestCluster Int32s Error: %s", chip::ErrorStr(chipError));
+                                 SetCommandExitStatus(chipError);
                              }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -53534,17 +54804,17 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x0000050F) WriteAttribute (0x00000011) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPTestCluster * cluster = [[CHIPTestCluster alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nonnull value = [NSNumber numberWithLongLong:mValue];
 
         [cluster writeAttributeInt40sWithValue:value
                              completionHandler:^(NSError * _Nullable error) {
-                                 err = [CHIPError errorToCHIPErrorCode:error];
-                                 ChipLogError(chipTool, "TestCluster Int40s Error: %s", chip::ErrorStr(err));
-                                 SetCommandExitStatus(err);
+                                 chipError = [CHIPError errorToCHIPErrorCode:error];
+                                 ChipLogError(chipTool, "TestCluster Int40s Error: %s", chip::ErrorStr(chipError));
+                                 SetCommandExitStatus(chipError);
                              }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -53645,17 +54915,17 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x0000050F) WriteAttribute (0x00000012) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPTestCluster * cluster = [[CHIPTestCluster alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nonnull value = [NSNumber numberWithLongLong:mValue];
 
         [cluster writeAttributeInt48sWithValue:value
                              completionHandler:^(NSError * _Nullable error) {
-                                 err = [CHIPError errorToCHIPErrorCode:error];
-                                 ChipLogError(chipTool, "TestCluster Int48s Error: %s", chip::ErrorStr(err));
-                                 SetCommandExitStatus(err);
+                                 chipError = [CHIPError errorToCHIPErrorCode:error];
+                                 ChipLogError(chipTool, "TestCluster Int48s Error: %s", chip::ErrorStr(chipError));
+                                 SetCommandExitStatus(chipError);
                              }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -53756,17 +55026,17 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x0000050F) WriteAttribute (0x00000013) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPTestCluster * cluster = [[CHIPTestCluster alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nonnull value = [NSNumber numberWithLongLong:mValue];
 
         [cluster writeAttributeInt56sWithValue:value
                              completionHandler:^(NSError * _Nullable error) {
-                                 err = [CHIPError errorToCHIPErrorCode:error];
-                                 ChipLogError(chipTool, "TestCluster Int56s Error: %s", chip::ErrorStr(err));
-                                 SetCommandExitStatus(err);
+                                 chipError = [CHIPError errorToCHIPErrorCode:error];
+                                 ChipLogError(chipTool, "TestCluster Int56s Error: %s", chip::ErrorStr(chipError));
+                                 SetCommandExitStatus(chipError);
                              }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -53867,17 +55137,17 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x0000050F) WriteAttribute (0x00000014) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPTestCluster * cluster = [[CHIPTestCluster alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nonnull value = [NSNumber numberWithLongLong:mValue];
 
         [cluster writeAttributeInt64sWithValue:value
                              completionHandler:^(NSError * _Nullable error) {
-                                 err = [CHIPError errorToCHIPErrorCode:error];
-                                 ChipLogError(chipTool, "TestCluster Int64s Error: %s", chip::ErrorStr(err));
-                                 SetCommandExitStatus(err);
+                                 chipError = [CHIPError errorToCHIPErrorCode:error];
+                                 ChipLogError(chipTool, "TestCluster Int64s Error: %s", chip::ErrorStr(chipError));
+                                 SetCommandExitStatus(chipError);
                              }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -53978,17 +55248,17 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x0000050F) WriteAttribute (0x00000015) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPTestCluster * cluster = [[CHIPTestCluster alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nonnull value = [NSNumber numberWithUnsignedChar:mValue];
 
         [cluster writeAttributeEnum8WithValue:value
                             completionHandler:^(NSError * _Nullable error) {
-                                err = [CHIPError errorToCHIPErrorCode:error];
-                                ChipLogError(chipTool, "TestCluster Enum8 Error: %s", chip::ErrorStr(err));
-                                SetCommandExitStatus(err);
+                                chipError = [CHIPError errorToCHIPErrorCode:error];
+                                ChipLogError(chipTool, "TestCluster Enum8 Error: %s", chip::ErrorStr(chipError));
+                                SetCommandExitStatus(chipError);
                             }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -54089,17 +55359,17 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x0000050F) WriteAttribute (0x00000016) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPTestCluster * cluster = [[CHIPTestCluster alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nonnull value = [NSNumber numberWithUnsignedShort:mValue];
 
         [cluster writeAttributeEnum16WithValue:value
                              completionHandler:^(NSError * _Nullable error) {
-                                 err = [CHIPError errorToCHIPErrorCode:error];
-                                 ChipLogError(chipTool, "TestCluster Enum16 Error: %s", chip::ErrorStr(err));
-                                 SetCommandExitStatus(err);
+                                 chipError = [CHIPError errorToCHIPErrorCode:error];
+                                 ChipLogError(chipTool, "TestCluster Enum16 Error: %s", chip::ErrorStr(chipError));
+                                 SetCommandExitStatus(chipError);
                              }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -54200,17 +55470,17 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x0000050F) WriteAttribute (0x00000017) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPTestCluster * cluster = [[CHIPTestCluster alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nonnull value = [NSNumber numberWithFloat:mValue];
 
         [cluster writeAttributeFloatSingleWithValue:value
                                   completionHandler:^(NSError * _Nullable error) {
-                                      err = [CHIPError errorToCHIPErrorCode:error];
-                                      ChipLogError(chipTool, "TestCluster FloatSingle Error: %s", chip::ErrorStr(err));
-                                      SetCommandExitStatus(err);
+                                      chipError = [CHIPError errorToCHIPErrorCode:error];
+                                      ChipLogError(chipTool, "TestCluster FloatSingle Error: %s", chip::ErrorStr(chipError));
+                                      SetCommandExitStatus(chipError);
                                   }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -54311,17 +55581,17 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x0000050F) WriteAttribute (0x00000018) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPTestCluster * cluster = [[CHIPTestCluster alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nonnull value = [NSNumber numberWithDouble:mValue];
 
         [cluster writeAttributeFloatDoubleWithValue:value
                                   completionHandler:^(NSError * _Nullable error) {
-                                      err = [CHIPError errorToCHIPErrorCode:error];
-                                      ChipLogError(chipTool, "TestCluster FloatDouble Error: %s", chip::ErrorStr(err));
-                                      SetCommandExitStatus(err);
+                                      chipError = [CHIPError errorToCHIPErrorCode:error];
+                                      ChipLogError(chipTool, "TestCluster FloatDouble Error: %s", chip::ErrorStr(chipError));
+                                      SetCommandExitStatus(chipError);
                                   }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -54422,17 +55692,17 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x0000050F) WriteAttribute (0x00000019) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPTestCluster * cluster = [[CHIPTestCluster alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSData * _Nonnull value = [[NSData alloc] initWithBytes:mValue.data() length:mValue.size()];
 
         [cluster writeAttributeOctetStringWithValue:value
                                   completionHandler:^(NSError * _Nullable error) {
-                                      err = [CHIPError errorToCHIPErrorCode:error];
-                                      ChipLogError(chipTool, "TestCluster OctetString Error: %s", chip::ErrorStr(err));
-                                      SetCommandExitStatus(err);
+                                      chipError = [CHIPError errorToCHIPErrorCode:error];
+                                      ChipLogError(chipTool, "TestCluster OctetString Error: %s", chip::ErrorStr(chipError));
+                                      SetCommandExitStatus(chipError);
                                   }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -54516,6 +55786,52 @@ public:
     }
 };
 
+class WriteTestClusterListInt8u : public ModelCommand {
+public:
+    WriteTestClusterListInt8u()
+        : ModelCommand("write")
+        , mComplex(&mValue)
+    {
+        AddArgument("attr-name", "list-int8u");
+        AddArgument("attr-value", &mComplex);
+        ModelCommand::AddArguments();
+    }
+
+    ~WriteTestClusterListInt8u() {}
+
+    CHIP_ERROR SendCommand(CHIPDevice * device, chip::EndpointId endpointId) override
+    {
+        ChipLogProgress(chipTool, "Sending cluster (0x0000050F) WriteAttribute (0x0000001A) on endpoint %" PRIu16, endpointId);
+        dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
+        CHIPTestCluster * cluster = [[CHIPTestCluster alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
+
+        NSArray * _Nonnull value;
+        { // Scope for our temporary variables
+            auto * array_0 = [NSMutableArray new];
+            for (chip::ListIndex index_0 = 0; index_0 < mValue.size(); index_0++) {
+                auto & entry_0 = mValue.data()[index_0];
+                NSNumber * newElement_0;
+                newElement_0 = [NSNumber numberWithUnsignedChar:entry_0];
+                [array_0 addObject:newElement_0];
+            }
+            value = array_0;
+        }
+
+        [cluster writeAttributeListInt8uWithValue:value
+                                completionHandler:^(NSError * _Nullable error) {
+                                    chipError = [CHIPError errorToCHIPErrorCode:error];
+                                    ChipLogError(chipTool, "TestCluster ListInt8u Error: %s", chip::ErrorStr(chipError));
+                                    SetCommandExitStatus(chipError);
+                                }];
+        return chipError;
+    }
+
+private:
+    chip::app::DataModel::List<const uint8_t> mValue;
+    TypedComplexArgument<chip::app::DataModel::List<const uint8_t>> mComplex;
+};
+
 class SubscribeAttributeTestClusterListInt8u : public ModelCommand {
 public:
     SubscribeAttributeTestClusterListInt8u()
@@ -54593,6 +55909,53 @@ public:
     }
 };
 
+class WriteTestClusterListOctetString : public ModelCommand {
+public:
+    WriteTestClusterListOctetString()
+        : ModelCommand("write")
+        , mComplex(&mValue)
+    {
+        AddArgument("attr-name", "list-octet-string");
+        AddArgument("attr-value", &mComplex);
+        ModelCommand::AddArguments();
+    }
+
+    ~WriteTestClusterListOctetString() {}
+
+    CHIP_ERROR SendCommand(CHIPDevice * device, chip::EndpointId endpointId) override
+    {
+        ChipLogProgress(chipTool, "Sending cluster (0x0000050F) WriteAttribute (0x0000001B) on endpoint %" PRIu16, endpointId);
+        dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
+        CHIPTestCluster * cluster = [[CHIPTestCluster alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
+
+        NSArray * _Nonnull value;
+        { // Scope for our temporary variables
+            auto * array_0 = [NSMutableArray new];
+            for (chip::ListIndex index_0 = 0; index_0 < mValue.size(); index_0++) {
+                auto & entry_0 = mValue.data()[index_0];
+                NSData * newElement_0;
+                newElement_0 = [NSData dataWithBytes:entry_0.data() length:entry_0.size()];
+                [array_0 addObject:newElement_0];
+            }
+            value = array_0;
+        }
+
+        [cluster
+            writeAttributeListOctetStringWithValue:value
+                                 completionHandler:^(NSError * _Nullable error) {
+                                     chipError = [CHIPError errorToCHIPErrorCode:error];
+                                     ChipLogError(chipTool, "TestCluster ListOctetString Error: %s", chip::ErrorStr(chipError));
+                                     SetCommandExitStatus(chipError);
+                                 }];
+        return chipError;
+    }
+
+private:
+    chip::app::DataModel::List<const chip::ByteSpan> mValue;
+    TypedComplexArgument<chip::app::DataModel::List<const chip::ByteSpan>> mComplex;
+};
+
 class SubscribeAttributeTestClusterListOctetString : public ModelCommand {
 public:
     SubscribeAttributeTestClusterListOctetString()
@@ -54668,6 +56031,57 @@ public:
         }];
         return err;
     }
+};
+
+class WriteTestClusterListStructOctetString : public ModelCommand {
+public:
+    WriteTestClusterListStructOctetString()
+        : ModelCommand("write")
+        , mComplex(&mValue)
+    {
+        AddArgument("attr-name", "list-struct-octet-string");
+        AddArgument("attr-value", &mComplex);
+        ModelCommand::AddArguments();
+    }
+
+    ~WriteTestClusterListStructOctetString() {}
+
+    CHIP_ERROR SendCommand(CHIPDevice * device, chip::EndpointId endpointId) override
+    {
+        ChipLogProgress(chipTool, "Sending cluster (0x0000050F) WriteAttribute (0x0000001C) on endpoint %" PRIu16, endpointId);
+        dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
+        CHIPTestCluster * cluster = [[CHIPTestCluster alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
+
+        NSArray * _Nonnull value;
+        { // Scope for our temporary variables
+            auto * array_0 = [NSMutableArray new];
+            for (chip::ListIndex index_0 = 0; index_0 < mValue.size(); index_0++) {
+                auto & entry_0 = mValue.data()[index_0];
+                CHIPTestClusterClusterTestListStructOctet * newElement_0;
+                newElement_0 = [CHIPTestClusterClusterTestListStructOctet new];
+                newElement_0.fabricIndex = [NSNumber numberWithUnsignedLongLong:entry_0.fabricIndex];
+                newElement_0.operationalCert = [NSData dataWithBytes:entry_0.operationalCert.data()
+                                                              length:entry_0.operationalCert.size()];
+                [array_0 addObject:newElement_0];
+            }
+            value = array_0;
+        }
+
+        [cluster writeAttributeListStructOctetStringWithValue:value
+                                            completionHandler:^(NSError * _Nullable error) {
+                                                chipError = [CHIPError errorToCHIPErrorCode:error];
+                                                ChipLogError(chipTool, "TestCluster ListStructOctetString Error: %s",
+                                                    chip::ErrorStr(chipError));
+                                                SetCommandExitStatus(chipError);
+                                            }];
+        return chipError;
+    }
+
+private:
+    chip::app::DataModel::List<const chip::app::Clusters::TestCluster::Structs::TestListStructOctet::Type> mValue;
+    TypedComplexArgument<chip::app::DataModel::List<const chip::app::Clusters::TestCluster::Structs::TestListStructOctet::Type>>
+        mComplex;
 };
 
 class SubscribeAttributeTestClusterListStructOctetString : public ModelCommand {
@@ -54765,17 +56179,18 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x0000050F) WriteAttribute (0x0000001D) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPTestCluster * cluster = [[CHIPTestCluster alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSData * _Nonnull value = [[NSData alloc] initWithBytes:mValue.data() length:mValue.size()];
 
-        [cluster writeAttributeLongOctetStringWithValue:value
-                                      completionHandler:^(NSError * _Nullable error) {
-                                          err = [CHIPError errorToCHIPErrorCode:error];
-                                          ChipLogError(chipTool, "TestCluster LongOctetString Error: %s", chip::ErrorStr(err));
-                                          SetCommandExitStatus(err);
-                                      }];
-        return err;
+        [cluster
+            writeAttributeLongOctetStringWithValue:value
+                                 completionHandler:^(NSError * _Nullable error) {
+                                     chipError = [CHIPError errorToCHIPErrorCode:error];
+                                     ChipLogError(chipTool, "TestCluster LongOctetString Error: %s", chip::ErrorStr(chipError));
+                                     SetCommandExitStatus(chipError);
+                                 }];
+        return chipError;
     }
 
 private:
@@ -54876,7 +56291,7 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x0000050F) WriteAttribute (0x0000001E) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPTestCluster * cluster = [[CHIPTestCluster alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSString * _Nonnull value = [[NSString alloc] initWithBytes:mValue.data()
                                                              length:mValue.size()
@@ -54884,11 +56299,11 @@ public:
 
         [cluster writeAttributeCharStringWithValue:value
                                  completionHandler:^(NSError * _Nullable error) {
-                                     err = [CHIPError errorToCHIPErrorCode:error];
-                                     ChipLogError(chipTool, "TestCluster CharString Error: %s", chip::ErrorStr(err));
-                                     SetCommandExitStatus(err);
+                                     chipError = [CHIPError errorToCHIPErrorCode:error];
+                                     ChipLogError(chipTool, "TestCluster CharString Error: %s", chip::ErrorStr(chipError));
+                                     SetCommandExitStatus(chipError);
                                  }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -54989,7 +56404,7 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x0000050F) WriteAttribute (0x0000001F) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPTestCluster * cluster = [[CHIPTestCluster alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSString * _Nonnull value = [[NSString alloc] initWithBytes:mValue.data()
                                                              length:mValue.size()
@@ -54997,11 +56412,11 @@ public:
 
         [cluster writeAttributeLongCharStringWithValue:value
                                      completionHandler:^(NSError * _Nullable error) {
-                                         err = [CHIPError errorToCHIPErrorCode:error];
-                                         ChipLogError(chipTool, "TestCluster LongCharString Error: %s", chip::ErrorStr(err));
-                                         SetCommandExitStatus(err);
+                                         chipError = [CHIPError errorToCHIPErrorCode:error];
+                                         ChipLogError(chipTool, "TestCluster LongCharString Error: %s", chip::ErrorStr(chipError));
+                                         SetCommandExitStatus(chipError);
                                      }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -55102,17 +56517,17 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x0000050F) WriteAttribute (0x00000020) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPTestCluster * cluster = [[CHIPTestCluster alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nonnull value = [NSNumber numberWithUnsignedLongLong:mValue];
 
         [cluster writeAttributeEpochUsWithValue:value
                               completionHandler:^(NSError * _Nullable error) {
-                                  err = [CHIPError errorToCHIPErrorCode:error];
-                                  ChipLogError(chipTool, "TestCluster EpochUs Error: %s", chip::ErrorStr(err));
-                                  SetCommandExitStatus(err);
+                                  chipError = [CHIPError errorToCHIPErrorCode:error];
+                                  ChipLogError(chipTool, "TestCluster EpochUs Error: %s", chip::ErrorStr(chipError));
+                                  SetCommandExitStatus(chipError);
                               }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -55213,17 +56628,17 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x0000050F) WriteAttribute (0x00000021) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPTestCluster * cluster = [[CHIPTestCluster alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nonnull value = [NSNumber numberWithUnsignedInt:mValue];
 
         [cluster writeAttributeEpochSWithValue:value
                              completionHandler:^(NSError * _Nullable error) {
-                                 err = [CHIPError errorToCHIPErrorCode:error];
-                                 ChipLogError(chipTool, "TestCluster EpochS Error: %s", chip::ErrorStr(err));
-                                 SetCommandExitStatus(err);
+                                 chipError = [CHIPError errorToCHIPErrorCode:error];
+                                 ChipLogError(chipTool, "TestCluster EpochS Error: %s", chip::ErrorStr(chipError));
+                                 SetCommandExitStatus(chipError);
                              }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -55324,17 +56739,17 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x0000050F) WriteAttribute (0x00000022) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPTestCluster * cluster = [[CHIPTestCluster alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nonnull value = [NSNumber numberWithUnsignedShort:mValue];
 
         [cluster writeAttributeVendorIdWithValue:value
                                completionHandler:^(NSError * _Nullable error) {
-                                   err = [CHIPError errorToCHIPErrorCode:error];
-                                   ChipLogError(chipTool, "TestCluster VendorId Error: %s", chip::ErrorStr(err));
-                                   SetCommandExitStatus(err);
+                                   chipError = [CHIPError errorToCHIPErrorCode:error];
+                                   ChipLogError(chipTool, "TestCluster VendorId Error: %s", chip::ErrorStr(chipError));
+                                   SetCommandExitStatus(chipError);
                                }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -55417,6 +56832,211 @@ public:
         }];
         return err;
     }
+};
+
+class WriteTestClusterListNullablesAndOptionalsStruct : public ModelCommand {
+public:
+    WriteTestClusterListNullablesAndOptionalsStruct()
+        : ModelCommand("write")
+        , mComplex(&mValue)
+    {
+        AddArgument("attr-name", "list-nullables-and-optionals-struct");
+        AddArgument("attr-value", &mComplex);
+        ModelCommand::AddArguments();
+    }
+
+    ~WriteTestClusterListNullablesAndOptionalsStruct() {}
+
+    CHIP_ERROR SendCommand(CHIPDevice * device, chip::EndpointId endpointId) override
+    {
+        ChipLogProgress(chipTool, "Sending cluster (0x0000050F) WriteAttribute (0x00000023) on endpoint %" PRIu16, endpointId);
+        dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
+        CHIPTestCluster * cluster = [[CHIPTestCluster alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
+
+        NSArray * _Nonnull value;
+        { // Scope for our temporary variables
+            auto * array_0 = [NSMutableArray new];
+            for (chip::ListIndex index_0 = 0; index_0 < mValue.size(); index_0++) {
+                auto & entry_0 = mValue.data()[index_0];
+                CHIPTestClusterClusterNullablesAndOptionalsStruct * newElement_0;
+                newElement_0 = [CHIPTestClusterClusterNullablesAndOptionalsStruct new];
+                if (entry_0.nullableInt.IsNull()) {
+                    newElement_0.nullableInt = nil;
+                } else {
+                    newElement_0.nullableInt = [NSNumber numberWithUnsignedShort:entry_0.nullableInt.Value()];
+                }
+                if (entry_0.optionalInt.HasValue()) {
+                    newElement_0.optionalInt = [NSNumber numberWithUnsignedShort:entry_0.optionalInt.Value()];
+                } else {
+                    newElement_0.optionalInt = nil;
+                }
+                if (entry_0.nullableOptionalInt.HasValue()) {
+                    if (entry_0.nullableOptionalInt.Value().IsNull()) {
+                        newElement_0.nullableOptionalInt = nil;
+                    } else {
+                        newElement_0.nullableOptionalInt =
+                            [NSNumber numberWithUnsignedShort:entry_0.nullableOptionalInt.Value().Value()];
+                    }
+                } else {
+                    newElement_0.nullableOptionalInt = nil;
+                }
+                if (entry_0.nullableString.IsNull()) {
+                    newElement_0.nullableString = nil;
+                } else {
+                    newElement_0.nullableString = [[NSString alloc] initWithBytes:entry_0.nullableString.Value().data()
+                                                                           length:entry_0.nullableString.Value().size()
+                                                                         encoding:NSUTF8StringEncoding];
+                }
+                if (entry_0.optionalString.HasValue()) {
+                    newElement_0.optionalString = [[NSString alloc] initWithBytes:entry_0.optionalString.Value().data()
+                                                                           length:entry_0.optionalString.Value().size()
+                                                                         encoding:NSUTF8StringEncoding];
+                } else {
+                    newElement_0.optionalString = nil;
+                }
+                if (entry_0.nullableOptionalString.HasValue()) {
+                    if (entry_0.nullableOptionalString.Value().IsNull()) {
+                        newElement_0.nullableOptionalString = nil;
+                    } else {
+                        newElement_0.nullableOptionalString =
+                            [[NSString alloc] initWithBytes:entry_0.nullableOptionalString.Value().Value().data()
+                                                     length:entry_0.nullableOptionalString.Value().Value().size()
+                                                   encoding:NSUTF8StringEncoding];
+                    }
+                } else {
+                    newElement_0.nullableOptionalString = nil;
+                }
+                if (entry_0.nullableStruct.IsNull()) {
+                    newElement_0.nullableStruct = nil;
+                } else {
+                    newElement_0.nullableStruct = [CHIPTestClusterClusterSimpleStruct new];
+                    newElement_0.nullableStruct.a = [NSNumber numberWithUnsignedChar:entry_0.nullableStruct.Value().a];
+                    newElement_0.nullableStruct.b = [NSNumber numberWithBool:entry_0.nullableStruct.Value().b];
+                    newElement_0.nullableStruct.c =
+                        [NSNumber numberWithUnsignedChar:chip::to_underlying(entry_0.nullableStruct.Value().c)];
+                    newElement_0.nullableStruct.d = [NSData dataWithBytes:entry_0.nullableStruct.Value().d.data()
+                                                                   length:entry_0.nullableStruct.Value().d.size()];
+                    newElement_0.nullableStruct.e = [[NSString alloc] initWithBytes:entry_0.nullableStruct.Value().e.data()
+                                                                             length:entry_0.nullableStruct.Value().e.size()
+                                                                           encoding:NSUTF8StringEncoding];
+                    newElement_0.nullableStruct.f = [NSNumber numberWithUnsignedChar:entry_0.nullableStruct.Value().f.Raw()];
+                    newElement_0.nullableStruct.g = [NSNumber numberWithFloat:entry_0.nullableStruct.Value().g];
+                    newElement_0.nullableStruct.h = [NSNumber numberWithDouble:entry_0.nullableStruct.Value().h];
+                }
+                if (entry_0.optionalStruct.HasValue()) {
+                    newElement_0.optionalStruct = [CHIPTestClusterClusterSimpleStruct new];
+                    newElement_0.optionalStruct.a = [NSNumber numberWithUnsignedChar:entry_0.optionalStruct.Value().a];
+                    newElement_0.optionalStruct.b = [NSNumber numberWithBool:entry_0.optionalStruct.Value().b];
+                    newElement_0.optionalStruct.c =
+                        [NSNumber numberWithUnsignedChar:chip::to_underlying(entry_0.optionalStruct.Value().c)];
+                    newElement_0.optionalStruct.d = [NSData dataWithBytes:entry_0.optionalStruct.Value().d.data()
+                                                                   length:entry_0.optionalStruct.Value().d.size()];
+                    newElement_0.optionalStruct.e = [[NSString alloc] initWithBytes:entry_0.optionalStruct.Value().e.data()
+                                                                             length:entry_0.optionalStruct.Value().e.size()
+                                                                           encoding:NSUTF8StringEncoding];
+                    newElement_0.optionalStruct.f = [NSNumber numberWithUnsignedChar:entry_0.optionalStruct.Value().f.Raw()];
+                    newElement_0.optionalStruct.g = [NSNumber numberWithFloat:entry_0.optionalStruct.Value().g];
+                    newElement_0.optionalStruct.h = [NSNumber numberWithDouble:entry_0.optionalStruct.Value().h];
+                } else {
+                    newElement_0.optionalStruct = nil;
+                }
+                if (entry_0.nullableOptionalStruct.HasValue()) {
+                    if (entry_0.nullableOptionalStruct.Value().IsNull()) {
+                        newElement_0.nullableOptionalStruct = nil;
+                    } else {
+                        newElement_0.nullableOptionalStruct = [CHIPTestClusterClusterSimpleStruct new];
+                        newElement_0.nullableOptionalStruct.a =
+                            [NSNumber numberWithUnsignedChar:entry_0.nullableOptionalStruct.Value().Value().a];
+                        newElement_0.nullableOptionalStruct.b =
+                            [NSNumber numberWithBool:entry_0.nullableOptionalStruct.Value().Value().b];
+                        newElement_0.nullableOptionalStruct.c =
+                            [NSNumber numberWithUnsignedChar:chip::to_underlying(entry_0.nullableOptionalStruct.Value().Value().c)];
+                        newElement_0.nullableOptionalStruct.d =
+                            [NSData dataWithBytes:entry_0.nullableOptionalStruct.Value().Value().d.data()
+                                           length:entry_0.nullableOptionalStruct.Value().Value().d.size()];
+                        newElement_0.nullableOptionalStruct.e =
+                            [[NSString alloc] initWithBytes:entry_0.nullableOptionalStruct.Value().Value().e.data()
+                                                     length:entry_0.nullableOptionalStruct.Value().Value().e.size()
+                                                   encoding:NSUTF8StringEncoding];
+                        newElement_0.nullableOptionalStruct.f =
+                            [NSNumber numberWithUnsignedChar:entry_0.nullableOptionalStruct.Value().Value().f.Raw()];
+                        newElement_0.nullableOptionalStruct.g =
+                            [NSNumber numberWithFloat:entry_0.nullableOptionalStruct.Value().Value().g];
+                        newElement_0.nullableOptionalStruct.h =
+                            [NSNumber numberWithDouble:entry_0.nullableOptionalStruct.Value().Value().h];
+                    }
+                } else {
+                    newElement_0.nullableOptionalStruct = nil;
+                }
+                if (entry_0.nullableList.IsNull()) {
+                    newElement_0.nullableList = nil;
+                } else {
+                    { // Scope for our temporary variables
+                        auto * array_3 = [NSMutableArray new];
+                        for (chip::ListIndex index_3 = 0; index_3 < entry_0.nullableList.Value().size(); index_3++) {
+                            auto & entry_3 = entry_0.nullableList.Value().data()[index_3];
+                            NSNumber * newElement_3;
+                            newElement_3 = [NSNumber numberWithUnsignedChar:chip::to_underlying(entry_3)];
+                            [array_3 addObject:newElement_3];
+                        }
+                        newElement_0.nullableList = array_3;
+                    }
+                }
+                if (entry_0.optionalList.HasValue()) {
+                    { // Scope for our temporary variables
+                        auto * array_3 = [NSMutableArray new];
+                        for (chip::ListIndex index_3 = 0; index_3 < entry_0.optionalList.Value().size(); index_3++) {
+                            auto & entry_3 = entry_0.optionalList.Value().data()[index_3];
+                            NSNumber * newElement_3;
+                            newElement_3 = [NSNumber numberWithUnsignedChar:chip::to_underlying(entry_3)];
+                            [array_3 addObject:newElement_3];
+                        }
+                        newElement_0.optionalList = array_3;
+                    }
+                } else {
+                    newElement_0.optionalList = nil;
+                }
+                if (entry_0.nullableOptionalList.HasValue()) {
+                    if (entry_0.nullableOptionalList.Value().IsNull()) {
+                        newElement_0.nullableOptionalList = nil;
+                    } else {
+                        { // Scope for our temporary variables
+                            auto * array_4 = [NSMutableArray new];
+                            for (chip::ListIndex index_4 = 0; index_4 < entry_0.nullableOptionalList.Value().Value().size();
+                                 index_4++) {
+                                auto & entry_4 = entry_0.nullableOptionalList.Value().Value().data()[index_4];
+                                NSNumber * newElement_4;
+                                newElement_4 = [NSNumber numberWithUnsignedChar:chip::to_underlying(entry_4)];
+                                [array_4 addObject:newElement_4];
+                            }
+                            newElement_0.nullableOptionalList = array_4;
+                        }
+                    }
+                } else {
+                    newElement_0.nullableOptionalList = nil;
+                }
+                [array_0 addObject:newElement_0];
+            }
+            value = array_0;
+        }
+
+        [cluster
+            writeAttributeListNullablesAndOptionalsStructWithValue:value
+                                                 completionHandler:^(NSError * _Nullable error) {
+                                                     chipError = [CHIPError errorToCHIPErrorCode:error];
+                                                     ChipLogError(chipTool, "TestCluster ListNullablesAndOptionalsStruct Error: %s",
+                                                         chip::ErrorStr(chipError));
+                                                     SetCommandExitStatus(chipError);
+                                                 }];
+        return chipError;
+    }
+
+private:
+    chip::app::DataModel::List<const chip::app::Clusters::TestCluster::Structs::NullablesAndOptionalsStruct::Type> mValue;
+    TypedComplexArgument<
+        chip::app::DataModel::List<const chip::app::Clusters::TestCluster::Structs::NullablesAndOptionalsStruct::Type>>
+        mComplex;
 };
 
 class SubscribeAttributeTestClusterListNullablesAndOptionalsStruct : public ModelCommand {
@@ -55516,17 +57136,17 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x0000050F) WriteAttribute (0x00000024) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPTestCluster * cluster = [[CHIPTestCluster alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nonnull value = [NSNumber numberWithUnsignedChar:mValue];
 
         [cluster writeAttributeEnumAttrWithValue:value
                                completionHandler:^(NSError * _Nullable error) {
-                                   err = [CHIPError errorToCHIPErrorCode:error];
-                                   ChipLogError(chipTool, "TestCluster EnumAttr Error: %s", chip::ErrorStr(err));
-                                   SetCommandExitStatus(err);
+                                   chipError = [CHIPError errorToCHIPErrorCode:error];
+                                   ChipLogError(chipTool, "TestCluster EnumAttr Error: %s", chip::ErrorStr(chipError));
+                                   SetCommandExitStatus(chipError);
                                }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -55615,8 +57235,10 @@ class WriteTestClusterStructAttr : public ModelCommand {
 public:
     WriteTestClusterStructAttr()
         : ModelCommand("write")
+        , mComplex(&mValue)
     {
         AddArgument("attr-name", "struct-attr");
+        AddArgument("attr-value", &mComplex);
         ModelCommand::AddArguments();
     }
 
@@ -55627,20 +57249,31 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x0000050F) WriteAttribute (0x00000025) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPTestCluster * cluster = [[CHIPTestCluster alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
-        CHIPTestClusterClusterSimpleStruct * value = [[CHIPTestClusterClusterSimpleStruct alloc] init];
+        CHIPTestClusterClusterSimpleStruct * _Nonnull value;
+        value = [CHIPTestClusterClusterSimpleStruct new];
+        value.a = [NSNumber numberWithUnsignedChar:mValue.a];
+        value.b = [NSNumber numberWithBool:mValue.b];
+        value.c = [NSNumber numberWithUnsignedChar:chip::to_underlying(mValue.c)];
+        value.d = [NSData dataWithBytes:mValue.d.data() length:mValue.d.size()];
+        value.e = [[NSString alloc] initWithBytes:mValue.e.data() length:mValue.e.size() encoding:NSUTF8StringEncoding];
+        value.f = [NSNumber numberWithUnsignedChar:mValue.f.Raw()];
+        value.g = [NSNumber numberWithFloat:mValue.g];
+        value.h = [NSNumber numberWithDouble:mValue.h];
 
         [cluster writeAttributeStructAttrWithValue:value
                                  completionHandler:^(NSError * _Nullable error) {
-                                     err = [CHIPError errorToCHIPErrorCode:error];
-                                     ChipLogError(chipTool, "TestCluster StructAttr Error: %s", chip::ErrorStr(err));
-                                     SetCommandExitStatus(err);
+                                     chipError = [CHIPError errorToCHIPErrorCode:error];
+                                     ChipLogError(chipTool, "TestCluster StructAttr Error: %s", chip::ErrorStr(chipError));
+                                     SetCommandExitStatus(chipError);
                                  }];
-        return err;
+        return chipError;
     }
 
 private:
+    chip::app::Clusters::TestCluster::Structs::SimpleStruct::Type mValue;
+    TypedComplexArgument<chip::app::Clusters::TestCluster::Structs::SimpleStruct::Type> mComplex;
 };
 
 class SubscribeAttributeTestClusterStructAttr : public ModelCommand {
@@ -55738,18 +57371,18 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x0000050F) WriteAttribute (0x00000026) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPTestCluster * cluster = [[CHIPTestCluster alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nonnull value = [NSNumber numberWithUnsignedChar:mValue];
 
-        [cluster
-            writeAttributeRangeRestrictedInt8uWithValue:value
-                                      completionHandler:^(NSError * _Nullable error) {
-                                          err = [CHIPError errorToCHIPErrorCode:error];
-                                          ChipLogError(chipTool, "TestCluster RangeRestrictedInt8u Error: %s", chip::ErrorStr(err));
-                                          SetCommandExitStatus(err);
-                                      }];
-        return err;
+        [cluster writeAttributeRangeRestrictedInt8uWithValue:value
+                                           completionHandler:^(NSError * _Nullable error) {
+                                               chipError = [CHIPError errorToCHIPErrorCode:error];
+                                               ChipLogError(chipTool, "TestCluster RangeRestrictedInt8u Error: %s",
+                                                   chip::ErrorStr(chipError));
+                                               SetCommandExitStatus(chipError);
+                                           }];
+        return chipError;
     }
 
 private:
@@ -55851,18 +57484,18 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x0000050F) WriteAttribute (0x00000027) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPTestCluster * cluster = [[CHIPTestCluster alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nonnull value = [NSNumber numberWithChar:mValue];
 
-        [cluster
-            writeAttributeRangeRestrictedInt8sWithValue:value
-                                      completionHandler:^(NSError * _Nullable error) {
-                                          err = [CHIPError errorToCHIPErrorCode:error];
-                                          ChipLogError(chipTool, "TestCluster RangeRestrictedInt8s Error: %s", chip::ErrorStr(err));
-                                          SetCommandExitStatus(err);
-                                      }];
-        return err;
+        [cluster writeAttributeRangeRestrictedInt8sWithValue:value
+                                           completionHandler:^(NSError * _Nullable error) {
+                                               chipError = [CHIPError errorToCHIPErrorCode:error];
+                                               ChipLogError(chipTool, "TestCluster RangeRestrictedInt8s Error: %s",
+                                                   chip::ErrorStr(chipError));
+                                               SetCommandExitStatus(chipError);
+                                           }];
+        return chipError;
     }
 
 private:
@@ -55964,18 +57597,18 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x0000050F) WriteAttribute (0x00000028) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPTestCluster * cluster = [[CHIPTestCluster alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nonnull value = [NSNumber numberWithUnsignedShort:mValue];
 
         [cluster writeAttributeRangeRestrictedInt16uWithValue:value
                                             completionHandler:^(NSError * _Nullable error) {
-                                                err = [CHIPError errorToCHIPErrorCode:error];
-                                                ChipLogError(
-                                                    chipTool, "TestCluster RangeRestrictedInt16u Error: %s", chip::ErrorStr(err));
-                                                SetCommandExitStatus(err);
+                                                chipError = [CHIPError errorToCHIPErrorCode:error];
+                                                ChipLogError(chipTool, "TestCluster RangeRestrictedInt16u Error: %s",
+                                                    chip::ErrorStr(chipError));
+                                                SetCommandExitStatus(chipError);
                                             }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -56077,18 +57710,18 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x0000050F) WriteAttribute (0x00000029) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPTestCluster * cluster = [[CHIPTestCluster alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nonnull value = [NSNumber numberWithShort:mValue];
 
         [cluster writeAttributeRangeRestrictedInt16sWithValue:value
                                             completionHandler:^(NSError * _Nullable error) {
-                                                err = [CHIPError errorToCHIPErrorCode:error];
-                                                ChipLogError(
-                                                    chipTool, "TestCluster RangeRestrictedInt16s Error: %s", chip::ErrorStr(err));
-                                                SetCommandExitStatus(err);
+                                                chipError = [CHIPError errorToCHIPErrorCode:error];
+                                                ChipLogError(chipTool, "TestCluster RangeRestrictedInt16s Error: %s",
+                                                    chip::ErrorStr(chipError));
+                                                SetCommandExitStatus(chipError);
                                             }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -56173,6 +57806,53 @@ public:
     }
 };
 
+class WriteTestClusterListLongOctetString : public ModelCommand {
+public:
+    WriteTestClusterListLongOctetString()
+        : ModelCommand("write")
+        , mComplex(&mValue)
+    {
+        AddArgument("attr-name", "list-long-octet-string");
+        AddArgument("attr-value", &mComplex);
+        ModelCommand::AddArguments();
+    }
+
+    ~WriteTestClusterListLongOctetString() {}
+
+    CHIP_ERROR SendCommand(CHIPDevice * device, chip::EndpointId endpointId) override
+    {
+        ChipLogProgress(chipTool, "Sending cluster (0x0000050F) WriteAttribute (0x0000002A) on endpoint %" PRIu16, endpointId);
+        dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
+        CHIPTestCluster * cluster = [[CHIPTestCluster alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
+
+        NSArray * _Nonnull value;
+        { // Scope for our temporary variables
+            auto * array_0 = [NSMutableArray new];
+            for (chip::ListIndex index_0 = 0; index_0 < mValue.size(); index_0++) {
+                auto & entry_0 = mValue.data()[index_0];
+                NSData * newElement_0;
+                newElement_0 = [NSData dataWithBytes:entry_0.data() length:entry_0.size()];
+                [array_0 addObject:newElement_0];
+            }
+            value = array_0;
+        }
+
+        [cluster writeAttributeListLongOctetStringWithValue:value
+                                          completionHandler:^(NSError * _Nullable error) {
+                                              chipError = [CHIPError errorToCHIPErrorCode:error];
+                                              ChipLogError(
+                                                  chipTool, "TestCluster ListLongOctetString Error: %s", chip::ErrorStr(chipError));
+                                              SetCommandExitStatus(chipError);
+                                          }];
+        return chipError;
+    }
+
+private:
+    chip::app::DataModel::List<const chip::ByteSpan> mValue;
+    TypedComplexArgument<chip::app::DataModel::List<const chip::ByteSpan>> mComplex;
+};
+
 class SubscribeAttributeTestClusterListLongOctetString : public ModelCommand {
 public:
     SubscribeAttributeTestClusterListLongOctetString()
@@ -56251,6 +57931,104 @@ public:
                                        }];
         return err;
     }
+};
+
+class WriteTestClusterListFabricScoped : public ModelCommand {
+public:
+    WriteTestClusterListFabricScoped()
+        : ModelCommand("write")
+        , mComplex(&mValue)
+    {
+        AddArgument("attr-name", "list-fabric-scoped");
+        AddArgument("attr-value", &mComplex);
+        ModelCommand::AddArguments();
+    }
+
+    ~WriteTestClusterListFabricScoped() {}
+
+    CHIP_ERROR SendCommand(CHIPDevice * device, chip::EndpointId endpointId) override
+    {
+        ChipLogProgress(chipTool, "Sending cluster (0x0000050F) WriteAttribute (0x0000002B) on endpoint %" PRIu16, endpointId);
+        dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
+        CHIPTestCluster * cluster = [[CHIPTestCluster alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
+
+        NSArray * _Nonnull value;
+        { // Scope for our temporary variables
+            auto * array_0 = [NSMutableArray new];
+            for (chip::ListIndex index_0 = 0; index_0 < mValue.size(); index_0++) {
+                auto & entry_0 = mValue.data()[index_0];
+                CHIPTestClusterClusterTestFabricScoped * newElement_0;
+                newElement_0 = [CHIPTestClusterClusterTestFabricScoped new];
+                newElement_0.fabricSensitiveInt8u = [NSNumber numberWithUnsignedChar:entry_0.fabricSensitiveInt8u];
+                if (entry_0.optionalFabricSensitiveInt8u.HasValue()) {
+                    newElement_0.optionalFabricSensitiveInt8u =
+                        [NSNumber numberWithUnsignedChar:entry_0.optionalFabricSensitiveInt8u.Value()];
+                } else {
+                    newElement_0.optionalFabricSensitiveInt8u = nil;
+                }
+                if (entry_0.nullableFabricSensitiveInt8u.IsNull()) {
+                    newElement_0.nullableFabricSensitiveInt8u = nil;
+                } else {
+                    newElement_0.nullableFabricSensitiveInt8u =
+                        [NSNumber numberWithUnsignedChar:entry_0.nullableFabricSensitiveInt8u.Value()];
+                }
+                if (entry_0.nullableOptionalFabricSensitiveInt8u.HasValue()) {
+                    if (entry_0.nullableOptionalFabricSensitiveInt8u.Value().IsNull()) {
+                        newElement_0.nullableOptionalFabricSensitiveInt8u = nil;
+                    } else {
+                        newElement_0.nullableOptionalFabricSensitiveInt8u =
+                            [NSNumber numberWithUnsignedChar:entry_0.nullableOptionalFabricSensitiveInt8u.Value().Value()];
+                    }
+                } else {
+                    newElement_0.nullableOptionalFabricSensitiveInt8u = nil;
+                }
+                newElement_0.fabricSensitiveCharString = [[NSString alloc] initWithBytes:entry_0.fabricSensitiveCharString.data()
+                                                                                  length:entry_0.fabricSensitiveCharString.size()
+                                                                                encoding:NSUTF8StringEncoding];
+                newElement_0.fabricSensitiveStruct = [CHIPTestClusterClusterSimpleStruct new];
+                newElement_0.fabricSensitiveStruct.a = [NSNumber numberWithUnsignedChar:entry_0.fabricSensitiveStruct.a];
+                newElement_0.fabricSensitiveStruct.b = [NSNumber numberWithBool:entry_0.fabricSensitiveStruct.b];
+                newElement_0.fabricSensitiveStruct.c =
+                    [NSNumber numberWithUnsignedChar:chip::to_underlying(entry_0.fabricSensitiveStruct.c)];
+                newElement_0.fabricSensitiveStruct.d = [NSData dataWithBytes:entry_0.fabricSensitiveStruct.d.data()
+                                                                      length:entry_0.fabricSensitiveStruct.d.size()];
+                newElement_0.fabricSensitiveStruct.e = [[NSString alloc] initWithBytes:entry_0.fabricSensitiveStruct.e.data()
+                                                                                length:entry_0.fabricSensitiveStruct.e.size()
+                                                                              encoding:NSUTF8StringEncoding];
+                newElement_0.fabricSensitiveStruct.f = [NSNumber numberWithUnsignedChar:entry_0.fabricSensitiveStruct.f.Raw()];
+                newElement_0.fabricSensitiveStruct.g = [NSNumber numberWithFloat:entry_0.fabricSensitiveStruct.g];
+                newElement_0.fabricSensitiveStruct.h = [NSNumber numberWithDouble:entry_0.fabricSensitiveStruct.h];
+                { // Scope for our temporary variables
+                    auto * array_2 = [NSMutableArray new];
+                    for (chip::ListIndex index_2 = 0; index_2 < entry_0.fabricSensitiveInt8uList.size(); index_2++) {
+                        auto & entry_2 = entry_0.fabricSensitiveInt8uList.data()[index_2];
+                        NSNumber * newElement_2;
+                        newElement_2 = [NSNumber numberWithUnsignedChar:entry_2];
+                        [array_2 addObject:newElement_2];
+                    }
+                    newElement_0.fabricSensitiveInt8uList = array_2;
+                }
+                newElement_0.fabricIndex = [NSNumber numberWithUnsignedChar:entry_0.fabricIndex];
+                [array_0 addObject:newElement_0];
+            }
+            value = array_0;
+        }
+
+        [cluster
+            writeAttributeListFabricScopedWithValue:value
+                                  completionHandler:^(NSError * _Nullable error) {
+                                      chipError = [CHIPError errorToCHIPErrorCode:error];
+                                      ChipLogError(chipTool, "TestCluster ListFabricScoped Error: %s", chip::ErrorStr(chipError));
+                                      SetCommandExitStatus(chipError);
+                                  }];
+        return chipError;
+    }
+
+private:
+    chip::app::DataModel::List<const chip::app::Clusters::TestCluster::Structs::TestFabricScoped::Type> mValue;
+    TypedComplexArgument<chip::app::DataModel::List<const chip::app::Clusters::TestCluster::Structs::TestFabricScoped::Type>>
+        mComplex;
 };
 
 class SubscribeAttributeTestClusterListFabricScoped : public ModelCommand {
@@ -56347,17 +58125,18 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x0000050F) WriteAttribute (0x00000030) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPTestCluster * cluster = [[CHIPTestCluster alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nonnull value = [NSNumber numberWithBool:mValue];
 
-        [cluster writeAttributeTimedWriteBooleanWithValue:value
-                                        completionHandler:^(NSError * _Nullable error) {
-                                            err = [CHIPError errorToCHIPErrorCode:error];
-                                            ChipLogError(chipTool, "TestCluster TimedWriteBoolean Error: %s", chip::ErrorStr(err));
-                                            SetCommandExitStatus(err);
-                                        }];
-        return err;
+        [cluster
+            writeAttributeTimedWriteBooleanWithValue:value
+                                   completionHandler:^(NSError * _Nullable error) {
+                                       chipError = [CHIPError errorToCHIPErrorCode:error];
+                                       ChipLogError(chipTool, "TestCluster TimedWriteBoolean Error: %s", chip::ErrorStr(chipError));
+                                       SetCommandExitStatus(chipError);
+                                   }];
+        return chipError;
     }
 
 private:
@@ -56458,18 +58237,18 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x0000050F) WriteAttribute (0x00000031) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPTestCluster * cluster = [[CHIPTestCluster alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nonnull value = [NSNumber numberWithBool:mValue];
 
-        [cluster
-            writeAttributeGeneralErrorBooleanWithValue:value
-                                     completionHandler:^(NSError * _Nullable error) {
-                                         err = [CHIPError errorToCHIPErrorCode:error];
-                                         ChipLogError(chipTool, "TestCluster GeneralErrorBoolean Error: %s", chip::ErrorStr(err));
-                                         SetCommandExitStatus(err);
-                                     }];
-        return err;
+        [cluster writeAttributeGeneralErrorBooleanWithValue:value
+                                          completionHandler:^(NSError * _Nullable error) {
+                                              chipError = [CHIPError errorToCHIPErrorCode:error];
+                                              ChipLogError(
+                                                  chipTool, "TestCluster GeneralErrorBoolean Error: %s", chip::ErrorStr(chipError));
+                                              SetCommandExitStatus(chipError);
+                                          }];
+        return chipError;
     }
 
 private:
@@ -56571,18 +58350,18 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x0000050F) WriteAttribute (0x00000032) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPTestCluster * cluster = [[CHIPTestCluster alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nonnull value = [NSNumber numberWithBool:mValue];
 
-        [cluster
-            writeAttributeClusterErrorBooleanWithValue:value
-                                     completionHandler:^(NSError * _Nullable error) {
-                                         err = [CHIPError errorToCHIPErrorCode:error];
-                                         ChipLogError(chipTool, "TestCluster ClusterErrorBoolean Error: %s", chip::ErrorStr(err));
-                                         SetCommandExitStatus(err);
-                                     }];
-        return err;
+        [cluster writeAttributeClusterErrorBooleanWithValue:value
+                                          completionHandler:^(NSError * _Nullable error) {
+                                              chipError = [CHIPError errorToCHIPErrorCode:error];
+                                              ChipLogError(
+                                                  chipTool, "TestCluster ClusterErrorBoolean Error: %s", chip::ErrorStr(chipError));
+                                              SetCommandExitStatus(chipError);
+                                          }];
+        return chipError;
     }
 
 private:
@@ -56684,17 +58463,17 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x0000050F) WriteAttribute (0x000000FF) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPTestCluster * cluster = [[CHIPTestCluster alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nonnull value = [NSNumber numberWithBool:mValue];
 
         [cluster writeAttributeUnsupportedWithValue:value
                                   completionHandler:^(NSError * _Nullable error) {
-                                      err = [CHIPError errorToCHIPErrorCode:error];
-                                      ChipLogError(chipTool, "TestCluster Unsupported Error: %s", chip::ErrorStr(err));
-                                      SetCommandExitStatus(err);
+                                      chipError = [CHIPError errorToCHIPErrorCode:error];
+                                      ChipLogError(chipTool, "TestCluster Unsupported Error: %s", chip::ErrorStr(chipError));
+                                      SetCommandExitStatus(chipError);
                                   }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -56795,17 +58574,18 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x0000050F) WriteAttribute (0x00008000) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPTestCluster * cluster = [[CHIPTestCluster alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nullable value = [NSNumber numberWithBool:mValue];
 
-        [cluster writeAttributeNullableBooleanWithValue:value
-                                      completionHandler:^(NSError * _Nullable error) {
-                                          err = [CHIPError errorToCHIPErrorCode:error];
-                                          ChipLogError(chipTool, "TestCluster NullableBoolean Error: %s", chip::ErrorStr(err));
-                                          SetCommandExitStatus(err);
-                                      }];
-        return err;
+        [cluster
+            writeAttributeNullableBooleanWithValue:value
+                                 completionHandler:^(NSError * _Nullable error) {
+                                     chipError = [CHIPError errorToCHIPErrorCode:error];
+                                     ChipLogError(chipTool, "TestCluster NullableBoolean Error: %s", chip::ErrorStr(chipError));
+                                     SetCommandExitStatus(chipError);
+                                 }];
+        return chipError;
     }
 
 private:
@@ -56906,17 +58686,18 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x0000050F) WriteAttribute (0x00008001) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPTestCluster * cluster = [[CHIPTestCluster alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nullable value = [NSNumber numberWithUnsignedChar:mValue];
 
-        [cluster writeAttributeNullableBitmap8WithValue:value
-                                      completionHandler:^(NSError * _Nullable error) {
-                                          err = [CHIPError errorToCHIPErrorCode:error];
-                                          ChipLogError(chipTool, "TestCluster NullableBitmap8 Error: %s", chip::ErrorStr(err));
-                                          SetCommandExitStatus(err);
-                                      }];
-        return err;
+        [cluster
+            writeAttributeNullableBitmap8WithValue:value
+                                 completionHandler:^(NSError * _Nullable error) {
+                                     chipError = [CHIPError errorToCHIPErrorCode:error];
+                                     ChipLogError(chipTool, "TestCluster NullableBitmap8 Error: %s", chip::ErrorStr(chipError));
+                                     SetCommandExitStatus(chipError);
+                                 }];
+        return chipError;
     }
 
 private:
@@ -57017,17 +58798,18 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x0000050F) WriteAttribute (0x00008002) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPTestCluster * cluster = [[CHIPTestCluster alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nullable value = [NSNumber numberWithUnsignedShort:mValue];
 
-        [cluster writeAttributeNullableBitmap16WithValue:value
-                                       completionHandler:^(NSError * _Nullable error) {
-                                           err = [CHIPError errorToCHIPErrorCode:error];
-                                           ChipLogError(chipTool, "TestCluster NullableBitmap16 Error: %s", chip::ErrorStr(err));
-                                           SetCommandExitStatus(err);
-                                       }];
-        return err;
+        [cluster
+            writeAttributeNullableBitmap16WithValue:value
+                                  completionHandler:^(NSError * _Nullable error) {
+                                      chipError = [CHIPError errorToCHIPErrorCode:error];
+                                      ChipLogError(chipTool, "TestCluster NullableBitmap16 Error: %s", chip::ErrorStr(chipError));
+                                      SetCommandExitStatus(chipError);
+                                  }];
+        return chipError;
     }
 
 private:
@@ -57128,17 +58910,18 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x0000050F) WriteAttribute (0x00008003) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPTestCluster * cluster = [[CHIPTestCluster alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nullable value = [NSNumber numberWithUnsignedInt:mValue];
 
-        [cluster writeAttributeNullableBitmap32WithValue:value
-                                       completionHandler:^(NSError * _Nullable error) {
-                                           err = [CHIPError errorToCHIPErrorCode:error];
-                                           ChipLogError(chipTool, "TestCluster NullableBitmap32 Error: %s", chip::ErrorStr(err));
-                                           SetCommandExitStatus(err);
-                                       }];
-        return err;
+        [cluster
+            writeAttributeNullableBitmap32WithValue:value
+                                  completionHandler:^(NSError * _Nullable error) {
+                                      chipError = [CHIPError errorToCHIPErrorCode:error];
+                                      ChipLogError(chipTool, "TestCluster NullableBitmap32 Error: %s", chip::ErrorStr(chipError));
+                                      SetCommandExitStatus(chipError);
+                                  }];
+        return chipError;
     }
 
 private:
@@ -57239,17 +59022,18 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x0000050F) WriteAttribute (0x00008004) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPTestCluster * cluster = [[CHIPTestCluster alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nullable value = [NSNumber numberWithUnsignedLongLong:mValue];
 
-        [cluster writeAttributeNullableBitmap64WithValue:value
-                                       completionHandler:^(NSError * _Nullable error) {
-                                           err = [CHIPError errorToCHIPErrorCode:error];
-                                           ChipLogError(chipTool, "TestCluster NullableBitmap64 Error: %s", chip::ErrorStr(err));
-                                           SetCommandExitStatus(err);
-                                       }];
-        return err;
+        [cluster
+            writeAttributeNullableBitmap64WithValue:value
+                                  completionHandler:^(NSError * _Nullable error) {
+                                      chipError = [CHIPError errorToCHIPErrorCode:error];
+                                      ChipLogError(chipTool, "TestCluster NullableBitmap64 Error: %s", chip::ErrorStr(chipError));
+                                      SetCommandExitStatus(chipError);
+                                  }];
+        return chipError;
     }
 
 private:
@@ -57350,17 +59134,17 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x0000050F) WriteAttribute (0x00008005) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPTestCluster * cluster = [[CHIPTestCluster alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nullable value = [NSNumber numberWithUnsignedChar:mValue];
 
         [cluster writeAttributeNullableInt8uWithValue:value
                                     completionHandler:^(NSError * _Nullable error) {
-                                        err = [CHIPError errorToCHIPErrorCode:error];
-                                        ChipLogError(chipTool, "TestCluster NullableInt8u Error: %s", chip::ErrorStr(err));
-                                        SetCommandExitStatus(err);
+                                        chipError = [CHIPError errorToCHIPErrorCode:error];
+                                        ChipLogError(chipTool, "TestCluster NullableInt8u Error: %s", chip::ErrorStr(chipError));
+                                        SetCommandExitStatus(chipError);
                                     }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -57461,17 +59245,17 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x0000050F) WriteAttribute (0x00008006) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPTestCluster * cluster = [[CHIPTestCluster alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nullable value = [NSNumber numberWithUnsignedShort:mValue];
 
         [cluster writeAttributeNullableInt16uWithValue:value
                                      completionHandler:^(NSError * _Nullable error) {
-                                         err = [CHIPError errorToCHIPErrorCode:error];
-                                         ChipLogError(chipTool, "TestCluster NullableInt16u Error: %s", chip::ErrorStr(err));
-                                         SetCommandExitStatus(err);
+                                         chipError = [CHIPError errorToCHIPErrorCode:error];
+                                         ChipLogError(chipTool, "TestCluster NullableInt16u Error: %s", chip::ErrorStr(chipError));
+                                         SetCommandExitStatus(chipError);
                                      }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -57572,17 +59356,17 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x0000050F) WriteAttribute (0x00008007) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPTestCluster * cluster = [[CHIPTestCluster alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nullable value = [NSNumber numberWithUnsignedInt:mValue];
 
         [cluster writeAttributeNullableInt24uWithValue:value
                                      completionHandler:^(NSError * _Nullable error) {
-                                         err = [CHIPError errorToCHIPErrorCode:error];
-                                         ChipLogError(chipTool, "TestCluster NullableInt24u Error: %s", chip::ErrorStr(err));
-                                         SetCommandExitStatus(err);
+                                         chipError = [CHIPError errorToCHIPErrorCode:error];
+                                         ChipLogError(chipTool, "TestCluster NullableInt24u Error: %s", chip::ErrorStr(chipError));
+                                         SetCommandExitStatus(chipError);
                                      }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -57683,17 +59467,17 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x0000050F) WriteAttribute (0x00008008) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPTestCluster * cluster = [[CHIPTestCluster alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nullable value = [NSNumber numberWithUnsignedInt:mValue];
 
         [cluster writeAttributeNullableInt32uWithValue:value
                                      completionHandler:^(NSError * _Nullable error) {
-                                         err = [CHIPError errorToCHIPErrorCode:error];
-                                         ChipLogError(chipTool, "TestCluster NullableInt32u Error: %s", chip::ErrorStr(err));
-                                         SetCommandExitStatus(err);
+                                         chipError = [CHIPError errorToCHIPErrorCode:error];
+                                         ChipLogError(chipTool, "TestCluster NullableInt32u Error: %s", chip::ErrorStr(chipError));
+                                         SetCommandExitStatus(chipError);
                                      }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -57794,17 +59578,17 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x0000050F) WriteAttribute (0x00008009) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPTestCluster * cluster = [[CHIPTestCluster alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nullable value = [NSNumber numberWithUnsignedLongLong:mValue];
 
         [cluster writeAttributeNullableInt40uWithValue:value
                                      completionHandler:^(NSError * _Nullable error) {
-                                         err = [CHIPError errorToCHIPErrorCode:error];
-                                         ChipLogError(chipTool, "TestCluster NullableInt40u Error: %s", chip::ErrorStr(err));
-                                         SetCommandExitStatus(err);
+                                         chipError = [CHIPError errorToCHIPErrorCode:error];
+                                         ChipLogError(chipTool, "TestCluster NullableInt40u Error: %s", chip::ErrorStr(chipError));
+                                         SetCommandExitStatus(chipError);
                                      }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -57905,17 +59689,17 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x0000050F) WriteAttribute (0x0000800A) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPTestCluster * cluster = [[CHIPTestCluster alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nullable value = [NSNumber numberWithUnsignedLongLong:mValue];
 
         [cluster writeAttributeNullableInt48uWithValue:value
                                      completionHandler:^(NSError * _Nullable error) {
-                                         err = [CHIPError errorToCHIPErrorCode:error];
-                                         ChipLogError(chipTool, "TestCluster NullableInt48u Error: %s", chip::ErrorStr(err));
-                                         SetCommandExitStatus(err);
+                                         chipError = [CHIPError errorToCHIPErrorCode:error];
+                                         ChipLogError(chipTool, "TestCluster NullableInt48u Error: %s", chip::ErrorStr(chipError));
+                                         SetCommandExitStatus(chipError);
                                      }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -58016,17 +59800,17 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x0000050F) WriteAttribute (0x0000800B) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPTestCluster * cluster = [[CHIPTestCluster alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nullable value = [NSNumber numberWithUnsignedLongLong:mValue];
 
         [cluster writeAttributeNullableInt56uWithValue:value
                                      completionHandler:^(NSError * _Nullable error) {
-                                         err = [CHIPError errorToCHIPErrorCode:error];
-                                         ChipLogError(chipTool, "TestCluster NullableInt56u Error: %s", chip::ErrorStr(err));
-                                         SetCommandExitStatus(err);
+                                         chipError = [CHIPError errorToCHIPErrorCode:error];
+                                         ChipLogError(chipTool, "TestCluster NullableInt56u Error: %s", chip::ErrorStr(chipError));
+                                         SetCommandExitStatus(chipError);
                                      }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -58127,17 +59911,17 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x0000050F) WriteAttribute (0x0000800C) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPTestCluster * cluster = [[CHIPTestCluster alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nullable value = [NSNumber numberWithUnsignedLongLong:mValue];
 
         [cluster writeAttributeNullableInt64uWithValue:value
                                      completionHandler:^(NSError * _Nullable error) {
-                                         err = [CHIPError errorToCHIPErrorCode:error];
-                                         ChipLogError(chipTool, "TestCluster NullableInt64u Error: %s", chip::ErrorStr(err));
-                                         SetCommandExitStatus(err);
+                                         chipError = [CHIPError errorToCHIPErrorCode:error];
+                                         ChipLogError(chipTool, "TestCluster NullableInt64u Error: %s", chip::ErrorStr(chipError));
+                                         SetCommandExitStatus(chipError);
                                      }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -58238,17 +60022,17 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x0000050F) WriteAttribute (0x0000800D) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPTestCluster * cluster = [[CHIPTestCluster alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nullable value = [NSNumber numberWithChar:mValue];
 
         [cluster writeAttributeNullableInt8sWithValue:value
                                     completionHandler:^(NSError * _Nullable error) {
-                                        err = [CHIPError errorToCHIPErrorCode:error];
-                                        ChipLogError(chipTool, "TestCluster NullableInt8s Error: %s", chip::ErrorStr(err));
-                                        SetCommandExitStatus(err);
+                                        chipError = [CHIPError errorToCHIPErrorCode:error];
+                                        ChipLogError(chipTool, "TestCluster NullableInt8s Error: %s", chip::ErrorStr(chipError));
+                                        SetCommandExitStatus(chipError);
                                     }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -58349,17 +60133,17 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x0000050F) WriteAttribute (0x0000800E) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPTestCluster * cluster = [[CHIPTestCluster alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nullable value = [NSNumber numberWithShort:mValue];
 
         [cluster writeAttributeNullableInt16sWithValue:value
                                      completionHandler:^(NSError * _Nullable error) {
-                                         err = [CHIPError errorToCHIPErrorCode:error];
-                                         ChipLogError(chipTool, "TestCluster NullableInt16s Error: %s", chip::ErrorStr(err));
-                                         SetCommandExitStatus(err);
+                                         chipError = [CHIPError errorToCHIPErrorCode:error];
+                                         ChipLogError(chipTool, "TestCluster NullableInt16s Error: %s", chip::ErrorStr(chipError));
+                                         SetCommandExitStatus(chipError);
                                      }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -58460,17 +60244,17 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x0000050F) WriteAttribute (0x0000800F) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPTestCluster * cluster = [[CHIPTestCluster alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nullable value = [NSNumber numberWithInt:mValue];
 
         [cluster writeAttributeNullableInt24sWithValue:value
                                      completionHandler:^(NSError * _Nullable error) {
-                                         err = [CHIPError errorToCHIPErrorCode:error];
-                                         ChipLogError(chipTool, "TestCluster NullableInt24s Error: %s", chip::ErrorStr(err));
-                                         SetCommandExitStatus(err);
+                                         chipError = [CHIPError errorToCHIPErrorCode:error];
+                                         ChipLogError(chipTool, "TestCluster NullableInt24s Error: %s", chip::ErrorStr(chipError));
+                                         SetCommandExitStatus(chipError);
                                      }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -58571,17 +60355,17 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x0000050F) WriteAttribute (0x00008010) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPTestCluster * cluster = [[CHIPTestCluster alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nullable value = [NSNumber numberWithInt:mValue];
 
         [cluster writeAttributeNullableInt32sWithValue:value
                                      completionHandler:^(NSError * _Nullable error) {
-                                         err = [CHIPError errorToCHIPErrorCode:error];
-                                         ChipLogError(chipTool, "TestCluster NullableInt32s Error: %s", chip::ErrorStr(err));
-                                         SetCommandExitStatus(err);
+                                         chipError = [CHIPError errorToCHIPErrorCode:error];
+                                         ChipLogError(chipTool, "TestCluster NullableInt32s Error: %s", chip::ErrorStr(chipError));
+                                         SetCommandExitStatus(chipError);
                                      }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -58682,17 +60466,17 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x0000050F) WriteAttribute (0x00008011) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPTestCluster * cluster = [[CHIPTestCluster alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nullable value = [NSNumber numberWithLongLong:mValue];
 
         [cluster writeAttributeNullableInt40sWithValue:value
                                      completionHandler:^(NSError * _Nullable error) {
-                                         err = [CHIPError errorToCHIPErrorCode:error];
-                                         ChipLogError(chipTool, "TestCluster NullableInt40s Error: %s", chip::ErrorStr(err));
-                                         SetCommandExitStatus(err);
+                                         chipError = [CHIPError errorToCHIPErrorCode:error];
+                                         ChipLogError(chipTool, "TestCluster NullableInt40s Error: %s", chip::ErrorStr(chipError));
+                                         SetCommandExitStatus(chipError);
                                      }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -58793,17 +60577,17 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x0000050F) WriteAttribute (0x00008012) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPTestCluster * cluster = [[CHIPTestCluster alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nullable value = [NSNumber numberWithLongLong:mValue];
 
         [cluster writeAttributeNullableInt48sWithValue:value
                                      completionHandler:^(NSError * _Nullable error) {
-                                         err = [CHIPError errorToCHIPErrorCode:error];
-                                         ChipLogError(chipTool, "TestCluster NullableInt48s Error: %s", chip::ErrorStr(err));
-                                         SetCommandExitStatus(err);
+                                         chipError = [CHIPError errorToCHIPErrorCode:error];
+                                         ChipLogError(chipTool, "TestCluster NullableInt48s Error: %s", chip::ErrorStr(chipError));
+                                         SetCommandExitStatus(chipError);
                                      }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -58904,17 +60688,17 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x0000050F) WriteAttribute (0x00008013) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPTestCluster * cluster = [[CHIPTestCluster alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nullable value = [NSNumber numberWithLongLong:mValue];
 
         [cluster writeAttributeNullableInt56sWithValue:value
                                      completionHandler:^(NSError * _Nullable error) {
-                                         err = [CHIPError errorToCHIPErrorCode:error];
-                                         ChipLogError(chipTool, "TestCluster NullableInt56s Error: %s", chip::ErrorStr(err));
-                                         SetCommandExitStatus(err);
+                                         chipError = [CHIPError errorToCHIPErrorCode:error];
+                                         ChipLogError(chipTool, "TestCluster NullableInt56s Error: %s", chip::ErrorStr(chipError));
+                                         SetCommandExitStatus(chipError);
                                      }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -59015,17 +60799,17 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x0000050F) WriteAttribute (0x00008014) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPTestCluster * cluster = [[CHIPTestCluster alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nullable value = [NSNumber numberWithLongLong:mValue];
 
         [cluster writeAttributeNullableInt64sWithValue:value
                                      completionHandler:^(NSError * _Nullable error) {
-                                         err = [CHIPError errorToCHIPErrorCode:error];
-                                         ChipLogError(chipTool, "TestCluster NullableInt64s Error: %s", chip::ErrorStr(err));
-                                         SetCommandExitStatus(err);
+                                         chipError = [CHIPError errorToCHIPErrorCode:error];
+                                         ChipLogError(chipTool, "TestCluster NullableInt64s Error: %s", chip::ErrorStr(chipError));
+                                         SetCommandExitStatus(chipError);
                                      }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -59126,17 +60910,17 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x0000050F) WriteAttribute (0x00008015) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPTestCluster * cluster = [[CHIPTestCluster alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nullable value = [NSNumber numberWithUnsignedChar:mValue];
 
         [cluster writeAttributeNullableEnum8WithValue:value
                                     completionHandler:^(NSError * _Nullable error) {
-                                        err = [CHIPError errorToCHIPErrorCode:error];
-                                        ChipLogError(chipTool, "TestCluster NullableEnum8 Error: %s", chip::ErrorStr(err));
-                                        SetCommandExitStatus(err);
+                                        chipError = [CHIPError errorToCHIPErrorCode:error];
+                                        ChipLogError(chipTool, "TestCluster NullableEnum8 Error: %s", chip::ErrorStr(chipError));
+                                        SetCommandExitStatus(chipError);
                                     }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -59237,17 +61021,17 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x0000050F) WriteAttribute (0x00008016) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPTestCluster * cluster = [[CHIPTestCluster alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nullable value = [NSNumber numberWithUnsignedShort:mValue];
 
         [cluster writeAttributeNullableEnum16WithValue:value
                                      completionHandler:^(NSError * _Nullable error) {
-                                         err = [CHIPError errorToCHIPErrorCode:error];
-                                         ChipLogError(chipTool, "TestCluster NullableEnum16 Error: %s", chip::ErrorStr(err));
-                                         SetCommandExitStatus(err);
+                                         chipError = [CHIPError errorToCHIPErrorCode:error];
+                                         ChipLogError(chipTool, "TestCluster NullableEnum16 Error: %s", chip::ErrorStr(chipError));
+                                         SetCommandExitStatus(chipError);
                                      }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -59348,18 +61132,18 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x0000050F) WriteAttribute (0x00008017) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPTestCluster * cluster = [[CHIPTestCluster alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nullable value = [NSNumber numberWithFloat:mValue];
 
-        [cluster
-            writeAttributeNullableFloatSingleWithValue:value
-                                     completionHandler:^(NSError * _Nullable error) {
-                                         err = [CHIPError errorToCHIPErrorCode:error];
-                                         ChipLogError(chipTool, "TestCluster NullableFloatSingle Error: %s", chip::ErrorStr(err));
-                                         SetCommandExitStatus(err);
-                                     }];
-        return err;
+        [cluster writeAttributeNullableFloatSingleWithValue:value
+                                          completionHandler:^(NSError * _Nullable error) {
+                                              chipError = [CHIPError errorToCHIPErrorCode:error];
+                                              ChipLogError(
+                                                  chipTool, "TestCluster NullableFloatSingle Error: %s", chip::ErrorStr(chipError));
+                                              SetCommandExitStatus(chipError);
+                                          }];
+        return chipError;
     }
 
 private:
@@ -59461,18 +61245,18 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x0000050F) WriteAttribute (0x00008018) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPTestCluster * cluster = [[CHIPTestCluster alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nullable value = [NSNumber numberWithDouble:mValue];
 
-        [cluster
-            writeAttributeNullableFloatDoubleWithValue:value
-                                     completionHandler:^(NSError * _Nullable error) {
-                                         err = [CHIPError errorToCHIPErrorCode:error];
-                                         ChipLogError(chipTool, "TestCluster NullableFloatDouble Error: %s", chip::ErrorStr(err));
-                                         SetCommandExitStatus(err);
-                                     }];
-        return err;
+        [cluster writeAttributeNullableFloatDoubleWithValue:value
+                                          completionHandler:^(NSError * _Nullable error) {
+                                              chipError = [CHIPError errorToCHIPErrorCode:error];
+                                              ChipLogError(
+                                                  chipTool, "TestCluster NullableFloatDouble Error: %s", chip::ErrorStr(chipError));
+                                              SetCommandExitStatus(chipError);
+                                          }];
+        return chipError;
     }
 
 private:
@@ -59574,18 +61358,18 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x0000050F) WriteAttribute (0x00008019) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPTestCluster * cluster = [[CHIPTestCluster alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSData * _Nullable value = [[NSData alloc] initWithBytes:mValue.data() length:mValue.size()];
 
-        [cluster
-            writeAttributeNullableOctetStringWithValue:value
-                                     completionHandler:^(NSError * _Nullable error) {
-                                         err = [CHIPError errorToCHIPErrorCode:error];
-                                         ChipLogError(chipTool, "TestCluster NullableOctetString Error: %s", chip::ErrorStr(err));
-                                         SetCommandExitStatus(err);
-                                     }];
-        return err;
+        [cluster writeAttributeNullableOctetStringWithValue:value
+                                          completionHandler:^(NSError * _Nullable error) {
+                                              chipError = [CHIPError errorToCHIPErrorCode:error];
+                                              ChipLogError(
+                                                  chipTool, "TestCluster NullableOctetString Error: %s", chip::ErrorStr(chipError));
+                                              SetCommandExitStatus(chipError);
+                                          }];
+        return chipError;
     }
 
 private:
@@ -59687,20 +61471,20 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x0000050F) WriteAttribute (0x0000801E) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPTestCluster * cluster = [[CHIPTestCluster alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSString * _Nullable value = [[NSString alloc] initWithBytes:mValue.data()
                                                               length:mValue.size()
                                                             encoding:NSUTF8StringEncoding];
 
-        [cluster
-            writeAttributeNullableCharStringWithValue:value
-                                    completionHandler:^(NSError * _Nullable error) {
-                                        err = [CHIPError errorToCHIPErrorCode:error];
-                                        ChipLogError(chipTool, "TestCluster NullableCharString Error: %s", chip::ErrorStr(err));
-                                        SetCommandExitStatus(err);
-                                    }];
-        return err;
+        [cluster writeAttributeNullableCharStringWithValue:value
+                                         completionHandler:^(NSError * _Nullable error) {
+                                             chipError = [CHIPError errorToCHIPErrorCode:error];
+                                             ChipLogError(
+                                                 chipTool, "TestCluster NullableCharString Error: %s", chip::ErrorStr(chipError));
+                                             SetCommandExitStatus(chipError);
+                                         }];
+        return chipError;
     }
 
 private:
@@ -59802,17 +61586,18 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x0000050F) WriteAttribute (0x00008024) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPTestCluster * cluster = [[CHIPTestCluster alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nullable value = [NSNumber numberWithUnsignedChar:mValue];
 
-        [cluster writeAttributeNullableEnumAttrWithValue:value
-                                       completionHandler:^(NSError * _Nullable error) {
-                                           err = [CHIPError errorToCHIPErrorCode:error];
-                                           ChipLogError(chipTool, "TestCluster NullableEnumAttr Error: %s", chip::ErrorStr(err));
-                                           SetCommandExitStatus(err);
-                                       }];
-        return err;
+        [cluster
+            writeAttributeNullableEnumAttrWithValue:value
+                                  completionHandler:^(NSError * _Nullable error) {
+                                      chipError = [CHIPError errorToCHIPErrorCode:error];
+                                      ChipLogError(chipTool, "TestCluster NullableEnumAttr Error: %s", chip::ErrorStr(chipError));
+                                      SetCommandExitStatus(chipError);
+                                  }];
+        return chipError;
     }
 
 private:
@@ -59901,8 +61686,10 @@ class WriteTestClusterNullableStruct : public ModelCommand {
 public:
     WriteTestClusterNullableStruct()
         : ModelCommand("write")
+        , mComplex(&mValue)
     {
         AddArgument("attr-name", "nullable-struct");
+        AddArgument("attr-value", &mComplex);
         ModelCommand::AddArguments();
     }
 
@@ -59913,20 +61700,37 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x0000050F) WriteAttribute (0x00008025) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPTestCluster * cluster = [[CHIPTestCluster alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
-        CHIPTestClusterClusterSimpleStruct * value = [[CHIPTestClusterClusterSimpleStruct alloc] init];
+        CHIPTestClusterClusterSimpleStruct * _Nullable value;
+        if (mValue.IsNull()) {
+            value = nil;
+        } else {
+            value = [CHIPTestClusterClusterSimpleStruct new];
+            value.a = [NSNumber numberWithUnsignedChar:mValue.Value().a];
+            value.b = [NSNumber numberWithBool:mValue.Value().b];
+            value.c = [NSNumber numberWithUnsignedChar:chip::to_underlying(mValue.Value().c)];
+            value.d = [NSData dataWithBytes:mValue.Value().d.data() length:mValue.Value().d.size()];
+            value.e = [[NSString alloc] initWithBytes:mValue.Value().e.data()
+                                               length:mValue.Value().e.size()
+                                             encoding:NSUTF8StringEncoding];
+            value.f = [NSNumber numberWithUnsignedChar:mValue.Value().f.Raw()];
+            value.g = [NSNumber numberWithFloat:mValue.Value().g];
+            value.h = [NSNumber numberWithDouble:mValue.Value().h];
+        }
 
         [cluster writeAttributeNullableStructWithValue:value
                                      completionHandler:^(NSError * _Nullable error) {
-                                         err = [CHIPError errorToCHIPErrorCode:error];
-                                         ChipLogError(chipTool, "TestCluster NullableStruct Error: %s", chip::ErrorStr(err));
-                                         SetCommandExitStatus(err);
+                                         chipError = [CHIPError errorToCHIPErrorCode:error];
+                                         ChipLogError(chipTool, "TestCluster NullableStruct Error: %s", chip::ErrorStr(chipError));
+                                         SetCommandExitStatus(chipError);
                                      }];
-        return err;
+        return chipError;
     }
 
 private:
+    chip::app::DataModel::Nullable<chip::app::Clusters::TestCluster::Structs::SimpleStruct::Type> mValue;
+    TypedComplexArgument<chip::app::DataModel::Nullable<chip::app::Clusters::TestCluster::Structs::SimpleStruct::Type>> mComplex;
 };
 
 class SubscribeAttributeTestClusterNullableStruct : public ModelCommand {
@@ -60025,18 +61829,18 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x0000050F) WriteAttribute (0x00008026) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPTestCluster * cluster = [[CHIPTestCluster alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nullable value = [NSNumber numberWithUnsignedChar:mValue];
 
         [cluster writeAttributeNullableRangeRestrictedInt8uWithValue:value
                                                    completionHandler:^(NSError * _Nullable error) {
-                                                       err = [CHIPError errorToCHIPErrorCode:error];
+                                                       chipError = [CHIPError errorToCHIPErrorCode:error];
                                                        ChipLogError(chipTool, "TestCluster NullableRangeRestrictedInt8u Error: %s",
-                                                           chip::ErrorStr(err));
-                                                       SetCommandExitStatus(err);
+                                                           chip::ErrorStr(chipError));
+                                                       SetCommandExitStatus(chipError);
                                                    }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -60140,18 +61944,18 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x0000050F) WriteAttribute (0x00008027) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPTestCluster * cluster = [[CHIPTestCluster alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nullable value = [NSNumber numberWithChar:mValue];
 
         [cluster writeAttributeNullableRangeRestrictedInt8sWithValue:value
                                                    completionHandler:^(NSError * _Nullable error) {
-                                                       err = [CHIPError errorToCHIPErrorCode:error];
+                                                       chipError = [CHIPError errorToCHIPErrorCode:error];
                                                        ChipLogError(chipTool, "TestCluster NullableRangeRestrictedInt8s Error: %s",
-                                                           chip::ErrorStr(err));
-                                                       SetCommandExitStatus(err);
+                                                           chip::ErrorStr(chipError));
+                                                       SetCommandExitStatus(chipError);
                                                    }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -60255,19 +62059,19 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x0000050F) WriteAttribute (0x00008028) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPTestCluster * cluster = [[CHIPTestCluster alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nullable value = [NSNumber numberWithUnsignedShort:mValue];
 
         [cluster
             writeAttributeNullableRangeRestrictedInt16uWithValue:value
                                                completionHandler:^(NSError * _Nullable error) {
-                                                   err = [CHIPError errorToCHIPErrorCode:error];
+                                                   chipError = [CHIPError errorToCHIPErrorCode:error];
                                                    ChipLogError(chipTool, "TestCluster NullableRangeRestrictedInt16u Error: %s",
-                                                       chip::ErrorStr(err));
-                                                   SetCommandExitStatus(err);
+                                                       chip::ErrorStr(chipError));
+                                                   SetCommandExitStatus(chipError);
                                                }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -60372,19 +62176,19 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x0000050F) WriteAttribute (0x00008029) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPTestCluster * cluster = [[CHIPTestCluster alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nullable value = [NSNumber numberWithShort:mValue];
 
         [cluster
             writeAttributeNullableRangeRestrictedInt16sWithValue:value
                                                completionHandler:^(NSError * _Nullable error) {
-                                                   err = [CHIPError errorToCHIPErrorCode:error];
+                                                   chipError = [CHIPError errorToCHIPErrorCode:error];
                                                    ChipLogError(chipTool, "TestCluster NullableRangeRestrictedInt16s Error: %s",
-                                                       chip::ErrorStr(err));
-                                                   SetCommandExitStatus(err);
+                                                       chip::ErrorStr(chipError));
+                                                   SetCommandExitStatus(chipError);
                                                }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -60829,13 +62633,13 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPThermostat * cluster = [[CHIPThermostat alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         [cluster clearWeeklyScheduleWithCompletionHandler:^(NSError * _Nullable error) {
-            err = [CHIPError errorToCHIPErrorCode:error];
-            ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-            SetCommandExitStatus(err);
+            chipError = [CHIPError errorToCHIPErrorCode:error];
+            ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+            SetCommandExitStatus(chipError);
         }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -60858,15 +62662,15 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPThermostat * cluster = [[CHIPThermostat alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         [cluster getRelayStatusLogWithCompletionHandler:^(
             CHIPThermostatClusterGetRelayStatusLogResponseParams * _Nullable values, NSError * _Nullable error) {
             NSLog(@"Values: %@", values);
-            err = [CHIPError errorToCHIPErrorCode:error];
-            ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-            SetCommandExitStatus(err);
+            chipError = [CHIPError errorToCHIPErrorCode:error];
+            ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+            SetCommandExitStatus(chipError);
         }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -60891,19 +62695,21 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPThermostat * cluster = [[CHIPThermostat alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPThermostatClusterGetWeeklyScheduleParams alloc] init];
+
         params.daysToReturn = [NSNumber numberWithUnsignedChar:mDaysToReturn];
+
         params.modeToReturn = [NSNumber numberWithUnsignedChar:mModeToReturn];
         [cluster getWeeklyScheduleWithParams:params
                            completionHandler:^(
                                CHIPThermostatClusterGetWeeklyScheduleResponseParams * _Nullable values, NSError * _Nullable error) {
                                NSLog(@"Values: %@", values);
-                               err = [CHIPError errorToCHIPErrorCode:error];
-                               ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                               SetCommandExitStatus(err);
+                               chipError = [CHIPError errorToCHIPErrorCode:error];
+                               ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                               SetCommandExitStatus(chipError);
                            }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -60918,10 +62724,12 @@ class ThermostatSetWeeklySchedule : public ModelCommand {
 public:
     ThermostatSetWeeklySchedule()
         : ModelCommand("set-weekly-schedule")
+        , mComplex_Payload(&mRequest.payload)
     {
         AddArgument("NumberOfTransitionsForSequence", 0, UINT8_MAX, &mNumberOfTransitionsForSequence);
         AddArgument("DayOfWeekForSequence", 0, UINT8_MAX, &mDayOfWeekForSequence);
         AddArgument("ModeForSequence", 0, UINT8_MAX, &mModeForSequence);
+        AddArgument("Payload", &mComplex_Payload);
         ModelCommand::AddArguments();
     }
 
@@ -60931,25 +62739,40 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPThermostat * cluster = [[CHIPThermostat alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPThermostatClusterSetWeeklyScheduleParams alloc] init];
+
         params.numberOfTransitionsForSequence = [NSNumber numberWithUnsignedChar:mNumberOfTransitionsForSequence];
+
         params.dayOfWeekForSequence = [NSNumber numberWithUnsignedChar:mDayOfWeekForSequence];
+
         params.modeForSequence = [NSNumber numberWithUnsignedChar:mModeForSequence];
-        // payload Array parsing is not supported yet
+
+        { // Scope for our temporary variables
+            auto * array_0 = [NSMutableArray new];
+            for (chip::ListIndex index_0 = 0; index_0 < mRequest.payload.size(); index_0++) {
+                auto & entry_0 = mRequest.payload.data()[index_0];
+                NSNumber * newElement_0;
+                newElement_0 = [NSNumber numberWithUnsignedChar:entry_0];
+                [array_0 addObject:newElement_0];
+            }
+            params.payload = array_0;
+        }
         [cluster setWeeklyScheduleWithParams:params
                            completionHandler:^(NSError * _Nullable error) {
-                               err = [CHIPError errorToCHIPErrorCode:error];
-                               ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                               SetCommandExitStatus(err);
+                               chipError = [CHIPError errorToCHIPErrorCode:error];
+                               ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                               SetCommandExitStatus(chipError);
                            }];
-        return err;
+        return chipError;
     }
 
 private:
     uint8_t mNumberOfTransitionsForSequence;
     uint8_t mDayOfWeekForSequence;
     uint8_t mModeForSequence;
+    chip::app::Clusters::Thermostat::Commands::SetWeeklySchedule::Type mRequest;
+    TypedComplexArgument<chip::app::DataModel::List<const uint8_t>> mComplex_Payload;
 };
 
 /*
@@ -60971,17 +62794,19 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPThermostat * cluster = [[CHIPThermostat alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPThermostatClusterSetpointRaiseLowerParams alloc] init];
+
         params.mode = [NSNumber numberWithUnsignedChar:mMode];
+
         params.amount = [NSNumber numberWithChar:mAmount];
         [cluster setpointRaiseLowerWithParams:params
                             completionHandler:^(NSError * _Nullable error) {
-                                err = [CHIPError errorToCHIPErrorCode:error];
-                                ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                                SetCommandExitStatus(err);
+                                chipError = [CHIPError errorToCHIPErrorCode:error];
+                                ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                                SetCommandExitStatus(chipError);
                             }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -61432,18 +63257,18 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x00000201) WriteAttribute (0x00000011) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPThermostat * cluster = [[CHIPThermostat alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nonnull value = [NSNumber numberWithShort:mValue];
 
         [cluster writeAttributeOccupiedCoolingSetpointWithValue:value
                                               completionHandler:^(NSError * _Nullable error) {
-                                                  err = [CHIPError errorToCHIPErrorCode:error];
+                                                  chipError = [CHIPError errorToCHIPErrorCode:error];
                                                   ChipLogError(chipTool, "Thermostat OccupiedCoolingSetpoint Error: %s",
-                                                      chip::ErrorStr(err));
-                                                  SetCommandExitStatus(err);
+                                                      chip::ErrorStr(chipError));
+                                                  SetCommandExitStatus(chipError);
                                               }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -61546,18 +63371,18 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x00000201) WriteAttribute (0x00000012) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPThermostat * cluster = [[CHIPThermostat alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nonnull value = [NSNumber numberWithShort:mValue];
 
         [cluster writeAttributeOccupiedHeatingSetpointWithValue:value
                                               completionHandler:^(NSError * _Nullable error) {
-                                                  err = [CHIPError errorToCHIPErrorCode:error];
+                                                  chipError = [CHIPError errorToCHIPErrorCode:error];
                                                   ChipLogError(chipTool, "Thermostat OccupiedHeatingSetpoint Error: %s",
-                                                      chip::ErrorStr(err));
-                                                  SetCommandExitStatus(err);
+                                                      chip::ErrorStr(chipError));
+                                                  SetCommandExitStatus(chipError);
                                               }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -61659,18 +63484,18 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x00000201) WriteAttribute (0x00000015) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPThermostat * cluster = [[CHIPThermostat alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nonnull value = [NSNumber numberWithShort:mValue];
 
-        [cluster
-            writeAttributeMinHeatSetpointLimitWithValue:value
-                                      completionHandler:^(NSError * _Nullable error) {
-                                          err = [CHIPError errorToCHIPErrorCode:error];
-                                          ChipLogError(chipTool, "Thermostat MinHeatSetpointLimit Error: %s", chip::ErrorStr(err));
-                                          SetCommandExitStatus(err);
-                                      }];
-        return err;
+        [cluster writeAttributeMinHeatSetpointLimitWithValue:value
+                                           completionHandler:^(NSError * _Nullable error) {
+                                               chipError = [CHIPError errorToCHIPErrorCode:error];
+                                               ChipLogError(chipTool, "Thermostat MinHeatSetpointLimit Error: %s",
+                                                   chip::ErrorStr(chipError));
+                                               SetCommandExitStatus(chipError);
+                                           }];
+        return chipError;
     }
 
 private:
@@ -61772,18 +63597,18 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x00000201) WriteAttribute (0x00000016) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPThermostat * cluster = [[CHIPThermostat alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nonnull value = [NSNumber numberWithShort:mValue];
 
-        [cluster
-            writeAttributeMaxHeatSetpointLimitWithValue:value
-                                      completionHandler:^(NSError * _Nullable error) {
-                                          err = [CHIPError errorToCHIPErrorCode:error];
-                                          ChipLogError(chipTool, "Thermostat MaxHeatSetpointLimit Error: %s", chip::ErrorStr(err));
-                                          SetCommandExitStatus(err);
-                                      }];
-        return err;
+        [cluster writeAttributeMaxHeatSetpointLimitWithValue:value
+                                           completionHandler:^(NSError * _Nullable error) {
+                                               chipError = [CHIPError errorToCHIPErrorCode:error];
+                                               ChipLogError(chipTool, "Thermostat MaxHeatSetpointLimit Error: %s",
+                                                   chip::ErrorStr(chipError));
+                                               SetCommandExitStatus(chipError);
+                                           }];
+        return chipError;
     }
 
 private:
@@ -61885,18 +63710,18 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x00000201) WriteAttribute (0x00000017) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPThermostat * cluster = [[CHIPThermostat alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nonnull value = [NSNumber numberWithShort:mValue];
 
-        [cluster
-            writeAttributeMinCoolSetpointLimitWithValue:value
-                                      completionHandler:^(NSError * _Nullable error) {
-                                          err = [CHIPError errorToCHIPErrorCode:error];
-                                          ChipLogError(chipTool, "Thermostat MinCoolSetpointLimit Error: %s", chip::ErrorStr(err));
-                                          SetCommandExitStatus(err);
-                                      }];
-        return err;
+        [cluster writeAttributeMinCoolSetpointLimitWithValue:value
+                                           completionHandler:^(NSError * _Nullable error) {
+                                               chipError = [CHIPError errorToCHIPErrorCode:error];
+                                               ChipLogError(chipTool, "Thermostat MinCoolSetpointLimit Error: %s",
+                                                   chip::ErrorStr(chipError));
+                                               SetCommandExitStatus(chipError);
+                                           }];
+        return chipError;
     }
 
 private:
@@ -61998,18 +63823,18 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x00000201) WriteAttribute (0x00000018) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPThermostat * cluster = [[CHIPThermostat alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nonnull value = [NSNumber numberWithShort:mValue];
 
-        [cluster
-            writeAttributeMaxCoolSetpointLimitWithValue:value
-                                      completionHandler:^(NSError * _Nullable error) {
-                                          err = [CHIPError errorToCHIPErrorCode:error];
-                                          ChipLogError(chipTool, "Thermostat MaxCoolSetpointLimit Error: %s", chip::ErrorStr(err));
-                                          SetCommandExitStatus(err);
-                                      }];
-        return err;
+        [cluster writeAttributeMaxCoolSetpointLimitWithValue:value
+                                           completionHandler:^(NSError * _Nullable error) {
+                                               chipError = [CHIPError errorToCHIPErrorCode:error];
+                                               ChipLogError(chipTool, "Thermostat MaxCoolSetpointLimit Error: %s",
+                                                   chip::ErrorStr(chipError));
+                                               SetCommandExitStatus(chipError);
+                                           }];
+        return chipError;
     }
 
 private:
@@ -62111,18 +63936,18 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x00000201) WriteAttribute (0x00000019) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPThermostat * cluster = [[CHIPThermostat alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nonnull value = [NSNumber numberWithChar:mValue];
 
-        [cluster
-            writeAttributeMinSetpointDeadBandWithValue:value
-                                     completionHandler:^(NSError * _Nullable error) {
-                                         err = [CHIPError errorToCHIPErrorCode:error];
-                                         ChipLogError(chipTool, "Thermostat MinSetpointDeadBand Error: %s", chip::ErrorStr(err));
-                                         SetCommandExitStatus(err);
-                                     }];
-        return err;
+        [cluster writeAttributeMinSetpointDeadBandWithValue:value
+                                          completionHandler:^(NSError * _Nullable error) {
+                                              chipError = [CHIPError errorToCHIPErrorCode:error];
+                                              ChipLogError(
+                                                  chipTool, "Thermostat MinSetpointDeadBand Error: %s", chip::ErrorStr(chipError));
+                                              SetCommandExitStatus(chipError);
+                                          }];
+        return chipError;
     }
 
 private:
@@ -62225,18 +64050,18 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x00000201) WriteAttribute (0x0000001B) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPThermostat * cluster = [[CHIPThermostat alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nonnull value = [NSNumber numberWithUnsignedChar:mValue];
 
         [cluster writeAttributeControlSequenceOfOperationWithValue:value
                                                  completionHandler:^(NSError * _Nullable error) {
-                                                     err = [CHIPError errorToCHIPErrorCode:error];
+                                                     chipError = [CHIPError errorToCHIPErrorCode:error];
                                                      ChipLogError(chipTool, "Thermostat ControlSequenceOfOperation Error: %s",
-                                                         chip::ErrorStr(err));
-                                                     SetCommandExitStatus(err);
+                                                         chip::ErrorStr(chipError));
+                                                     SetCommandExitStatus(chipError);
                                                  }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -62339,17 +64164,17 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x00000201) WriteAttribute (0x0000001C) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPThermostat * cluster = [[CHIPThermostat alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nonnull value = [NSNumber numberWithUnsignedChar:mValue];
 
         [cluster writeAttributeSystemModeWithValue:value
                                  completionHandler:^(NSError * _Nullable error) {
-                                     err = [CHIPError errorToCHIPErrorCode:error];
-                                     ChipLogError(chipTool, "Thermostat SystemMode Error: %s", chip::ErrorStr(err));
-                                     SetCommandExitStatus(err);
+                                     chipError = [CHIPError errorToCHIPErrorCode:error];
+                                     ChipLogError(chipTool, "Thermostat SystemMode Error: %s", chip::ErrorStr(chipError));
+                                     SetCommandExitStatus(chipError);
                                  }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -62938,19 +64763,19 @@ public:
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPThermostatUserInterfaceConfiguration * cluster =
             [[CHIPThermostatUserInterfaceConfiguration alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nonnull value = [NSNumber numberWithUnsignedChar:mValue];
 
         [cluster writeAttributeTemperatureDisplayModeWithValue:value
                                              completionHandler:^(NSError * _Nullable error) {
-                                                 err = [CHIPError errorToCHIPErrorCode:error];
+                                                 chipError = [CHIPError errorToCHIPErrorCode:error];
                                                  ChipLogError(chipTool,
                                                      "ThermostatUserInterfaceConfiguration TemperatureDisplayMode Error: %s",
-                                                     chip::ErrorStr(err));
-                                                 SetCommandExitStatus(err);
+                                                     chip::ErrorStr(chipError));
+                                                 SetCommandExitStatus(chipError);
                                              }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -63056,18 +64881,18 @@ public:
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPThermostatUserInterfaceConfiguration * cluster =
             [[CHIPThermostatUserInterfaceConfiguration alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nonnull value = [NSNumber numberWithUnsignedChar:mValue];
 
         [cluster writeAttributeKeypadLockoutWithValue:value
                                     completionHandler:^(NSError * _Nullable error) {
-                                        err = [CHIPError errorToCHIPErrorCode:error];
+                                        chipError = [CHIPError errorToCHIPErrorCode:error];
                                         ChipLogError(chipTool, "ThermostatUserInterfaceConfiguration KeypadLockout Error: %s",
-                                            chip::ErrorStr(err));
-                                        SetCommandExitStatus(err);
+                                            chip::ErrorStr(chipError));
+                                        SetCommandExitStatus(chipError);
                                     }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -63174,20 +64999,20 @@ public:
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPThermostatUserInterfaceConfiguration * cluster =
             [[CHIPThermostatUserInterfaceConfiguration alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nonnull value = [NSNumber numberWithUnsignedChar:mValue];
 
         [cluster writeAttributeScheduleProgrammingVisibilityWithValue:value
                                                     completionHandler:^(NSError * _Nullable error) {
-                                                        err = [CHIPError errorToCHIPErrorCode:error];
+                                                        chipError = [CHIPError errorToCHIPErrorCode:error];
                                                         ChipLogError(chipTool,
                                                             "ThermostatUserInterfaceConfiguration ScheduleProgrammingVisibility "
                                                             "Error: %s",
-                                                            chip::ErrorStr(err));
-                                                        SetCommandExitStatus(err);
+                                                            chip::ErrorStr(chipError));
+                                                        SetCommandExitStatus(chipError);
                                                     }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -63666,13 +65491,13 @@ public:
         CHIPThreadNetworkDiagnostics * cluster = [[CHIPThreadNetworkDiagnostics alloc] initWithDevice:device
                                                                                              endpoint:endpointId
                                                                                                 queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         [cluster resetCountsWithCompletionHandler:^(NSError * _Nullable error) {
-            err = [CHIPError errorToCHIPErrorCode:error];
-            ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-            SetCommandExitStatus(err);
+            chipError = [CHIPError errorToCHIPErrorCode:error];
+            ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+            SetCommandExitStatus(chipError);
         }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -69335,17 +71160,18 @@ public:
         CHIPTimeFormatLocalization * cluster = [[CHIPTimeFormatLocalization alloc] initWithDevice:device
                                                                                          endpoint:endpointId
                                                                                             queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nonnull value = [NSNumber numberWithUnsignedChar:mValue];
 
-        [cluster writeAttributeHourFormatWithValue:value
-                                 completionHandler:^(NSError * _Nullable error) {
-                                     err = [CHIPError errorToCHIPErrorCode:error];
-                                     ChipLogError(chipTool, "TimeFormatLocalization HourFormat Error: %s", chip::ErrorStr(err));
-                                     SetCommandExitStatus(err);
-                                 }];
-        return err;
+        [cluster
+            writeAttributeHourFormatWithValue:value
+                            completionHandler:^(NSError * _Nullable error) {
+                                chipError = [CHIPError errorToCHIPErrorCode:error];
+                                ChipLogError(chipTool, "TimeFormatLocalization HourFormat Error: %s", chip::ErrorStr(chipError));
+                                SetCommandExitStatus(chipError);
+                            }];
+        return chipError;
     }
 
 private:
@@ -69452,18 +71278,18 @@ public:
         CHIPTimeFormatLocalization * cluster = [[CHIPTimeFormatLocalization alloc] initWithDevice:device
                                                                                          endpoint:endpointId
                                                                                             queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nonnull value = [NSNumber numberWithUnsignedChar:mValue];
 
         [cluster writeAttributeActiveCalendarTypeWithValue:value
                                          completionHandler:^(NSError * _Nullable error) {
-                                             err = [CHIPError errorToCHIPErrorCode:error];
+                                             chipError = [CHIPError errorToCHIPErrorCode:error];
                                              ChipLogError(chipTool, "TimeFormatLocalization ActiveCalendarType Error: %s",
-                                                 chip::ErrorStr(err));
-                                             SetCommandExitStatus(err);
+                                                 chip::ErrorStr(chipError));
+                                             SetCommandExitStatus(chipError);
                                          }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -69915,17 +71741,18 @@ public:
         CHIPUnitLocalization * cluster = [[CHIPUnitLocalization alloc] initWithDevice:device
                                                                              endpoint:endpointId
                                                                                 queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nonnull value = [NSNumber numberWithUnsignedChar:mValue];
 
         [cluster writeAttributeTemperatureUnitWithValue:value
                                       completionHandler:^(NSError * _Nullable error) {
-                                          err = [CHIPError errorToCHIPErrorCode:error];
-                                          ChipLogError(chipTool, "UnitLocalization TemperatureUnit Error: %s", chip::ErrorStr(err));
-                                          SetCommandExitStatus(err);
+                                          chipError = [CHIPError errorToCHIPErrorCode:error];
+                                          ChipLogError(
+                                              chipTool, "UnitLocalization TemperatureUnit Error: %s", chip::ErrorStr(chipError));
+                                          SetCommandExitStatus(chipError);
                                       }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -70268,6 +72095,58 @@ public:
         }];
         return err;
     }
+};
+
+class WriteUserLabelLabelList : public ModelCommand {
+public:
+    WriteUserLabelLabelList()
+        : ModelCommand("write")
+        , mComplex(&mValue)
+    {
+        AddArgument("attr-name", "label-list");
+        AddArgument("attr-value", &mComplex);
+        ModelCommand::AddArguments();
+    }
+
+    ~WriteUserLabelLabelList() {}
+
+    CHIP_ERROR SendCommand(CHIPDevice * device, chip::EndpointId endpointId) override
+    {
+        ChipLogProgress(chipTool, "Sending cluster (0x00000041) WriteAttribute (0x00000000) on endpoint %" PRIu16, endpointId);
+        dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
+        CHIPUserLabel * cluster = [[CHIPUserLabel alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
+
+        NSArray * _Nonnull value;
+        { // Scope for our temporary variables
+            auto * array_0 = [NSMutableArray new];
+            for (chip::ListIndex index_0 = 0; index_0 < mValue.size(); index_0++) {
+                auto & entry_0 = mValue.data()[index_0];
+                CHIPUserLabelClusterLabelStruct * newElement_0;
+                newElement_0 = [CHIPUserLabelClusterLabelStruct new];
+                newElement_0.label = [[NSString alloc] initWithBytes:entry_0.label.data()
+                                                              length:entry_0.label.size()
+                                                            encoding:NSUTF8StringEncoding];
+                newElement_0.value = [[NSString alloc] initWithBytes:entry_0.value.data()
+                                                              length:entry_0.value.size()
+                                                            encoding:NSUTF8StringEncoding];
+                [array_0 addObject:newElement_0];
+            }
+            value = array_0;
+        }
+
+        [cluster writeAttributeLabelListWithValue:value
+                                completionHandler:^(NSError * _Nullable error) {
+                                    chipError = [CHIPError errorToCHIPErrorCode:error];
+                                    ChipLogError(chipTool, "UserLabel LabelList Error: %s", chip::ErrorStr(chipError));
+                                    SetCommandExitStatus(chipError);
+                                }];
+        return chipError;
+    }
+
+private:
+    chip::app::DataModel::List<const chip::app::Clusters::UserLabel::Structs::LabelStruct::Type> mValue;
+    TypedComplexArgument<chip::app::DataModel::List<const chip::app::Clusters::UserLabel::Structs::LabelStruct::Type>> mComplex;
 };
 
 class SubscribeAttributeUserLabelLabelList : public ModelCommand {
@@ -71002,13 +72881,13 @@ public:
         CHIPWiFiNetworkDiagnostics * cluster = [[CHIPWiFiNetworkDiagnostics alloc] initWithDevice:device
                                                                                          endpoint:endpointId
                                                                                             queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         [cluster resetCountsWithCompletionHandler:^(NSError * _Nullable error) {
-            err = [CHIPError errorToCHIPErrorCode:error];
-            ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-            SetCommandExitStatus(err);
+            chipError = [CHIPError errorToCHIPErrorCode:error];
+            ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+            SetCommandExitStatus(chipError);
         }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -72545,13 +74424,13 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPWindowCovering * cluster = [[CHIPWindowCovering alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         [cluster downOrCloseWithCompletionHandler:^(NSError * _Nullable error) {
-            err = [CHIPError errorToCHIPErrorCode:error];
-            ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-            SetCommandExitStatus(err);
+            chipError = [CHIPError errorToCHIPErrorCode:error];
+            ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+            SetCommandExitStatus(chipError);
         }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -72576,17 +74455,19 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPWindowCovering * cluster = [[CHIPWindowCovering alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPWindowCoveringClusterGoToLiftPercentageParams alloc] init];
+
         params.liftPercentageValue = [NSNumber numberWithUnsignedChar:mLiftPercentageValue];
+
         params.liftPercent100thsValue = [NSNumber numberWithUnsignedShort:mLiftPercent100thsValue];
         [cluster goToLiftPercentageWithParams:params
                             completionHandler:^(NSError * _Nullable error) {
-                                err = [CHIPError errorToCHIPErrorCode:error];
-                                ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                                SetCommandExitStatus(err);
+                                chipError = [CHIPError errorToCHIPErrorCode:error];
+                                ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                                SetCommandExitStatus(chipError);
                             }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -72612,16 +74493,17 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPWindowCovering * cluster = [[CHIPWindowCovering alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPWindowCoveringClusterGoToLiftValueParams alloc] init];
+
         params.liftValue = [NSNumber numberWithUnsignedShort:mLiftValue];
         [cluster goToLiftValueWithParams:params
                        completionHandler:^(NSError * _Nullable error) {
-                           err = [CHIPError errorToCHIPErrorCode:error];
-                           ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                           SetCommandExitStatus(err);
+                           chipError = [CHIPError errorToCHIPErrorCode:error];
+                           ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                           SetCommandExitStatus(chipError);
                        }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -72647,17 +74529,19 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPWindowCovering * cluster = [[CHIPWindowCovering alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPWindowCoveringClusterGoToTiltPercentageParams alloc] init];
+
         params.tiltPercentageValue = [NSNumber numberWithUnsignedChar:mTiltPercentageValue];
+
         params.tiltPercent100thsValue = [NSNumber numberWithUnsignedShort:mTiltPercent100thsValue];
         [cluster goToTiltPercentageWithParams:params
                             completionHandler:^(NSError * _Nullable error) {
-                                err = [CHIPError errorToCHIPErrorCode:error];
-                                ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                                SetCommandExitStatus(err);
+                                chipError = [CHIPError errorToCHIPErrorCode:error];
+                                ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                                SetCommandExitStatus(chipError);
                             }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -72683,16 +74567,17 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPWindowCovering * cluster = [[CHIPWindowCovering alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         __auto_type * params = [[CHIPWindowCoveringClusterGoToTiltValueParams alloc] init];
+
         params.tiltValue = [NSNumber numberWithUnsignedShort:mTiltValue];
         [cluster goToTiltValueWithParams:params
                        completionHandler:^(NSError * _Nullable error) {
-                           err = [CHIPError errorToCHIPErrorCode:error];
-                           ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-                           SetCommandExitStatus(err);
+                           chipError = [CHIPError errorToCHIPErrorCode:error];
+                           ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+                           SetCommandExitStatus(chipError);
                        }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -72716,13 +74601,13 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPWindowCovering * cluster = [[CHIPWindowCovering alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         [cluster stopMotionWithCompletionHandler:^(NSError * _Nullable error) {
-            err = [CHIPError errorToCHIPErrorCode:error];
-            ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-            SetCommandExitStatus(err);
+            chipError = [CHIPError errorToCHIPErrorCode:error];
+            ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+            SetCommandExitStatus(chipError);
         }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -72745,13 +74630,13 @@ public:
 
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPWindowCovering * cluster = [[CHIPWindowCovering alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
         [cluster upOrOpenWithCompletionHandler:^(NSError * _Nullable error) {
-            err = [CHIPError errorToCHIPErrorCode:error];
-            ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(err));
-            SetCommandExitStatus(err);
+            chipError = [CHIPError errorToCHIPErrorCode:error];
+            ChipLogProgress(chipTool, "Error: %s", chip::ErrorStr(chipError));
+            SetCommandExitStatus(chipError);
         }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -74077,17 +75962,17 @@ public:
         ChipLogProgress(chipTool, "Sending cluster (0x00000102) WriteAttribute (0x00000017) on endpoint %" PRIu16, endpointId);
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPWindowCovering * cluster = [[CHIPWindowCovering alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
-        CHIP_ERROR __block err = CHIP_NO_ERROR;
+        CHIP_ERROR __block chipError = CHIP_NO_ERROR;
 
         NSNumber * _Nonnull value = [NSNumber numberWithUnsignedChar:mValue];
 
         [cluster writeAttributeModeWithValue:value
                            completionHandler:^(NSError * _Nullable error) {
-                               err = [CHIPError errorToCHIPErrorCode:error];
-                               ChipLogError(chipTool, "WindowCovering Mode Error: %s", chip::ErrorStr(err));
-                               SetCommandExitStatus(err);
+                               chipError = [CHIPError errorToCHIPErrorCode:error];
+                               ChipLogError(chipTool, "WindowCovering Mode Error: %s", chip::ErrorStr(chipError));
+                               SetCommandExitStatus(chipError);
                            }];
-        return err;
+        return chipError;
     }
 
 private:
@@ -74612,8 +76497,10 @@ void registerClusterAccessControl(Commands & commands)
 
     commands_list clusterCommands = {
         make_unique<ReadAccessControlAcl>(), //
+        make_unique<WriteAccessControlAcl>(), //
         make_unique<SubscribeAttributeAccessControlAcl>(), //
         make_unique<ReadAccessControlExtension>(), //
+        make_unique<WriteAccessControlExtension>(), //
         make_unique<SubscribeAttributeAccessControlExtension>(), //
         make_unique<ReadAccessControlGeneratedCommandList>(), //
         make_unique<SubscribeAttributeAccessControlGeneratedCommandList>(), //
@@ -74870,6 +76757,7 @@ void registerClusterBinding(Commands & commands)
 
     commands_list clusterCommands = {
         make_unique<ReadBindingBinding>(), //
+        make_unique<WriteBindingBinding>(), //
         make_unique<SubscribeAttributeBindingBinding>(), //
         make_unique<ReadBindingGeneratedCommandList>(), //
         make_unique<SubscribeAttributeBindingGeneratedCommandList>(), //
@@ -75528,6 +77416,7 @@ void registerClusterGroupKeyManagement(Commands & commands)
         make_unique<GroupKeyManagementKeySetRemove>(), //
         make_unique<GroupKeyManagementKeySetWrite>(), //
         make_unique<ReadGroupKeyManagementGroupKeyMap>(), //
+        make_unique<WriteGroupKeyManagementGroupKeyMap>(), //
         make_unique<SubscribeAttributeGroupKeyManagementGroupKeyMap>(), //
         make_unique<ReadGroupKeyManagementGroupTable>(), //
         make_unique<SubscribeAttributeGroupKeyManagementGroupTable>(), //
@@ -75906,6 +77795,7 @@ void registerClusterOtaSoftwareUpdateRequestor(Commands & commands)
     commands_list clusterCommands = {
         make_unique<OtaSoftwareUpdateRequestorAnnounceOtaProvider>(), //
         make_unique<ReadOtaSoftwareUpdateRequestorDefaultOtaProviders>(), //
+        make_unique<WriteOtaSoftwareUpdateRequestorDefaultOtaProviders>(), //
         make_unique<SubscribeAttributeOtaSoftwareUpdateRequestorDefaultOtaProviders>(), //
         make_unique<ReadOtaSoftwareUpdateRequestorUpdatePossible>(), //
         make_unique<SubscribeAttributeOtaSoftwareUpdateRequestorUpdatePossible>(), //
@@ -76445,10 +78335,13 @@ void registerClusterTestCluster(Commands & commands)
         make_unique<WriteTestClusterOctetString>(), //
         make_unique<SubscribeAttributeTestClusterOctetString>(), //
         make_unique<ReadTestClusterListInt8u>(), //
+        make_unique<WriteTestClusterListInt8u>(), //
         make_unique<SubscribeAttributeTestClusterListInt8u>(), //
         make_unique<ReadTestClusterListOctetString>(), //
+        make_unique<WriteTestClusterListOctetString>(), //
         make_unique<SubscribeAttributeTestClusterListOctetString>(), //
         make_unique<ReadTestClusterListStructOctetString>(), //
+        make_unique<WriteTestClusterListStructOctetString>(), //
         make_unique<SubscribeAttributeTestClusterListStructOctetString>(), //
         make_unique<ReadTestClusterLongOctetString>(), //
         make_unique<WriteTestClusterLongOctetString>(), //
@@ -76469,6 +78362,7 @@ void registerClusterTestCluster(Commands & commands)
         make_unique<WriteTestClusterVendorId>(), //
         make_unique<SubscribeAttributeTestClusterVendorId>(), //
         make_unique<ReadTestClusterListNullablesAndOptionalsStruct>(), //
+        make_unique<WriteTestClusterListNullablesAndOptionalsStruct>(), //
         make_unique<SubscribeAttributeTestClusterListNullablesAndOptionalsStruct>(), //
         make_unique<ReadTestClusterEnumAttr>(), //
         make_unique<WriteTestClusterEnumAttr>(), //
@@ -76489,8 +78383,10 @@ void registerClusterTestCluster(Commands & commands)
         make_unique<WriteTestClusterRangeRestrictedInt16s>(), //
         make_unique<SubscribeAttributeTestClusterRangeRestrictedInt16s>(), //
         make_unique<ReadTestClusterListLongOctetString>(), //
+        make_unique<WriteTestClusterListLongOctetString>(), //
         make_unique<SubscribeAttributeTestClusterListLongOctetString>(), //
         make_unique<ReadTestClusterListFabricScoped>(), //
+        make_unique<WriteTestClusterListFabricScoped>(), //
         make_unique<SubscribeAttributeTestClusterListFabricScoped>(), //
         make_unique<ReadTestClusterTimedWriteBoolean>(), //
         make_unique<WriteTestClusterTimedWriteBoolean>(), //
@@ -76897,6 +78793,7 @@ void registerClusterUserLabel(Commands & commands)
 
     commands_list clusterCommands = {
         make_unique<ReadUserLabelLabelList>(), //
+        make_unique<WriteUserLabelLabelList>(), //
         make_unique<SubscribeAttributeUserLabelLabelList>(), //
         make_unique<ReadUserLabelGeneratedCommandList>(), //
         make_unique<SubscribeAttributeUserLabelGeneratedCommandList>(), //
