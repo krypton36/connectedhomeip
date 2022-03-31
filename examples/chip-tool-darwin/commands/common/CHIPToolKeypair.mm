@@ -14,6 +14,7 @@
 
 static NSString * const kCHIPToolKeychainLabel = @"Chip Tool Keypair";
 static NSString * const kOperationalCredentialsIssuerKeypairStorage = @"ChipToolOpCredsCAKey";
+static NSString * const kOperationalCredentialsIPK = @"ChipToolOpCredsIPK";
 
 std::string StringToBase64(const std::string & value)
 {
@@ -43,6 +44,7 @@ std::string Base64ToString(const std::string & b64Value)
 @interface CHIPToolKeypair ()
 @property (nonatomic) chip::Crypto::P256Keypair mKeyPair;
 @property (nonatomic) chip::Crypto::P256Keypair mIssuer;
+@property (nonatomic) NSData * ipk;
 @property (atomic) uint32_t mNow;
 @end
 
@@ -95,12 +97,19 @@ std::string Base64ToString(const std::string & b64Value)
     return _mKeyPair.Serialize(output);
 }
 
+- (NSData *)getIPK
+{
+    return _ipk;
+}
+
 - (CHIP_ERROR)createOrLoadKeys:(CHIPToolPersistentStorageDelegate *)storage
 {
     chip::ASN1::ASN1UniversalTime effectiveTime;
     chip::Crypto::P256SerializedKeypair serializedKey;
     NSString * value;
+    NSData * ipk;
     CHIP_ERROR err = CHIP_NO_ERROR;
+    uint8_t tempIPK[chip::Crypto::CHIP_CRYPTO_SYMMETRIC_KEY_LENGTH_BYTES];
 
     // Initializing the default start validity to start of 2021. The default validity duration is 10 years.
     CHIP_ZERO_AT(effectiveTime);
@@ -126,6 +135,20 @@ std::string Base64ToString(const std::string & b64Value)
     } else {
         ReturnErrorOnFailure([self Deserialize:serializedKey]);
     }
+
+    value = [storage CHIPGetKeyValue:kOperationalCredentialsIPK];
+    err = [self decodeNSStringToNSData:value serializedKey:&ipk];
+    if (err != CHIP_NO_ERROR) {
+        chip::Crypto::DRBG_get_bytes(tempIPK, sizeof(tempIPK));
+        std::string serializedString(chip::Uint8::to_const_char(tempIPK), sizeof(tempIPK));
+        std::string base64Value = StringToBase64(serializedString);
+        _ipk = [NSData dataWithBytes:tempIPK length:sizeof(tempIPK)];
+        NSString * valueString = [NSString stringWithUTF8String:base64Value.c_str()];
+        [storage CHIPSetKeyValue:kOperationalCredentialsIPK value:valueString];
+    } else {
+        _ipk = ipk;
+    }
+
     return err;
 }
 
@@ -146,4 +169,14 @@ std::string Base64ToString(const std::string & b64Value)
     return CHIP_NO_ERROR;
 }
 
+- (CHIP_ERROR)decodeNSStringToNSData:(NSString *)value serializedKey:(NSData **)decodedData
+{
+    if (value == nil) {
+        return CHIP_ERROR_PERSISTED_STORAGE_VALUE_NOT_FOUND;
+    }
+
+    std::string decoded = Base64ToString([value UTF8String]);
+    *decodedData = [NSData dataWithBytes:decoded.data() length:decoded.length()];
+    return CHIP_NO_ERROR;
+}
 @end
