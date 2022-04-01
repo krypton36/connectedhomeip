@@ -44,7 +44,7 @@ CHIP_ERROR CHIPCommandBridge::Run()
     [mController setKeyValueStoreManagerPath:"/tmp/chip_kvs_darwin"];
 
     ReturnLogErrorOnFailure([nocSigner createOrLoadKeys:storage]);
-    
+
     ipk = [nocSigner getIPK];
 
     if (![mController startup:storage vendorId:chip::VendorId::TestVendor1 nocSigner:nocSigner ipk:ipk]) {

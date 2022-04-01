@@ -139,7 +139,7 @@ std::string Base64ToString(const std::string & b64Value)
     err = [self decodeNSStringToNSData:value serializedKey:&ipk];
     if (err != CHIP_NO_ERROR) {
         uint8_t tempIPK[chip::Crypto::CHIP_CRYPTO_SYMMETRIC_KEY_LENGTH_BYTES];
-        
+
         ReturnLogErrorOnFailure(chip::Crypto::DRBG_get_bytes(tempIPK, sizeof(tempIPK)));
 
         _ipk = [NSData dataWithBytes:tempIPK length:sizeof(tempIPK)];
