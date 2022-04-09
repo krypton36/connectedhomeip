@@ -6189,6 +6189,14 @@
               "outgoing": 1
             },
             {
+              "name": "UnlockWithTimeout",
+              "code": 3,
+              "mfgCode": null,
+              "source": "client",
+              "incoming": 1,
+              "outgoing": 1
+            },
+            {
               "name": "SetWeekDaySchedule",
               "code": 11,
               "mfgCode": null,
