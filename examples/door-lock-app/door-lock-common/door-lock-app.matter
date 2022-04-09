@@ -597,6 +597,11 @@ server cluster DoorLock = 257 {
     optional OCTET_STRING pinCode = 0;
   }
 
+  request struct UnlockWithTimeoutRequest {
+    INT16U timeout = 0;
+    optional OCTET_STRING pinCode = 1;
+  }
+
   request struct SetWeekDayScheduleRequest {
     INT8U weekDayIndex = 0;
     INT16U userIndex = 1;
@@ -715,6 +720,7 @@ server cluster DoorLock = 257 {
 
   timed command LockDoor(LockDoorRequest): DefaultSuccess = 0;
   timed command UnlockDoor(UnlockDoorRequest): DefaultSuccess = 1;
+  timed command UnlockWithTimeout(UnlockWithTimeoutRequest): DefaultSuccess = 3;
   command SetWeekDaySchedule(SetWeekDayScheduleRequest): DefaultSuccess = 11;
   command GetWeekDaySchedule(GetWeekDayScheduleRequest): GetWeekDayScheduleResponse = 12;
   command ClearWeekDaySchedule(ClearWeekDayScheduleRequest): DefaultSuccess = 13;
