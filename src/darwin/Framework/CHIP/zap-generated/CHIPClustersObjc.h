@@ -41,7 +41,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)readAttributeAclWithParams:(CHIPReadParams * _Nullable)params
                  completionHandler:(void (^)(NSArray * _Nullable value, NSError * _Nullable error))completionHandler;
-- (void)writeAttributeAclWithValue:(NSArray * _Nonnull)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeAclWithValue:(NSArray * _Nonnull)value
+                 completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeAclWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeAclWithValue:(NSArray * _Nonnull)value
+                            params:(CHIPWriteParams * _Nullable)params
+                 completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -58,7 +64,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)readAttributeExtensionWithParams:(CHIPReadParams * _Nullable)params
                        completionHandler:(void (^)(NSArray * _Nullable value, NSError * _Nullable error))completionHandler;
-- (void)writeAttributeExtensionWithValue:(NSArray * _Nonnull)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeExtensionWithValue:(NSArray * _Nonnull)value
+                       completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeExtensionWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeExtensionWithValue:(NSArray * _Nonnull)value
+                                  params:(CHIPWriteParams * _Nullable)params
+                       completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -214,9 +226,24 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)getSetupPINWithParams:(CHIPAccountLoginClusterGetSetupPINParams *)params
             completionHandler:(void (^)(CHIPAccountLoginClusterGetSetupPINResponseParams * _Nullable data,
-                                  NSError * _Nullable error))completionHandler;
-- (void)loginWithParams:(CHIPAccountLoginClusterLoginParams *)params completionHandler:(StatusCompletion)completionHandler;
-- (void)logoutWithCompletionHandler:(StatusCompletion)completionHandler;
+                                  NSError * _Nullable error))completionHandler
+    __attribute__((deprecated("Use getSetupPINWithArguments:params:completionHandler:")));
+;
+- (void)getSetupPINWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                          params:(CHIPAccountLoginClusterGetSetupPINParams *)params
+               completionHandler:(void (^)(CHIPAccountLoginClusterGetSetupPINResponseParams * _Nullable data,
+                                     NSError * _Nullable error))completionHandler;
+- (void)loginWithParams:(CHIPAccountLoginClusterLoginParams *)params
+      completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use loginWithArguments:params:completionHandler:")));
+;
+- (void)loginWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                    params:(CHIPAccountLoginClusterLoginParams *)params
+         completionHandler:(StatusCompletion)completionHandler;
+- (void)logoutWithCompletionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use logoutWithArguments: completionHandler:")));
+;
+- (void)logoutWithArguments:(CHIPCommandArguments * _Nullable)arguments completionHandler:(StatusCompletion)completionHandler;
 
 - (void)readAttributeGeneratedCommandListWithCompletionHandler:(void (^)(NSArray * _Nullable value,
                                                                    NSError * _Nullable error))completionHandler;
@@ -301,10 +328,24 @@ NS_ASSUME_NONNULL_BEGIN
 @interface CHIPAdministratorCommissioning : CHIPCluster
 
 - (void)openBasicCommissioningWindowWithParams:(CHIPAdministratorCommissioningClusterOpenBasicCommissioningWindowParams *)params
-                             completionHandler:(StatusCompletion)completionHandler;
+                             completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use openBasicCommissioningWindowWithArguments:params:completionHandler:")));
+;
+- (void)openBasicCommissioningWindowWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                           params:(CHIPAdministratorCommissioningClusterOpenBasicCommissioningWindowParams *)params
+                                completionHandler:(StatusCompletion)completionHandler;
 - (void)openCommissioningWindowWithParams:(CHIPAdministratorCommissioningClusterOpenCommissioningWindowParams *)params
-                        completionHandler:(StatusCompletion)completionHandler;
-- (void)revokeCommissioningWithCompletionHandler:(StatusCompletion)completionHandler;
+                        completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use openCommissioningWindowWithArguments:params:completionHandler:")));
+;
+- (void)openCommissioningWindowWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                      params:(CHIPAdministratorCommissioningClusterOpenCommissioningWindowParams *)params
+                           completionHandler:(StatusCompletion)completionHandler;
+- (void)revokeCommissioningWithCompletionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use revokeCommissioningWithArguments: completionHandler:")));
+;
+- (void)revokeCommissioningWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                       completionHandler:(StatusCompletion)completionHandler;
 
 - (void)readAttributeWindowStatusWithCompletionHandler:(void (^)(
                                                            NSNumber * _Nullable value, NSError * _Nullable error))completionHandler;
@@ -665,13 +706,31 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)hideAppWithParams:(CHIPApplicationLauncherClusterHideAppParams *)params
         completionHandler:(void (^)(CHIPApplicationLauncherClusterLauncherResponseParams * _Nullable data,
-                              NSError * _Nullable error))completionHandler;
+                              NSError * _Nullable error))completionHandler
+    __attribute__((deprecated("Use hideAppWithArguments:params:completionHandler:")));
+;
+- (void)hideAppWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                      params:(CHIPApplicationLauncherClusterHideAppParams *)params
+           completionHandler:(void (^)(CHIPApplicationLauncherClusterLauncherResponseParams * _Nullable data,
+                                 NSError * _Nullable error))completionHandler;
 - (void)launchAppWithParams:(CHIPApplicationLauncherClusterLaunchAppParams *)params
           completionHandler:(void (^)(CHIPApplicationLauncherClusterLauncherResponseParams * _Nullable data,
-                                NSError * _Nullable error))completionHandler;
+                                NSError * _Nullable error))completionHandler
+    __attribute__((deprecated("Use launchAppWithArguments:params:completionHandler:")));
+;
+- (void)launchAppWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                        params:(CHIPApplicationLauncherClusterLaunchAppParams *)params
+             completionHandler:(void (^)(CHIPApplicationLauncherClusterLauncherResponseParams * _Nullable data,
+                                   NSError * _Nullable error))completionHandler;
 - (void)stopAppWithParams:(CHIPApplicationLauncherClusterStopAppParams *)params
         completionHandler:(void (^)(CHIPApplicationLauncherClusterLauncherResponseParams * _Nullable data,
-                              NSError * _Nullable error))completionHandler;
+                              NSError * _Nullable error))completionHandler
+    __attribute__((deprecated("Use stopAppWithArguments:params:completionHandler:")));
+;
+- (void)stopAppWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                      params:(CHIPApplicationLauncherClusterStopAppParams *)params
+           completionHandler:(void (^)(CHIPApplicationLauncherClusterLauncherResponseParams * _Nullable data,
+                                 NSError * _Nullable error))completionHandler;
 
 - (void)readAttributeCatalogListWithCompletionHandler:(void (^)(
                                                           NSArray * _Nullable value, NSError * _Nullable error))completionHandler;
@@ -693,6 +752,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)readAttributeCurrentAppWithCompletionHandler:(void (^)(CHIPApplicationLauncherClusterApplicationEP * _Nullable value,
                                                          NSError * _Nullable error))completionHandler;
 - (void)writeAttributeCurrentAppWithValue:(CHIPApplicationLauncherClusterApplicationEP * _Nullable)value
+                        completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeCurrentAppWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeCurrentAppWithValue:(CHIPApplicationLauncherClusterApplicationEP * _Nullable)value
+                                   params:(CHIPWriteParams * _Nullable)params
                         completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
@@ -793,9 +857,19 @@ NS_ASSUME_NONNULL_BEGIN
 @interface CHIPAudioOutput : CHIPCluster
 
 - (void)renameOutputWithParams:(CHIPAudioOutputClusterRenameOutputParams *)params
-             completionHandler:(StatusCompletion)completionHandler;
+             completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use renameOutputWithArguments:params:completionHandler:")));
+;
+- (void)renameOutputWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                           params:(CHIPAudioOutputClusterRenameOutputParams *)params
+                completionHandler:(StatusCompletion)completionHandler;
 - (void)selectOutputWithParams:(CHIPAudioOutputClusterSelectOutputParams *)params
-             completionHandler:(StatusCompletion)completionHandler;
+             completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use selectOutputWithArguments:params:completionHandler:")));
+;
+- (void)selectOutputWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                           params:(CHIPAudioOutputClusterSelectOutputParams *)params
+                completionHandler:(StatusCompletion)completionHandler;
 
 - (void)readAttributeOutputListWithCompletionHandler:(void (^)(
                                                          NSArray * _Nullable value, NSError * _Nullable error))completionHandler;
@@ -914,8 +988,17 @@ NS_ASSUME_NONNULL_BEGIN
 @interface CHIPBarrierControl : CHIPCluster
 
 - (void)barrierControlGoToPercentWithParams:(CHIPBarrierControlClusterBarrierControlGoToPercentParams *)params
-                          completionHandler:(StatusCompletion)completionHandler;
-- (void)barrierControlStopWithCompletionHandler:(StatusCompletion)completionHandler;
+                          completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use barrierControlGoToPercentWithArguments:params:completionHandler:")));
+;
+- (void)barrierControlGoToPercentWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                        params:(CHIPBarrierControlClusterBarrierControlGoToPercentParams *)params
+                             completionHandler:(StatusCompletion)completionHandler;
+- (void)barrierControlStopWithCompletionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use barrierControlStopWithArguments: completionHandler:")));
+;
+- (void)barrierControlStopWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                      completionHandler:(StatusCompletion)completionHandler;
 
 - (void)readAttributeBarrierMovingStateWithCompletionHandler:(void (^)(NSNumber * _Nullable value,
                                                                  NSError * _Nullable error))completionHandler;
@@ -1159,7 +1242,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)readAttributeNodeLabelWithCompletionHandler:(void (^)(
                                                         NSString * _Nullable value, NSError * _Nullable error))completionHandler;
-- (void)writeAttributeNodeLabelWithValue:(NSString * _Nonnull)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeNodeLabelWithValue:(NSString * _Nonnull)value
+                       completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeNodeLabelWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeNodeLabelWithValue:(NSString * _Nonnull)value
+                                  params:(CHIPWriteParams * _Nullable)params
+                       completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -1176,7 +1265,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)readAttributeLocationWithCompletionHandler:(void (^)(
                                                        NSString * _Nullable value, NSError * _Nullable error))completionHandler;
-- (void)writeAttributeLocationWithValue:(NSString * _Nonnull)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeLocationWithValue:(NSString * _Nonnull)value
+                      completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeLocationWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeLocationWithValue:(NSString * _Nonnull)value
+                                 params:(CHIPWriteParams * _Nullable)params
+                      completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -1355,7 +1450,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)readAttributeLocalConfigDisabledWithCompletionHandler:(void (^)(NSNumber * _Nullable value,
                                                                   NSError * _Nullable error))completionHandler;
-- (void)writeAttributeLocalConfigDisabledWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeLocalConfigDisabledWithValue:(NSNumber * _Nonnull)value
+                                 completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeLocalConfigDisabledWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeLocalConfigDisabledWithValue:(NSNumber * _Nonnull)value
+                                            params:(CHIPWriteParams * _Nullable)params
+                                 completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -1507,7 +1608,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)readAttributeOutOfServiceWithCompletionHandler:(void (^)(
                                                            NSNumber * _Nullable value, NSError * _Nullable error))completionHandler;
-- (void)writeAttributeOutOfServiceWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeOutOfServiceWithValue:(NSNumber * _Nonnull)value
+                          completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeOutOfServiceWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeOutOfServiceWithValue:(NSNumber * _Nonnull)value
+                                     params:(CHIPWriteParams * _Nullable)params
+                          completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -1526,7 +1633,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)readAttributePresentValueWithCompletionHandler:(void (^)(
                                                            NSNumber * _Nullable value, NSError * _Nullable error))completionHandler;
-- (void)writeAttributePresentValueWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributePresentValueWithValue:(NSNumber * _Nonnull)value
+                          completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributePresentValueWithValue:params:completionHandler:")));
+;
+- (void)writeAttributePresentValueWithValue:(NSNumber * _Nonnull)value
+                                     params:(CHIPWriteParams * _Nullable)params
+                          completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -1644,7 +1757,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)readAttributeBindingWithParams:(CHIPReadParams * _Nullable)params
                      completionHandler:(void (^)(NSArray * _Nullable value, NSError * _Nullable error))completionHandler;
-- (void)writeAttributeBindingWithValue:(NSArray * _Nonnull)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeBindingWithValue:(NSArray * _Nonnull)value
+                     completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeBindingWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeBindingWithValue:(NSArray * _Nonnull)value
+                                params:(CHIPWriteParams * _Nullable)params
+                     completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -1841,29 +1960,89 @@ NS_ASSUME_NONNULL_BEGIN
 @interface CHIPBridgedActions : CHIPCluster
 
 - (void)disableActionWithParams:(CHIPBridgedActionsClusterDisableActionParams *)params
-              completionHandler:(StatusCompletion)completionHandler;
+              completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use disableActionWithArguments:params:completionHandler:")));
+;
+- (void)disableActionWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                            params:(CHIPBridgedActionsClusterDisableActionParams *)params
+                 completionHandler:(StatusCompletion)completionHandler;
 - (void)disableActionWithDurationWithParams:(CHIPBridgedActionsClusterDisableActionWithDurationParams *)params
-                          completionHandler:(StatusCompletion)completionHandler;
+                          completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use disableActionWithDurationWithArguments:params:completionHandler:")));
+;
+- (void)disableActionWithDurationWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                        params:(CHIPBridgedActionsClusterDisableActionWithDurationParams *)params
+                             completionHandler:(StatusCompletion)completionHandler;
 - (void)enableActionWithParams:(CHIPBridgedActionsClusterEnableActionParams *)params
-             completionHandler:(StatusCompletion)completionHandler;
+             completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use enableActionWithArguments:params:completionHandler:")));
+;
+- (void)enableActionWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                           params:(CHIPBridgedActionsClusterEnableActionParams *)params
+                completionHandler:(StatusCompletion)completionHandler;
 - (void)enableActionWithDurationWithParams:(CHIPBridgedActionsClusterEnableActionWithDurationParams *)params
-                         completionHandler:(StatusCompletion)completionHandler;
-- (void)instantActionWithParams:(CHIPBridgedActionsClusterInstantActionParams *)params
-              completionHandler:(StatusCompletion)completionHandler;
-- (void)instantActionWithTransitionWithParams:(CHIPBridgedActionsClusterInstantActionWithTransitionParams *)params
+                         completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use enableActionWithDurationWithArguments:params:completionHandler:")));
+;
+- (void)enableActionWithDurationWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                       params:(CHIPBridgedActionsClusterEnableActionWithDurationParams *)params
                             completionHandler:(StatusCompletion)completionHandler;
+- (void)instantActionWithParams:(CHIPBridgedActionsClusterInstantActionParams *)params
+              completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use instantActionWithArguments:params:completionHandler:")));
+;
+- (void)instantActionWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                            params:(CHIPBridgedActionsClusterInstantActionParams *)params
+                 completionHandler:(StatusCompletion)completionHandler;
+- (void)instantActionWithTransitionWithParams:(CHIPBridgedActionsClusterInstantActionWithTransitionParams *)params
+                            completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use instantActionWithTransitionWithArguments:params:completionHandler:")));
+;
+- (void)instantActionWithTransitionWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                          params:(CHIPBridgedActionsClusterInstantActionWithTransitionParams *)params
+                               completionHandler:(StatusCompletion)completionHandler;
 - (void)pauseActionWithParams:(CHIPBridgedActionsClusterPauseActionParams *)params
-            completionHandler:(StatusCompletion)completionHandler;
+            completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use pauseActionWithArguments:params:completionHandler:")));
+;
+- (void)pauseActionWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                          params:(CHIPBridgedActionsClusterPauseActionParams *)params
+               completionHandler:(StatusCompletion)completionHandler;
 - (void)pauseActionWithDurationWithParams:(CHIPBridgedActionsClusterPauseActionWithDurationParams *)params
-                        completionHandler:(StatusCompletion)completionHandler;
+                        completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use pauseActionWithDurationWithArguments:params:completionHandler:")));
+;
+- (void)pauseActionWithDurationWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                      params:(CHIPBridgedActionsClusterPauseActionWithDurationParams *)params
+                           completionHandler:(StatusCompletion)completionHandler;
 - (void)resumeActionWithParams:(CHIPBridgedActionsClusterResumeActionParams *)params
-             completionHandler:(StatusCompletion)completionHandler;
+             completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use resumeActionWithArguments:params:completionHandler:")));
+;
+- (void)resumeActionWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                           params:(CHIPBridgedActionsClusterResumeActionParams *)params
+                completionHandler:(StatusCompletion)completionHandler;
 - (void)startActionWithParams:(CHIPBridgedActionsClusterStartActionParams *)params
-            completionHandler:(StatusCompletion)completionHandler;
+            completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use startActionWithArguments:params:completionHandler:")));
+;
+- (void)startActionWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                          params:(CHIPBridgedActionsClusterStartActionParams *)params
+               completionHandler:(StatusCompletion)completionHandler;
 - (void)startActionWithDurationWithParams:(CHIPBridgedActionsClusterStartActionWithDurationParams *)params
-                        completionHandler:(StatusCompletion)completionHandler;
+                        completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use startActionWithDurationWithArguments:params:completionHandler:")));
+;
+- (void)startActionWithDurationWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                      params:(CHIPBridgedActionsClusterStartActionWithDurationParams *)params
+                           completionHandler:(StatusCompletion)completionHandler;
 - (void)stopActionWithParams:(CHIPBridgedActionsClusterStopActionParams *)params
-           completionHandler:(StatusCompletion)completionHandler;
+           completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use stopActionWithArguments:params:completionHandler:")));
+;
+- (void)stopActionWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                         params:(CHIPBridgedActionsClusterStopActionParams *)params
+              completionHandler:(StatusCompletion)completionHandler;
 
 - (void)readAttributeActionListWithCompletionHandler:(void (^)(
                                                          NSArray * _Nullable value, NSError * _Nullable error))completionHandler;
@@ -2048,7 +2227,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)readAttributeNodeLabelWithCompletionHandler:(void (^)(
                                                         NSString * _Nullable value, NSError * _Nullable error))completionHandler;
-- (void)writeAttributeNodeLabelWithValue:(NSString * _Nonnull)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeNodeLabelWithValue:(NSString * _Nonnull)value
+                       completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeNodeLabelWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeNodeLabelWithValue:(NSString * _Nonnull)value
+                                  params:(CHIPWriteParams * _Nullable)params
+                       completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -2341,10 +2526,27 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)changeChannelWithParams:(CHIPChannelClusterChangeChannelParams *)params
               completionHandler:(void (^)(CHIPChannelClusterChangeChannelResponseParams * _Nullable data,
-                                    NSError * _Nullable error))completionHandler;
+                                    NSError * _Nullable error))completionHandler
+    __attribute__((deprecated("Use changeChannelWithArguments:params:completionHandler:")));
+;
+- (void)changeChannelWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                            params:(CHIPChannelClusterChangeChannelParams *)params
+                 completionHandler:(void (^)(CHIPChannelClusterChangeChannelResponseParams * _Nullable data,
+                                       NSError * _Nullable error))completionHandler;
 - (void)changeChannelByNumberWithParams:(CHIPChannelClusterChangeChannelByNumberParams *)params
-                      completionHandler:(StatusCompletion)completionHandler;
-- (void)skipChannelWithParams:(CHIPChannelClusterSkipChannelParams *)params completionHandler:(StatusCompletion)completionHandler;
+                      completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use changeChannelByNumberWithArguments:params:completionHandler:")));
+;
+- (void)changeChannelByNumberWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                    params:(CHIPChannelClusterChangeChannelByNumberParams *)params
+                         completionHandler:(StatusCompletion)completionHandler;
+- (void)skipChannelWithParams:(CHIPChannelClusterSkipChannelParams *)params
+            completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use skipChannelWithArguments:params:completionHandler:")));
+;
+- (void)skipChannelWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                          params:(CHIPChannelClusterSkipChannelParams *)params
+               completionHandler:(StatusCompletion)completionHandler;
 
 - (void)readAttributeChannelListWithCompletionHandler:(void (^)(
                                                           NSArray * _Nullable value, NSError * _Nullable error))completionHandler;
@@ -2482,38 +2684,138 @@ NS_ASSUME_NONNULL_BEGIN
 @interface CHIPColorControl : CHIPCluster
 
 - (void)colorLoopSetWithParams:(CHIPColorControlClusterColorLoopSetParams *)params
-             completionHandler:(StatusCompletion)completionHandler;
+             completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use colorLoopSetWithArguments:params:completionHandler:")));
+;
+- (void)colorLoopSetWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                           params:(CHIPColorControlClusterColorLoopSetParams *)params
+                completionHandler:(StatusCompletion)completionHandler;
 - (void)enhancedMoveHueWithParams:(CHIPColorControlClusterEnhancedMoveHueParams *)params
-                completionHandler:(StatusCompletion)completionHandler;
+                completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use enhancedMoveHueWithArguments:params:completionHandler:")));
+;
+- (void)enhancedMoveHueWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                              params:(CHIPColorControlClusterEnhancedMoveHueParams *)params
+                   completionHandler:(StatusCompletion)completionHandler;
 - (void)enhancedMoveToHueWithParams:(CHIPColorControlClusterEnhancedMoveToHueParams *)params
-                  completionHandler:(StatusCompletion)completionHandler;
+                  completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use enhancedMoveToHueWithArguments:params:completionHandler:")));
+;
+- (void)enhancedMoveToHueWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                params:(CHIPColorControlClusterEnhancedMoveToHueParams *)params
+                     completionHandler:(StatusCompletion)completionHandler;
 - (void)enhancedMoveToHueAndSaturationWithParams:(CHIPColorControlClusterEnhancedMoveToHueAndSaturationParams *)params
-                               completionHandler:(StatusCompletion)completionHandler;
+                               completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use enhancedMoveToHueAndSaturationWithArguments:params:completionHandler:")));
+;
+- (void)enhancedMoveToHueAndSaturationWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                             params:(CHIPColorControlClusterEnhancedMoveToHueAndSaturationParams *)params
+                                  completionHandler:(StatusCompletion)completionHandler;
 - (void)enhancedStepHueWithParams:(CHIPColorControlClusterEnhancedStepHueParams *)params
-                completionHandler:(StatusCompletion)completionHandler;
-- (void)moveColorWithParams:(CHIPColorControlClusterMoveColorParams *)params completionHandler:(StatusCompletion)completionHandler;
-- (void)moveColorTemperatureWithParams:(CHIPColorControlClusterMoveColorTemperatureParams *)params
-                     completionHandler:(StatusCompletion)completionHandler;
-- (void)moveHueWithParams:(CHIPColorControlClusterMoveHueParams *)params completionHandler:(StatusCompletion)completionHandler;
-- (void)moveSaturationWithParams:(CHIPColorControlClusterMoveSaturationParams *)params
-               completionHandler:(StatusCompletion)completionHandler;
-- (void)moveToColorWithParams:(CHIPColorControlClusterMoveToColorParams *)params
-            completionHandler:(StatusCompletion)completionHandler;
-- (void)moveToColorTemperatureWithParams:(CHIPColorControlClusterMoveToColorTemperatureParams *)params
-                       completionHandler:(StatusCompletion)completionHandler;
-- (void)moveToHueWithParams:(CHIPColorControlClusterMoveToHueParams *)params completionHandler:(StatusCompletion)completionHandler;
-- (void)moveToHueAndSaturationWithParams:(CHIPColorControlClusterMoveToHueAndSaturationParams *)params
-                       completionHandler:(StatusCompletion)completionHandler;
-- (void)moveToSaturationWithParams:(CHIPColorControlClusterMoveToSaturationParams *)params
-                 completionHandler:(StatusCompletion)completionHandler;
-- (void)stepColorWithParams:(CHIPColorControlClusterStepColorParams *)params completionHandler:(StatusCompletion)completionHandler;
-- (void)stepColorTemperatureWithParams:(CHIPColorControlClusterStepColorTemperatureParams *)params
-                     completionHandler:(StatusCompletion)completionHandler;
-- (void)stepHueWithParams:(CHIPColorControlClusterStepHueParams *)params completionHandler:(StatusCompletion)completionHandler;
-- (void)stepSaturationWithParams:(CHIPColorControlClusterStepSaturationParams *)params
-               completionHandler:(StatusCompletion)completionHandler;
-- (void)stopMoveStepWithParams:(CHIPColorControlClusterStopMoveStepParams *)params
+                completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use enhancedStepHueWithArguments:params:completionHandler:")));
+;
+- (void)enhancedStepHueWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                              params:(CHIPColorControlClusterEnhancedStepHueParams *)params
+                   completionHandler:(StatusCompletion)completionHandler;
+- (void)moveColorWithParams:(CHIPColorControlClusterMoveColorParams *)params
+          completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use moveColorWithArguments:params:completionHandler:")));
+;
+- (void)moveColorWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                        params:(CHIPColorControlClusterMoveColorParams *)params
              completionHandler:(StatusCompletion)completionHandler;
+- (void)moveColorTemperatureWithParams:(CHIPColorControlClusterMoveColorTemperatureParams *)params
+                     completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use moveColorTemperatureWithArguments:params:completionHandler:")));
+;
+- (void)moveColorTemperatureWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                   params:(CHIPColorControlClusterMoveColorTemperatureParams *)params
+                        completionHandler:(StatusCompletion)completionHandler;
+- (void)moveHueWithParams:(CHIPColorControlClusterMoveHueParams *)params
+        completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use moveHueWithArguments:params:completionHandler:")));
+;
+- (void)moveHueWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                      params:(CHIPColorControlClusterMoveHueParams *)params
+           completionHandler:(StatusCompletion)completionHandler;
+- (void)moveSaturationWithParams:(CHIPColorControlClusterMoveSaturationParams *)params
+               completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use moveSaturationWithArguments:params:completionHandler:")));
+;
+- (void)moveSaturationWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                             params:(CHIPColorControlClusterMoveSaturationParams *)params
+                  completionHandler:(StatusCompletion)completionHandler;
+- (void)moveToColorWithParams:(CHIPColorControlClusterMoveToColorParams *)params
+            completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use moveToColorWithArguments:params:completionHandler:")));
+;
+- (void)moveToColorWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                          params:(CHIPColorControlClusterMoveToColorParams *)params
+               completionHandler:(StatusCompletion)completionHandler;
+- (void)moveToColorTemperatureWithParams:(CHIPColorControlClusterMoveToColorTemperatureParams *)params
+                       completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use moveToColorTemperatureWithArguments:params:completionHandler:")));
+;
+- (void)moveToColorTemperatureWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                     params:(CHIPColorControlClusterMoveToColorTemperatureParams *)params
+                          completionHandler:(StatusCompletion)completionHandler;
+- (void)moveToHueWithParams:(CHIPColorControlClusterMoveToHueParams *)params
+          completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use moveToHueWithArguments:params:completionHandler:")));
+;
+- (void)moveToHueWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                        params:(CHIPColorControlClusterMoveToHueParams *)params
+             completionHandler:(StatusCompletion)completionHandler;
+- (void)moveToHueAndSaturationWithParams:(CHIPColorControlClusterMoveToHueAndSaturationParams *)params
+                       completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use moveToHueAndSaturationWithArguments:params:completionHandler:")));
+;
+- (void)moveToHueAndSaturationWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                     params:(CHIPColorControlClusterMoveToHueAndSaturationParams *)params
+                          completionHandler:(StatusCompletion)completionHandler;
+- (void)moveToSaturationWithParams:(CHIPColorControlClusterMoveToSaturationParams *)params
+                 completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use moveToSaturationWithArguments:params:completionHandler:")));
+;
+- (void)moveToSaturationWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                               params:(CHIPColorControlClusterMoveToSaturationParams *)params
+                    completionHandler:(StatusCompletion)completionHandler;
+- (void)stepColorWithParams:(CHIPColorControlClusterStepColorParams *)params
+          completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use stepColorWithArguments:params:completionHandler:")));
+;
+- (void)stepColorWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                        params:(CHIPColorControlClusterStepColorParams *)params
+             completionHandler:(StatusCompletion)completionHandler;
+- (void)stepColorTemperatureWithParams:(CHIPColorControlClusterStepColorTemperatureParams *)params
+                     completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use stepColorTemperatureWithArguments:params:completionHandler:")));
+;
+- (void)stepColorTemperatureWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                   params:(CHIPColorControlClusterStepColorTemperatureParams *)params
+                        completionHandler:(StatusCompletion)completionHandler;
+- (void)stepHueWithParams:(CHIPColorControlClusterStepHueParams *)params
+        completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use stepHueWithArguments:params:completionHandler:")));
+;
+- (void)stepHueWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                      params:(CHIPColorControlClusterStepHueParams *)params
+           completionHandler:(StatusCompletion)completionHandler;
+- (void)stepSaturationWithParams:(CHIPColorControlClusterStepSaturationParams *)params
+               completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use stepSaturationWithArguments:params:completionHandler:")));
+;
+- (void)stepSaturationWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                             params:(CHIPColorControlClusterStepSaturationParams *)params
+                  completionHandler:(StatusCompletion)completionHandler;
+- (void)stopMoveStepWithParams:(CHIPColorControlClusterStopMoveStepParams *)params
+             completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use stopMoveStepWithArguments:params:completionHandler:")));
+;
+- (void)stopMoveStepWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                           params:(CHIPColorControlClusterStopMoveStepParams *)params
+                completionHandler:(StatusCompletion)completionHandler;
 
 - (void)readAttributeCurrentHueWithCompletionHandler:(void (^)(
                                                          NSNumber * _Nullable value, NSError * _Nullable error))completionHandler;
@@ -2672,7 +2974,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)readAttributeColorControlOptionsWithCompletionHandler:(void (^)(NSNumber * _Nullable value,
                                                                   NSError * _Nullable error))completionHandler;
-- (void)writeAttributeColorControlOptionsWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeColorControlOptionsWithValue:(NSNumber * _Nonnull)value
+                                 completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeColorControlOptionsWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeColorControlOptionsWithValue:(NSNumber * _Nonnull)value
+                                            params:(CHIPWriteParams * _Nullable)params
+                                 completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -3010,7 +3318,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)readAttributeWhitePointXWithCompletionHandler:(void (^)(
                                                           NSNumber * _Nullable value, NSError * _Nullable error))completionHandler;
-- (void)writeAttributeWhitePointXWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeWhitePointXWithValue:(NSNumber * _Nonnull)value
+                         completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeWhitePointXWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeWhitePointXWithValue:(NSNumber * _Nonnull)value
+                                    params:(CHIPWriteParams * _Nullable)params
+                         completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -3028,7 +3342,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)readAttributeWhitePointYWithCompletionHandler:(void (^)(
                                                           NSNumber * _Nullable value, NSError * _Nullable error))completionHandler;
-- (void)writeAttributeWhitePointYWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeWhitePointYWithValue:(NSNumber * _Nonnull)value
+                         completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeWhitePointYWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeWhitePointYWithValue:(NSNumber * _Nonnull)value
+                                    params:(CHIPWriteParams * _Nullable)params
+                         completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -3046,7 +3366,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)readAttributeColorPointRXWithCompletionHandler:(void (^)(
                                                            NSNumber * _Nullable value, NSError * _Nullable error))completionHandler;
-- (void)writeAttributeColorPointRXWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeColorPointRXWithValue:(NSNumber * _Nonnull)value
+                          completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeColorPointRXWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeColorPointRXWithValue:(NSNumber * _Nonnull)value
+                                     params:(CHIPWriteParams * _Nullable)params
+                          completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -3065,7 +3391,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)readAttributeColorPointRYWithCompletionHandler:(void (^)(
                                                            NSNumber * _Nullable value, NSError * _Nullable error))completionHandler;
-- (void)writeAttributeColorPointRYWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeColorPointRYWithValue:(NSNumber * _Nonnull)value
+                          completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeColorPointRYWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeColorPointRYWithValue:(NSNumber * _Nonnull)value
+                                     params:(CHIPWriteParams * _Nullable)params
+                          completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -3085,6 +3417,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)readAttributeColorPointRIntensityWithCompletionHandler:(void (^)(NSNumber * _Nullable value,
                                                                    NSError * _Nullable error))completionHandler;
 - (void)writeAttributeColorPointRIntensityWithValue:(NSNumber * _Nonnull)value
+                                  completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeColorPointRIntensityWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeColorPointRIntensityWithValue:(NSNumber * _Nonnull)value
+                                             params:(CHIPWriteParams * _Nullable)params
                                   completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
@@ -3105,7 +3442,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)readAttributeColorPointGXWithCompletionHandler:(void (^)(
                                                            NSNumber * _Nullable value, NSError * _Nullable error))completionHandler;
-- (void)writeAttributeColorPointGXWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeColorPointGXWithValue:(NSNumber * _Nonnull)value
+                          completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeColorPointGXWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeColorPointGXWithValue:(NSNumber * _Nonnull)value
+                                     params:(CHIPWriteParams * _Nullable)params
+                          completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -3124,7 +3467,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)readAttributeColorPointGYWithCompletionHandler:(void (^)(
                                                            NSNumber * _Nullable value, NSError * _Nullable error))completionHandler;
-- (void)writeAttributeColorPointGYWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeColorPointGYWithValue:(NSNumber * _Nonnull)value
+                          completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeColorPointGYWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeColorPointGYWithValue:(NSNumber * _Nonnull)value
+                                     params:(CHIPWriteParams * _Nullable)params
+                          completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -3144,6 +3493,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)readAttributeColorPointGIntensityWithCompletionHandler:(void (^)(NSNumber * _Nullable value,
                                                                    NSError * _Nullable error))completionHandler;
 - (void)writeAttributeColorPointGIntensityWithValue:(NSNumber * _Nonnull)value
+                                  completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeColorPointGIntensityWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeColorPointGIntensityWithValue:(NSNumber * _Nonnull)value
+                                             params:(CHIPWriteParams * _Nullable)params
                                   completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
@@ -3164,7 +3518,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)readAttributeColorPointBXWithCompletionHandler:(void (^)(
                                                            NSNumber * _Nullable value, NSError * _Nullable error))completionHandler;
-- (void)writeAttributeColorPointBXWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeColorPointBXWithValue:(NSNumber * _Nonnull)value
+                          completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeColorPointBXWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeColorPointBXWithValue:(NSNumber * _Nonnull)value
+                                     params:(CHIPWriteParams * _Nullable)params
+                          completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -3183,7 +3543,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)readAttributeColorPointBYWithCompletionHandler:(void (^)(
                                                            NSNumber * _Nullable value, NSError * _Nullable error))completionHandler;
-- (void)writeAttributeColorPointBYWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeColorPointBYWithValue:(NSNumber * _Nonnull)value
+                          completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeColorPointBYWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeColorPointBYWithValue:(NSNumber * _Nonnull)value
+                                     params:(CHIPWriteParams * _Nullable)params
+                          completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -3203,6 +3569,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)readAttributeColorPointBIntensityWithCompletionHandler:(void (^)(NSNumber * _Nullable value,
                                                                    NSError * _Nullable error))completionHandler;
 - (void)writeAttributeColorPointBIntensityWithValue:(NSNumber * _Nonnull)value
+                                  completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeColorPointBIntensityWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeColorPointBIntensityWithValue:(NSNumber * _Nonnull)value
+                                             params:(CHIPWriteParams * _Nullable)params
                                   completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
@@ -3427,6 +3798,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)readAttributeStartUpColorTemperatureMiredsWithCompletionHandler:(void (^)(NSNumber * _Nullable value,
                                                                             NSError * _Nullable error))completionHandler;
 - (void)writeAttributeStartUpColorTemperatureMiredsWithValue:(NSNumber * _Nonnull)value
+                                           completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeStartUpColorTemperatureMiredsWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeStartUpColorTemperatureMiredsWithValue:(NSNumber * _Nonnull)value
+                                                      params:(CHIPWriteParams * _Nullable)params
                                            completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
@@ -3529,10 +3905,22 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)launchContentWithParams:(CHIPContentLauncherClusterLaunchContentParams *)params
               completionHandler:(void (^)(CHIPContentLauncherClusterLaunchResponseParams * _Nullable data,
-                                    NSError * _Nullable error))completionHandler;
+                                    NSError * _Nullable error))completionHandler
+    __attribute__((deprecated("Use launchContentWithArguments:params:completionHandler:")));
+;
+- (void)launchContentWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                            params:(CHIPContentLauncherClusterLaunchContentParams *)params
+                 completionHandler:(void (^)(CHIPContentLauncherClusterLaunchResponseParams * _Nullable data,
+                                       NSError * _Nullable error))completionHandler;
 - (void)launchURLWithParams:(CHIPContentLauncherClusterLaunchURLParams *)params
           completionHandler:(void (^)(CHIPContentLauncherClusterLaunchResponseParams * _Nullable data,
-                                NSError * _Nullable error))completionHandler;
+                                NSError * _Nullable error))completionHandler
+    __attribute__((deprecated("Use launchURLWithArguments:params:completionHandler:")));
+;
+- (void)launchURLWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                        params:(CHIPContentLauncherClusterLaunchURLParams *)params
+             completionHandler:(void (^)(CHIPContentLauncherClusterLaunchResponseParams * _Nullable data,
+                                   NSError * _Nullable error))completionHandler;
 
 - (void)readAttributeAcceptHeaderWithCompletionHandler:(void (^)(
                                                            NSArray * _Nullable value, NSError * _Nullable error))completionHandler;
@@ -3554,6 +3942,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)readAttributeSupportedStreamingProtocolsWithCompletionHandler:(void (^)(NSNumber * _Nullable value,
                                                                           NSError * _Nullable error))completionHandler;
 - (void)writeAttributeSupportedStreamingProtocolsWithValue:(NSNumber * _Nonnull)value
+                                         completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeSupportedStreamingProtocolsWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeSupportedStreamingProtocolsWithValue:(NSNumber * _Nonnull)value
+                                                    params:(CHIPWriteParams * _Nullable)params
                                          completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
@@ -3802,7 +4195,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)retrieveLogsRequestWithParams:(CHIPDiagnosticLogsClusterRetrieveLogsRequestParams *)params
                     completionHandler:(void (^)(CHIPDiagnosticLogsClusterRetrieveLogsResponseParams * _Nullable data,
-                                          NSError * _Nullable error))completionHandler;
+                                          NSError * _Nullable error))completionHandler
+    __attribute__((deprecated("Use retrieveLogsRequestWithArguments:params:completionHandler:")));
+;
+- (void)retrieveLogsRequestWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                  params:(CHIPDiagnosticLogsClusterRetrieveLogsRequestParams *)params
+                       completionHandler:(void (^)(CHIPDiagnosticLogsClusterRetrieveLogsResponseParams * _Nullable data,
+                                             NSError * _Nullable error))completionHandler;
 
 - (void)readAttributeGeneratedCommandListWithCompletionHandler:(void (^)(NSArray * _Nullable value,
                                                                    NSError * _Nullable error))completionHandler;
@@ -3869,45 +4268,143 @@ NS_ASSUME_NONNULL_BEGIN
 @interface CHIPDoorLock : CHIPCluster
 
 - (void)clearCredentialWithParams:(CHIPDoorLockClusterClearCredentialParams *)params
-                completionHandler:(StatusCompletion)completionHandler;
+                completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use clearCredentialWithArguments:params:completionHandler:")));
+;
+- (void)clearCredentialWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                              params:(CHIPDoorLockClusterClearCredentialParams *)params
+                   completionHandler:(StatusCompletion)completionHandler;
 - (void)clearHolidayScheduleWithParams:(CHIPDoorLockClusterClearHolidayScheduleParams *)params
-                     completionHandler:(StatusCompletion)completionHandler;
-- (void)clearUserWithParams:(CHIPDoorLockClusterClearUserParams *)params completionHandler:(StatusCompletion)completionHandler;
+                     completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use clearHolidayScheduleWithArguments:params:completionHandler:")));
+;
+- (void)clearHolidayScheduleWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                   params:(CHIPDoorLockClusterClearHolidayScheduleParams *)params
+                        completionHandler:(StatusCompletion)completionHandler;
+- (void)clearUserWithParams:(CHIPDoorLockClusterClearUserParams *)params
+          completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use clearUserWithArguments:params:completionHandler:")));
+;
+- (void)clearUserWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                        params:(CHIPDoorLockClusterClearUserParams *)params
+             completionHandler:(StatusCompletion)completionHandler;
 - (void)clearWeekDayScheduleWithParams:(CHIPDoorLockClusterClearWeekDayScheduleParams *)params
-                     completionHandler:(StatusCompletion)completionHandler;
+                     completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use clearWeekDayScheduleWithArguments:params:completionHandler:")));
+;
+- (void)clearWeekDayScheduleWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                   params:(CHIPDoorLockClusterClearWeekDayScheduleParams *)params
+                        completionHandler:(StatusCompletion)completionHandler;
 - (void)clearYearDayScheduleWithParams:(CHIPDoorLockClusterClearYearDayScheduleParams *)params
-                     completionHandler:(StatusCompletion)completionHandler;
+                     completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use clearYearDayScheduleWithArguments:params:completionHandler:")));
+;
+- (void)clearYearDayScheduleWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                   params:(CHIPDoorLockClusterClearYearDayScheduleParams *)params
+                        completionHandler:(StatusCompletion)completionHandler;
 - (void)getCredentialStatusWithParams:(CHIPDoorLockClusterGetCredentialStatusParams *)params
                     completionHandler:(void (^)(CHIPDoorLockClusterGetCredentialStatusResponseParams * _Nullable data,
-                                          NSError * _Nullable error))completionHandler;
+                                          NSError * _Nullable error))completionHandler
+    __attribute__((deprecated("Use getCredentialStatusWithArguments:params:completionHandler:")));
+;
+- (void)getCredentialStatusWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                  params:(CHIPDoorLockClusterGetCredentialStatusParams *)params
+                       completionHandler:(void (^)(CHIPDoorLockClusterGetCredentialStatusResponseParams * _Nullable data,
+                                             NSError * _Nullable error))completionHandler;
 - (void)getHolidayScheduleWithParams:(CHIPDoorLockClusterGetHolidayScheduleParams *)params
                    completionHandler:(void (^)(CHIPDoorLockClusterGetHolidayScheduleResponseParams * _Nullable data,
-                                         NSError * _Nullable error))completionHandler;
+                                         NSError * _Nullable error))completionHandler
+    __attribute__((deprecated("Use getHolidayScheduleWithArguments:params:completionHandler:")));
+;
+- (void)getHolidayScheduleWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                 params:(CHIPDoorLockClusterGetHolidayScheduleParams *)params
+                      completionHandler:(void (^)(CHIPDoorLockClusterGetHolidayScheduleResponseParams * _Nullable data,
+                                            NSError * _Nullable error))completionHandler;
 - (void)getUserWithParams:(CHIPDoorLockClusterGetUserParams *)params
         completionHandler:
-            (void (^)(CHIPDoorLockClusterGetUserResponseParams * _Nullable data, NSError * _Nullable error))completionHandler;
+            (void (^)(CHIPDoorLockClusterGetUserResponseParams * _Nullable data, NSError * _Nullable error))completionHandler
+    __attribute__((deprecated("Use getUserWithArguments:params:completionHandler:")));
+;
+- (void)getUserWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                      params:(CHIPDoorLockClusterGetUserParams *)params
+           completionHandler:
+               (void (^)(CHIPDoorLockClusterGetUserResponseParams * _Nullable data, NSError * _Nullable error))completionHandler;
 - (void)getWeekDayScheduleWithParams:(CHIPDoorLockClusterGetWeekDayScheduleParams *)params
                    completionHandler:(void (^)(CHIPDoorLockClusterGetWeekDayScheduleResponseParams * _Nullable data,
-                                         NSError * _Nullable error))completionHandler;
+                                         NSError * _Nullable error))completionHandler
+    __attribute__((deprecated("Use getWeekDayScheduleWithArguments:params:completionHandler:")));
+;
+- (void)getWeekDayScheduleWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                 params:(CHIPDoorLockClusterGetWeekDayScheduleParams *)params
+                      completionHandler:(void (^)(CHIPDoorLockClusterGetWeekDayScheduleResponseParams * _Nullable data,
+                                            NSError * _Nullable error))completionHandler;
 - (void)getYearDayScheduleWithParams:(CHIPDoorLockClusterGetYearDayScheduleParams *)params
                    completionHandler:(void (^)(CHIPDoorLockClusterGetYearDayScheduleResponseParams * _Nullable data,
-                                         NSError * _Nullable error))completionHandler;
+                                         NSError * _Nullable error))completionHandler
+    __attribute__((deprecated("Use getYearDayScheduleWithArguments:params:completionHandler:")));
+;
+- (void)getYearDayScheduleWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                 params:(CHIPDoorLockClusterGetYearDayScheduleParams *)params
+                      completionHandler:(void (^)(CHIPDoorLockClusterGetYearDayScheduleResponseParams * _Nullable data,
+                                            NSError * _Nullable error))completionHandler;
 - (void)lockDoorWithParams:(CHIPDoorLockClusterLockDoorParams * _Nullable)params
-         completionHandler:(StatusCompletion)completionHandler;
+         completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use lockDoorWithArguments:params:completionHandler:")));
+;
+- (void)lockDoorWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                       params:(CHIPDoorLockClusterLockDoorParams * _Nullable)params
+            completionHandler:(StatusCompletion)completionHandler;
 - (void)setCredentialWithParams:(CHIPDoorLockClusterSetCredentialParams *)params
               completionHandler:(void (^)(CHIPDoorLockClusterSetCredentialResponseParams * _Nullable data,
-                                    NSError * _Nullable error))completionHandler;
+                                    NSError * _Nullable error))completionHandler
+    __attribute__((deprecated("Use setCredentialWithArguments:params:completionHandler:")));
+;
+- (void)setCredentialWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                            params:(CHIPDoorLockClusterSetCredentialParams *)params
+                 completionHandler:(void (^)(CHIPDoorLockClusterSetCredentialResponseParams * _Nullable data,
+                                       NSError * _Nullable error))completionHandler;
 - (void)setHolidayScheduleWithParams:(CHIPDoorLockClusterSetHolidayScheduleParams *)params
-                   completionHandler:(StatusCompletion)completionHandler;
-- (void)setUserWithParams:(CHIPDoorLockClusterSetUserParams *)params completionHandler:(StatusCompletion)completionHandler;
-- (void)setWeekDayScheduleWithParams:(CHIPDoorLockClusterSetWeekDayScheduleParams *)params
-                   completionHandler:(StatusCompletion)completionHandler;
-- (void)setYearDayScheduleWithParams:(CHIPDoorLockClusterSetYearDayScheduleParams *)params
-                   completionHandler:(StatusCompletion)completionHandler;
-- (void)unlockDoorWithParams:(CHIPDoorLockClusterUnlockDoorParams * _Nullable)params
+                   completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use setHolidayScheduleWithArguments:params:completionHandler:")));
+;
+- (void)setHolidayScheduleWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                 params:(CHIPDoorLockClusterSetHolidayScheduleParams *)params
+                      completionHandler:(StatusCompletion)completionHandler;
+- (void)setUserWithParams:(CHIPDoorLockClusterSetUserParams *)params
+        completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use setUserWithArguments:params:completionHandler:")));
+;
+- (void)setUserWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                      params:(CHIPDoorLockClusterSetUserParams *)params
            completionHandler:(StatusCompletion)completionHandler;
+- (void)setWeekDayScheduleWithParams:(CHIPDoorLockClusterSetWeekDayScheduleParams *)params
+                   completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use setWeekDayScheduleWithArguments:params:completionHandler:")));
+;
+- (void)setWeekDayScheduleWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                 params:(CHIPDoorLockClusterSetWeekDayScheduleParams *)params
+                      completionHandler:(StatusCompletion)completionHandler;
+- (void)setYearDayScheduleWithParams:(CHIPDoorLockClusterSetYearDayScheduleParams *)params
+                   completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use setYearDayScheduleWithArguments:params:completionHandler:")));
+;
+- (void)setYearDayScheduleWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                 params:(CHIPDoorLockClusterSetYearDayScheduleParams *)params
+                      completionHandler:(StatusCompletion)completionHandler;
+- (void)unlockDoorWithParams:(CHIPDoorLockClusterUnlockDoorParams * _Nullable)params
+           completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use unlockDoorWithArguments:params:completionHandler:")));
+;
+- (void)unlockDoorWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                         params:(CHIPDoorLockClusterUnlockDoorParams * _Nullable)params
+              completionHandler:(StatusCompletion)completionHandler;
 - (void)unlockWithTimeoutWithParams:(CHIPDoorLockClusterUnlockWithTimeoutParams *)params
-                  completionHandler:(StatusCompletion)completionHandler;
+                  completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use unlockWithTimeoutWithArguments:params:completionHandler:")));
+;
+- (void)unlockWithTimeoutWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                params:(CHIPDoorLockClusterUnlockWithTimeoutParams *)params
+                     completionHandler:(StatusCompletion)completionHandler;
 
 - (void)readAttributeLockStateWithCompletionHandler:(void (^)(
                                                         NSNumber * _Nullable value, NSError * _Nullable error))completionHandler;
@@ -4165,7 +4662,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)readAttributeLanguageWithCompletionHandler:(void (^)(
                                                        NSString * _Nullable value, NSError * _Nullable error))completionHandler;
-- (void)writeAttributeLanguageWithValue:(NSString * _Nonnull)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeLanguageWithValue:(NSString * _Nonnull)value
+                      completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeLanguageWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeLanguageWithValue:(NSString * _Nonnull)value
+                                 params:(CHIPWriteParams * _Nullable)params
+                      completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -4182,7 +4685,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)readAttributeAutoRelockTimeWithCompletionHandler:(void (^)(NSNumber * _Nullable value,
                                                              NSError * _Nullable error))completionHandler;
-- (void)writeAttributeAutoRelockTimeWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeAutoRelockTimeWithValue:(NSNumber * _Nonnull)value
+                            completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeAutoRelockTimeWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeAutoRelockTimeWithValue:(NSNumber * _Nonnull)value
+                                       params:(CHIPWriteParams * _Nullable)params
+                            completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -4201,7 +4710,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)readAttributeSoundVolumeWithCompletionHandler:(void (^)(
                                                           NSNumber * _Nullable value, NSError * _Nullable error))completionHandler;
-- (void)writeAttributeSoundVolumeWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeSoundVolumeWithValue:(NSNumber * _Nonnull)value
+                         completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeSoundVolumeWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeSoundVolumeWithValue:(NSNumber * _Nonnull)value
+                                    params:(CHIPWriteParams * _Nullable)params
+                         completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -4219,7 +4734,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)readAttributeOperatingModeWithCompletionHandler:(void (^)(NSNumber * _Nullable value,
                                                             NSError * _Nullable error))completionHandler;
-- (void)writeAttributeOperatingModeWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeOperatingModeWithValue:(NSNumber * _Nonnull)value
+                           completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeOperatingModeWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeOperatingModeWithValue:(NSNumber * _Nonnull)value
+                                      params:(CHIPWriteParams * _Nullable)params
+                           completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -4258,6 +4779,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)readAttributeEnableOneTouchLockingWithCompletionHandler:(void (^)(NSNumber * _Nullable value,
                                                                     NSError * _Nullable error))completionHandler;
 - (void)writeAttributeEnableOneTouchLockingWithValue:(NSNumber * _Nonnull)value
+                                   completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeEnableOneTouchLockingWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeEnableOneTouchLockingWithValue:(NSNumber * _Nonnull)value
+                                              params:(CHIPWriteParams * _Nullable)params
                                    completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
@@ -4279,6 +4805,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)readAttributeEnablePrivacyModeButtonWithCompletionHandler:(void (^)(NSNumber * _Nullable value,
                                                                       NSError * _Nullable error))completionHandler;
 - (void)writeAttributeEnablePrivacyModeButtonWithValue:(NSNumber * _Nonnull)value
+                                     completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeEnablePrivacyModeButtonWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeEnablePrivacyModeButtonWithValue:(NSNumber * _Nonnull)value
+                                                params:(CHIPWriteParams * _Nullable)params
                                      completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
@@ -4299,7 +4830,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)readAttributeWrongCodeEntryLimitWithCompletionHandler:(void (^)(NSNumber * _Nullable value,
                                                                   NSError * _Nullable error))completionHandler;
-- (void)writeAttributeWrongCodeEntryLimitWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeWrongCodeEntryLimitWithValue:(NSNumber * _Nonnull)value
+                                 completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeWrongCodeEntryLimitWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeWrongCodeEntryLimitWithValue:(NSNumber * _Nonnull)value
+                                            params:(CHIPWriteParams * _Nullable)params
+                                 completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -4320,6 +4857,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)readAttributeUserCodeTemporaryDisableTimeWithCompletionHandler:(void (^)(NSNumber * _Nullable value,
                                                                            NSError * _Nullable error))completionHandler;
 - (void)writeAttributeUserCodeTemporaryDisableTimeWithValue:(NSNumber * _Nonnull)value
+                                          completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeUserCodeTemporaryDisableTimeWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeUserCodeTemporaryDisableTimeWithValue:(NSNumber * _Nonnull)value
+                                                     params:(CHIPWriteParams * _Nullable)params
                                           completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
@@ -4341,6 +4883,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)readAttributeRequirePINforRemoteOperationWithCompletionHandler:(void (^)(NSNumber * _Nullable value,
                                                                            NSError * _Nullable error))completionHandler;
 - (void)writeAttributeRequirePINforRemoteOperationWithValue:(NSNumber * _Nonnull)value
+                                          completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeRequirePINforRemoteOperationWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeRequirePINforRemoteOperationWithValue:(NSNumber * _Nonnull)value
+                                                     params:(CHIPWriteParams * _Nullable)params
                                           completionHandler:(StatusCompletion)completionHandler;
 
 - (void)readAttributeGeneratedCommandListWithCompletionHandler:(void (^)(NSArray * _Nullable value,
@@ -4702,7 +5249,10 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @interface CHIPEthernetNetworkDiagnostics : CHIPCluster
 
-- (void)resetCountsWithCompletionHandler:(StatusCompletion)completionHandler;
+- (void)resetCountsWithCompletionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use resetCountsWithArguments: completionHandler:")));
+;
+- (void)resetCountsWithArguments:(CHIPCommandArguments * _Nullable)arguments completionHandler:(StatusCompletion)completionHandler;
 
 - (void)readAttributePHYRateWithCompletionHandler:(void (^)(
                                                       NSNumber * _Nullable value, NSError * _Nullable error))completionHandler;
@@ -4963,7 +5513,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)readAttributeFanModeWithCompletionHandler:(void (^)(
                                                       NSNumber * _Nullable value, NSError * _Nullable error))completionHandler;
-- (void)writeAttributeFanModeWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeFanModeWithValue:(NSNumber * _Nonnull)value
+                     completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeFanModeWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeFanModeWithValue:(NSNumber * _Nonnull)value
+                                params:(CHIPWriteParams * _Nullable)params
+                     completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -4980,7 +5536,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)readAttributeFanModeSequenceWithCompletionHandler:(void (^)(NSNumber * _Nullable value,
                                                               NSError * _Nullable error))completionHandler;
-- (void)writeAttributeFanModeSequenceWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeFanModeSequenceWithValue:(NSNumber * _Nonnull)value
+                             completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeFanModeSequenceWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeFanModeSequenceWithValue:(NSNumber * _Nonnull)value
+                                        params:(CHIPWriteParams * _Nullable)params
+                             completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -4999,7 +5561,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)readAttributePercentSettingWithCompletionHandler:(void (^)(NSNumber * _Nullable value,
                                                              NSError * _Nullable error))completionHandler;
-- (void)writeAttributePercentSettingWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributePercentSettingWithValue:(NSNumber * _Nonnull)value
+                            completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributePercentSettingWithValue:params:completionHandler:")));
+;
+- (void)writeAttributePercentSettingWithValue:(NSNumber * _Nonnull)value
+                                       params:(CHIPWriteParams * _Nullable)params
+                            completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -5052,7 +5620,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)readAttributeSpeedSettingWithCompletionHandler:(void (^)(
                                                            NSNumber * _Nullable value, NSError * _Nullable error))completionHandler;
-- (void)writeAttributeSpeedSettingWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeSpeedSettingWithValue:(NSNumber * _Nonnull)value
+                          completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeSpeedSettingWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeSpeedSettingWithValue:(NSNumber * _Nonnull)value
+                                     params:(CHIPWriteParams * _Nullable)params
+                          completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -5106,7 +5680,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)readAttributeRockSettingWithCompletionHandler:(void (^)(
                                                           NSNumber * _Nullable value, NSError * _Nullable error))completionHandler;
-- (void)writeAttributeRockSettingWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeRockSettingWithValue:(NSNumber * _Nonnull)value
+                         completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeRockSettingWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeRockSettingWithValue:(NSNumber * _Nonnull)value
+                                    params:(CHIPWriteParams * _Nullable)params
+                         completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -5141,7 +5721,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)readAttributeWindSettingWithCompletionHandler:(void (^)(
                                                           NSNumber * _Nullable value, NSError * _Nullable error))completionHandler;
-- (void)writeAttributeWindSettingWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeWindSettingWithValue:(NSNumber * _Nonnull)value
+                         completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeWindSettingWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeWindSettingWithValue:(NSNumber * _Nonnull)value
+                                    params:(CHIPWriteParams * _Nullable)params
+                         completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -5508,17 +6094,42 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)armFailSafeWithParams:(CHIPGeneralCommissioningClusterArmFailSafeParams *)params
             completionHandler:(void (^)(CHIPGeneralCommissioningClusterArmFailSafeResponseParams * _Nullable data,
-                                  NSError * _Nullable error))completionHandler;
+                                  NSError * _Nullable error))completionHandler
+    __attribute__((deprecated("Use armFailSafeWithArguments:params:completionHandler:")));
+;
+- (void)armFailSafeWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                          params:(CHIPGeneralCommissioningClusterArmFailSafeParams *)params
+               completionHandler:(void (^)(CHIPGeneralCommissioningClusterArmFailSafeResponseParams * _Nullable data,
+                                     NSError * _Nullable error))completionHandler;
 - (void)commissioningCompleteWithCompletionHandler:
     (void (^)(CHIPGeneralCommissioningClusterCommissioningCompleteResponseParams * _Nullable data,
-        NSError * _Nullable error))completionHandler;
+        NSError * _Nullable error))completionHandler
+    __attribute__((deprecated("Use commissioningCompleteWithArguments: completionHandler:")));
+;
+- (void)commissioningCompleteWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                         completionHandler:
+                             (void (^)(CHIPGeneralCommissioningClusterCommissioningCompleteResponseParams * _Nullable data,
+                                 NSError * _Nullable error))completionHandler;
 - (void)setRegulatoryConfigWithParams:(CHIPGeneralCommissioningClusterSetRegulatoryConfigParams *)params
                     completionHandler:(void (^)(CHIPGeneralCommissioningClusterSetRegulatoryConfigResponseParams * _Nullable data,
-                                          NSError * _Nullable error))completionHandler;
+                                          NSError * _Nullable error))completionHandler
+    __attribute__((deprecated("Use setRegulatoryConfigWithArguments:params:completionHandler:")));
+;
+- (void)setRegulatoryConfigWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                  params:(CHIPGeneralCommissioningClusterSetRegulatoryConfigParams *)params
+                       completionHandler:
+                           (void (^)(CHIPGeneralCommissioningClusterSetRegulatoryConfigResponseParams * _Nullable data,
+                               NSError * _Nullable error))completionHandler;
 
 - (void)readAttributeBreadcrumbWithCompletionHandler:(void (^)(
                                                          NSNumber * _Nullable value, NSError * _Nullable error))completionHandler;
-- (void)writeAttributeBreadcrumbWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeBreadcrumbWithValue:(NSNumber * _Nonnull)value
+                        completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeBreadcrumbWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeBreadcrumbWithValue:(NSNumber * _Nonnull)value
+                                   params:(CHIPWriteParams * _Nullable)params
+                        completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -5918,18 +6529,47 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)keySetReadWithParams:(CHIPGroupKeyManagementClusterKeySetReadParams *)params
            completionHandler:(void (^)(CHIPGroupKeyManagementClusterKeySetReadResponseParams * _Nullable data,
-                                 NSError * _Nullable error))completionHandler;
+                                 NSError * _Nullable error))completionHandler
+    __attribute__((deprecated("Use keySetReadWithArguments:params:completionHandler:")));
+;
+- (void)keySetReadWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                         params:(CHIPGroupKeyManagementClusterKeySetReadParams *)params
+              completionHandler:(void (^)(CHIPGroupKeyManagementClusterKeySetReadResponseParams * _Nullable data,
+                                    NSError * _Nullable error))completionHandler;
 - (void)keySetReadAllIndicesWithParams:(CHIPGroupKeyManagementClusterKeySetReadAllIndicesParams *)params
                      completionHandler:(void (^)(CHIPGroupKeyManagementClusterKeySetReadAllIndicesResponseParams * _Nullable data,
-                                           NSError * _Nullable error))completionHandler;
+                                           NSError * _Nullable error))completionHandler
+    __attribute__((deprecated("Use keySetReadAllIndicesWithArguments:params:completionHandler:")));
+;
+- (void)keySetReadAllIndicesWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                   params:(CHIPGroupKeyManagementClusterKeySetReadAllIndicesParams *)params
+                        completionHandler:
+                            (void (^)(CHIPGroupKeyManagementClusterKeySetReadAllIndicesResponseParams * _Nullable data,
+                                NSError * _Nullable error))completionHandler;
 - (void)keySetRemoveWithParams:(CHIPGroupKeyManagementClusterKeySetRemoveParams *)params
-             completionHandler:(StatusCompletion)completionHandler;
+             completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use keySetRemoveWithArguments:params:completionHandler:")));
+;
+- (void)keySetRemoveWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                           params:(CHIPGroupKeyManagementClusterKeySetRemoveParams *)params
+                completionHandler:(StatusCompletion)completionHandler;
 - (void)keySetWriteWithParams:(CHIPGroupKeyManagementClusterKeySetWriteParams *)params
-            completionHandler:(StatusCompletion)completionHandler;
+            completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use keySetWriteWithArguments:params:completionHandler:")));
+;
+- (void)keySetWriteWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                          params:(CHIPGroupKeyManagementClusterKeySetWriteParams *)params
+               completionHandler:(StatusCompletion)completionHandler;
 
 - (void)readAttributeGroupKeyMapWithParams:(CHIPReadParams * _Nullable)params
                          completionHandler:(void (^)(NSArray * _Nullable value, NSError * _Nullable error))completionHandler;
-- (void)writeAttributeGroupKeyMapWithValue:(NSArray * _Nonnull)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeGroupKeyMapWithValue:(NSArray * _Nonnull)value
+                         completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeGroupKeyMapWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeGroupKeyMapWithValue:(NSArray * _Nonnull)value
+                                    params:(CHIPWriteParams * _Nullable)params
+                         completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -6082,19 +6722,52 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)addGroupWithParams:(CHIPGroupsClusterAddGroupParams *)params
          completionHandler:
-             (void (^)(CHIPGroupsClusterAddGroupResponseParams * _Nullable data, NSError * _Nullable error))completionHandler;
+             (void (^)(CHIPGroupsClusterAddGroupResponseParams * _Nullable data, NSError * _Nullable error))completionHandler
+    __attribute__((deprecated("Use addGroupWithArguments:params:completionHandler:")));
+;
+- (void)addGroupWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                       params:(CHIPGroupsClusterAddGroupParams *)params
+            completionHandler:
+                (void (^)(CHIPGroupsClusterAddGroupResponseParams * _Nullable data, NSError * _Nullable error))completionHandler;
 - (void)addGroupIfIdentifyingWithParams:(CHIPGroupsClusterAddGroupIfIdentifyingParams *)params
-                      completionHandler:(StatusCompletion)completionHandler;
+                      completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use addGroupIfIdentifyingWithArguments:params:completionHandler:")));
+;
+- (void)addGroupIfIdentifyingWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                    params:(CHIPGroupsClusterAddGroupIfIdentifyingParams *)params
+                         completionHandler:(StatusCompletion)completionHandler;
 - (void)getGroupMembershipWithParams:(CHIPGroupsClusterGetGroupMembershipParams *)params
                    completionHandler:(void (^)(CHIPGroupsClusterGetGroupMembershipResponseParams * _Nullable data,
-                                         NSError * _Nullable error))completionHandler;
-- (void)removeAllGroupsWithCompletionHandler:(StatusCompletion)completionHandler;
+                                         NSError * _Nullable error))completionHandler
+    __attribute__((deprecated("Use getGroupMembershipWithArguments:params:completionHandler:")));
+;
+- (void)getGroupMembershipWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                 params:(CHIPGroupsClusterGetGroupMembershipParams *)params
+                      completionHandler:(void (^)(CHIPGroupsClusterGetGroupMembershipResponseParams * _Nullable data,
+                                            NSError * _Nullable error))completionHandler;
+- (void)removeAllGroupsWithCompletionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use removeAllGroupsWithArguments: completionHandler:")));
+;
+- (void)removeAllGroupsWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                   completionHandler:(StatusCompletion)completionHandler;
 - (void)removeGroupWithParams:(CHIPGroupsClusterRemoveGroupParams *)params
             completionHandler:
-                (void (^)(CHIPGroupsClusterRemoveGroupResponseParams * _Nullable data, NSError * _Nullable error))completionHandler;
+                (void (^)(CHIPGroupsClusterRemoveGroupResponseParams * _Nullable data, NSError * _Nullable error))completionHandler
+    __attribute__((deprecated("Use removeGroupWithArguments:params:completionHandler:")));
+;
+- (void)removeGroupWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                          params:(CHIPGroupsClusterRemoveGroupParams *)params
+               completionHandler:(void (^)(CHIPGroupsClusterRemoveGroupResponseParams * _Nullable data,
+                                     NSError * _Nullable error))completionHandler;
 - (void)viewGroupWithParams:(CHIPGroupsClusterViewGroupParams *)params
           completionHandler:
-              (void (^)(CHIPGroupsClusterViewGroupResponseParams * _Nullable data, NSError * _Nullable error))completionHandler;
+              (void (^)(CHIPGroupsClusterViewGroupResponseParams * _Nullable data, NSError * _Nullable error))completionHandler
+    __attribute__((deprecated("Use viewGroupWithArguments:params:completionHandler:")));
+;
+- (void)viewGroupWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                        params:(CHIPGroupsClusterViewGroupParams *)params
+             completionHandler:
+                 (void (^)(CHIPGroupsClusterViewGroupResponseParams * _Nullable data, NSError * _Nullable error))completionHandler;
 
 - (void)readAttributeNameSupportWithCompletionHandler:(void (^)(
                                                           NSNumber * _Nullable value, NSError * _Nullable error))completionHandler;
@@ -6195,15 +6868,37 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @interface CHIPIdentify : CHIPCluster
 
-- (void)identifyWithParams:(CHIPIdentifyClusterIdentifyParams *)params completionHandler:(StatusCompletion)completionHandler;
-- (void)identifyQueryWithCompletionHandler:(void (^)(CHIPIdentifyClusterIdentifyQueryResponseParams * _Nullable data,
-                                               NSError * _Nullable error))completionHandler;
+- (void)identifyWithParams:(CHIPIdentifyClusterIdentifyParams *)params
+         completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use identifyWithArguments:params:completionHandler:")));
+;
+- (void)identifyWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                       params:(CHIPIdentifyClusterIdentifyParams *)params
+            completionHandler:(StatusCompletion)completionHandler;
+- (void)identifyQueryWithCompletionHandler:
+    (void (^)(CHIPIdentifyClusterIdentifyQueryResponseParams * _Nullable data, NSError * _Nullable error))completionHandler
+    __attribute__((deprecated("Use identifyQueryWithArguments: completionHandler:")));
+;
+- (void)identifyQueryWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                 completionHandler:(void (^)(CHIPIdentifyClusterIdentifyQueryResponseParams * _Nullable data,
+                                       NSError * _Nullable error))completionHandler;
 - (void)triggerEffectWithParams:(CHIPIdentifyClusterTriggerEffectParams *)params
-              completionHandler:(StatusCompletion)completionHandler;
+              completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use triggerEffectWithArguments:params:completionHandler:")));
+;
+- (void)triggerEffectWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                            params:(CHIPIdentifyClusterTriggerEffectParams *)params
+                 completionHandler:(StatusCompletion)completionHandler;
 
 - (void)readAttributeIdentifyTimeWithCompletionHandler:(void (^)(
                                                            NSNumber * _Nullable value, NSError * _Nullable error))completionHandler;
-- (void)writeAttributeIdentifyTimeWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeIdentifyTimeWithValue:(NSNumber * _Nonnull)value
+                          completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeIdentifyTimeWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeIdentifyTimeWithValue:(NSNumber * _Nonnull)value
+                                     params:(CHIPWriteParams * _Nullable)params
+                          completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -6492,7 +7187,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)sendKeyWithParams:(CHIPKeypadInputClusterSendKeyParams *)params
         completionHandler:
-            (void (^)(CHIPKeypadInputClusterSendKeyResponseParams * _Nullable data, NSError * _Nullable error))completionHandler;
+            (void (^)(CHIPKeypadInputClusterSendKeyResponseParams * _Nullable data, NSError * _Nullable error))completionHandler
+    __attribute__((deprecated("Use sendKeyWithArguments:params:completionHandler:")));
+;
+- (void)sendKeyWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                      params:(CHIPKeypadInputClusterSendKeyParams *)params
+           completionHandler:
+               (void (^)(CHIPKeypadInputClusterSendKeyResponseParams * _Nullable data, NSError * _Nullable error))completionHandler;
 
 - (void)readAttributeGeneratedCommandListWithCompletionHandler:(void (^)(NSArray * _Nullable value,
                                                                    NSError * _Nullable error))completionHandler;
@@ -6576,18 +7277,60 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @interface CHIPLevelControl : CHIPCluster
 
-- (void)moveWithParams:(CHIPLevelControlClusterMoveParams *)params completionHandler:(StatusCompletion)completionHandler;
+- (void)moveWithParams:(CHIPLevelControlClusterMoveParams *)params
+     completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use moveWithArguments:params:completionHandler:")));
+;
+- (void)moveWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                   params:(CHIPLevelControlClusterMoveParams *)params
+        completionHandler:(StatusCompletion)completionHandler;
 - (void)moveToLevelWithParams:(CHIPLevelControlClusterMoveToLevelParams *)params
-            completionHandler:(StatusCompletion)completionHandler;
+            completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use moveToLevelWithArguments:params:completionHandler:")));
+;
+- (void)moveToLevelWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                          params:(CHIPLevelControlClusterMoveToLevelParams *)params
+               completionHandler:(StatusCompletion)completionHandler;
 - (void)moveToLevelWithOnOffWithParams:(CHIPLevelControlClusterMoveToLevelWithOnOffParams *)params
-                     completionHandler:(StatusCompletion)completionHandler;
+                     completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use moveToLevelWithOnOffWithArguments:params:completionHandler:")));
+;
+- (void)moveToLevelWithOnOffWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                   params:(CHIPLevelControlClusterMoveToLevelWithOnOffParams *)params
+                        completionHandler:(StatusCompletion)completionHandler;
 - (void)moveWithOnOffWithParams:(CHIPLevelControlClusterMoveWithOnOffParams *)params
-              completionHandler:(StatusCompletion)completionHandler;
-- (void)stepWithParams:(CHIPLevelControlClusterStepParams *)params completionHandler:(StatusCompletion)completionHandler;
+              completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use moveWithOnOffWithArguments:params:completionHandler:")));
+;
+- (void)moveWithOnOffWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                            params:(CHIPLevelControlClusterMoveWithOnOffParams *)params
+                 completionHandler:(StatusCompletion)completionHandler;
+- (void)stepWithParams:(CHIPLevelControlClusterStepParams *)params
+     completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use stepWithArguments:params:completionHandler:")));
+;
+- (void)stepWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                   params:(CHIPLevelControlClusterStepParams *)params
+        completionHandler:(StatusCompletion)completionHandler;
 - (void)stepWithOnOffWithParams:(CHIPLevelControlClusterStepWithOnOffParams *)params
-              completionHandler:(StatusCompletion)completionHandler;
-- (void)stopWithParams:(CHIPLevelControlClusterStopParams *)params completionHandler:(StatusCompletion)completionHandler;
-- (void)stopWithOnOffWithCompletionHandler:(StatusCompletion)completionHandler;
+              completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use stepWithOnOffWithArguments:params:completionHandler:")));
+;
+- (void)stepWithOnOffWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                            params:(CHIPLevelControlClusterStepWithOnOffParams *)params
+                 completionHandler:(StatusCompletion)completionHandler;
+- (void)stopWithParams:(CHIPLevelControlClusterStopParams *)params
+     completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use stopWithArguments:params:completionHandler:")));
+;
+- (void)stopWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                   params:(CHIPLevelControlClusterStopParams *)params
+        completionHandler:(StatusCompletion)completionHandler;
+- (void)stopWithOnOffWithCompletionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use stopWithOnOffWithArguments: completionHandler:")));
+;
+- (void)stopWithOnOffWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                 completionHandler:(StatusCompletion)completionHandler;
 
 - (void)readAttributeCurrentLevelWithCompletionHandler:(void (^)(
                                                            NSNumber * _Nullable value, NSError * _Nullable error))completionHandler;
@@ -6713,7 +7456,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)readAttributeOptionsWithCompletionHandler:(void (^)(
                                                       NSNumber * _Nullable value, NSError * _Nullable error))completionHandler;
-- (void)writeAttributeOptionsWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeOptionsWithValue:(NSNumber * _Nonnull)value
+                     completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeOptionsWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeOptionsWithValue:(NSNumber * _Nonnull)value
+                                params:(CHIPWriteParams * _Nullable)params
+                     completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -6730,7 +7479,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)readAttributeOnOffTransitionTimeWithCompletionHandler:(void (^)(NSNumber * _Nullable value,
                                                                   NSError * _Nullable error))completionHandler;
-- (void)writeAttributeOnOffTransitionTimeWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeOnOffTransitionTimeWithValue:(NSNumber * _Nonnull)value
+                                 completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeOnOffTransitionTimeWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeOnOffTransitionTimeWithValue:(NSNumber * _Nonnull)value
+                                            params:(CHIPWriteParams * _Nullable)params
+                                 completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -6750,7 +7505,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)readAttributeOnLevelWithCompletionHandler:(void (^)(
                                                       NSNumber * _Nullable value, NSError * _Nullable error))completionHandler;
-- (void)writeAttributeOnLevelWithValue:(NSNumber * _Nullable)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeOnLevelWithValue:(NSNumber * _Nullable)value
+                     completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeOnLevelWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeOnLevelWithValue:(NSNumber * _Nullable)value
+                                params:(CHIPWriteParams * _Nullable)params
+                     completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -6767,7 +7528,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)readAttributeOnTransitionTimeWithCompletionHandler:(void (^)(NSNumber * _Nullable value,
                                                                NSError * _Nullable error))completionHandler;
-- (void)writeAttributeOnTransitionTimeWithValue:(NSNumber * _Nullable)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeOnTransitionTimeWithValue:(NSNumber * _Nullable)value
+                              completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeOnTransitionTimeWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeOnTransitionTimeWithValue:(NSNumber * _Nullable)value
+                                         params:(CHIPWriteParams * _Nullable)params
+                              completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -6786,7 +7553,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)readAttributeOffTransitionTimeWithCompletionHandler:(void (^)(NSNumber * _Nullable value,
                                                                 NSError * _Nullable error))completionHandler;
-- (void)writeAttributeOffTransitionTimeWithValue:(NSNumber * _Nullable)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeOffTransitionTimeWithValue:(NSNumber * _Nullable)value
+                               completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeOffTransitionTimeWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeOffTransitionTimeWithValue:(NSNumber * _Nullable)value
+                                          params:(CHIPWriteParams * _Nullable)params
+                               completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -6805,7 +7578,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)readAttributeDefaultMoveRateWithCompletionHandler:(void (^)(NSNumber * _Nullable value,
                                                               NSError * _Nullable error))completionHandler;
-- (void)writeAttributeDefaultMoveRateWithValue:(NSNumber * _Nullable)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeDefaultMoveRateWithValue:(NSNumber * _Nullable)value
+                             completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeDefaultMoveRateWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeDefaultMoveRateWithValue:(NSNumber * _Nullable)value
+                                        params:(CHIPWriteParams * _Nullable)params
+                             completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -6825,6 +7604,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)readAttributeStartUpCurrentLevelWithCompletionHandler:(void (^)(NSNumber * _Nullable value,
                                                                   NSError * _Nullable error))completionHandler;
 - (void)writeAttributeStartUpCurrentLevelWithValue:(NSNumber * _Nullable)value
+                                 completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeStartUpCurrentLevelWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeStartUpCurrentLevelWithValue:(NSNumber * _Nullable)value
+                                            params:(CHIPWriteParams * _Nullable)params
                                  completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
@@ -6944,7 +7728,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)readAttributeActiveLocaleWithCompletionHandler:(void (^)(
                                                            NSString * _Nullable value, NSError * _Nullable error))completionHandler;
-- (void)writeAttributeActiveLocaleWithValue:(NSString * _Nonnull)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeActiveLocaleWithValue:(NSString * _Nonnull)value
+                          completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeActiveLocaleWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeActiveLocaleWithValue:(NSString * _Nonnull)value
+                                     params:(CHIPWriteParams * _Nullable)params
+                          completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -7043,7 +7833,10 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @interface CHIPLowPower : CHIPCluster
 
-- (void)sleepWithCompletionHandler:(StatusCompletion)completionHandler;
+- (void)sleepWithCompletionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use sleepWithArguments: completionHandler:")));
+;
+- (void)sleepWithArguments:(CHIPCommandArguments * _Nullable)arguments completionHandler:(StatusCompletion)completionHandler;
 
 - (void)readAttributeGeneratedCommandListWithCompletionHandler:(void (^)(NSArray * _Nullable value,
                                                                    NSError * _Nullable error))completionHandler;
@@ -7127,12 +7920,30 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @interface CHIPMediaInput : CHIPCluster
 
-- (void)hideInputStatusWithCompletionHandler:(StatusCompletion)completionHandler;
+- (void)hideInputStatusWithCompletionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use hideInputStatusWithArguments: completionHandler:")));
+;
+- (void)hideInputStatusWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                   completionHandler:(StatusCompletion)completionHandler;
 - (void)renameInputWithParams:(CHIPMediaInputClusterRenameInputParams *)params
-            completionHandler:(StatusCompletion)completionHandler;
+            completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use renameInputWithArguments:params:completionHandler:")));
+;
+- (void)renameInputWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                          params:(CHIPMediaInputClusterRenameInputParams *)params
+               completionHandler:(StatusCompletion)completionHandler;
 - (void)selectInputWithParams:(CHIPMediaInputClusterSelectInputParams *)params
-            completionHandler:(StatusCompletion)completionHandler;
-- (void)showInputStatusWithCompletionHandler:(StatusCompletion)completionHandler;
+            completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use selectInputWithArguments:params:completionHandler:")));
+;
+- (void)selectInputWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                          params:(CHIPMediaInputClusterSelectInputParams *)params
+               completionHandler:(StatusCompletion)completionHandler;
+- (void)showInputStatusWithCompletionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use showInputStatusWithArguments: completionHandler:")));
+;
+- (void)showInputStatusWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                   completionHandler:(StatusCompletion)completionHandler;
 
 - (void)readAttributeInputListWithCompletionHandler:(void (^)(
                                                         NSArray * _Nullable value, NSError * _Nullable error))completionHandler;
@@ -7250,31 +8061,89 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @interface CHIPMediaPlayback : CHIPCluster
 
-- (void)fastForwardWithCompletionHandler:(void (^)(CHIPMediaPlaybackClusterPlaybackResponseParams * _Nullable data,
-                                             NSError * _Nullable error))completionHandler;
-- (void)nextWithCompletionHandler:(void (^)(CHIPMediaPlaybackClusterPlaybackResponseParams * _Nullable data,
-                                      NSError * _Nullable error))completionHandler;
-- (void)pauseWithCompletionHandler:(void (^)(CHIPMediaPlaybackClusterPlaybackResponseParams * _Nullable data,
-                                       NSError * _Nullable error))completionHandler;
-- (void)playWithCompletionHandler:(void (^)(CHIPMediaPlaybackClusterPlaybackResponseParams * _Nullable data,
-                                      NSError * _Nullable error))completionHandler;
-- (void)previousWithCompletionHandler:(void (^)(CHIPMediaPlaybackClusterPlaybackResponseParams * _Nullable data,
-                                          NSError * _Nullable error))completionHandler;
-- (void)rewindWithCompletionHandler:(void (^)(CHIPMediaPlaybackClusterPlaybackResponseParams * _Nullable data,
-                                        NSError * _Nullable error))completionHandler;
-- (void)seekWithParams:(CHIPMediaPlaybackClusterSeekParams *)params
-     completionHandler:
-         (void (^)(CHIPMediaPlaybackClusterPlaybackResponseParams * _Nullable data, NSError * _Nullable error))completionHandler;
-- (void)skipBackwardWithParams:(CHIPMediaPlaybackClusterSkipBackwardParams *)params
-             completionHandler:(void (^)(CHIPMediaPlaybackClusterPlaybackResponseParams * _Nullable data,
-                                   NSError * _Nullable error))completionHandler;
-- (void)skipForwardWithParams:(CHIPMediaPlaybackClusterSkipForwardParams *)params
+- (void)fastForwardWithCompletionHandler:
+    (void (^)(CHIPMediaPlaybackClusterPlaybackResponseParams * _Nullable data, NSError * _Nullable error))completionHandler
+    __attribute__((deprecated("Use fastForwardWithArguments: completionHandler:")));
+;
+- (void)fastForwardWithArguments:(CHIPCommandArguments * _Nullable)arguments
+               completionHandler:(void (^)(CHIPMediaPlaybackClusterPlaybackResponseParams * _Nullable data,
+                                     NSError * _Nullable error))completionHandler;
+- (void)nextWithCompletionHandler:
+    (void (^)(CHIPMediaPlaybackClusterPlaybackResponseParams * _Nullable data, NSError * _Nullable error))completionHandler
+    __attribute__((deprecated("Use nextWithArguments: completionHandler:")));
+;
+- (void)nextWithArguments:(CHIPCommandArguments * _Nullable)arguments
+        completionHandler:
+            (void (^)(CHIPMediaPlaybackClusterPlaybackResponseParams * _Nullable data, NSError * _Nullable error))completionHandler;
+- (void)pauseWithCompletionHandler:
+    (void (^)(CHIPMediaPlaybackClusterPlaybackResponseParams * _Nullable data, NSError * _Nullable error))completionHandler
+    __attribute__((deprecated("Use pauseWithArguments: completionHandler:")));
+;
+- (void)pauseWithArguments:(CHIPCommandArguments * _Nullable)arguments
+         completionHandler:(void (^)(CHIPMediaPlaybackClusterPlaybackResponseParams * _Nullable data,
+                               NSError * _Nullable error))completionHandler;
+- (void)playWithCompletionHandler:
+    (void (^)(CHIPMediaPlaybackClusterPlaybackResponseParams * _Nullable data, NSError * _Nullable error))completionHandler
+    __attribute__((deprecated("Use playWithArguments: completionHandler:")));
+;
+- (void)playWithArguments:(CHIPCommandArguments * _Nullable)arguments
+        completionHandler:
+            (void (^)(CHIPMediaPlaybackClusterPlaybackResponseParams * _Nullable data, NSError * _Nullable error))completionHandler;
+- (void)previousWithCompletionHandler:
+    (void (^)(CHIPMediaPlaybackClusterPlaybackResponseParams * _Nullable data, NSError * _Nullable error))completionHandler
+    __attribute__((deprecated("Use previousWithArguments: completionHandler:")));
+;
+- (void)previousWithArguments:(CHIPCommandArguments * _Nullable)arguments
             completionHandler:(void (^)(CHIPMediaPlaybackClusterPlaybackResponseParams * _Nullable data,
                                   NSError * _Nullable error))completionHandler;
-- (void)startOverWithCompletionHandler:(void (^)(CHIPMediaPlaybackClusterPlaybackResponseParams * _Nullable data,
-                                           NSError * _Nullable error))completionHandler;
-- (void)stopPlaybackWithCompletionHandler:(void (^)(CHIPMediaPlaybackClusterPlaybackResponseParams * _Nullable data,
-                                              NSError * _Nullable error))completionHandler;
+- (void)rewindWithCompletionHandler:
+    (void (^)(CHIPMediaPlaybackClusterPlaybackResponseParams * _Nullable data, NSError * _Nullable error))completionHandler
+    __attribute__((deprecated("Use rewindWithArguments: completionHandler:")));
+;
+- (void)rewindWithArguments:(CHIPCommandArguments * _Nullable)arguments
+          completionHandler:(void (^)(CHIPMediaPlaybackClusterPlaybackResponseParams * _Nullable data,
+                                NSError * _Nullable error))completionHandler;
+- (void)seekWithParams:(CHIPMediaPlaybackClusterSeekParams *)params
+     completionHandler:
+         (void (^)(CHIPMediaPlaybackClusterPlaybackResponseParams * _Nullable data, NSError * _Nullable error))completionHandler
+    __attribute__((deprecated("Use seekWithArguments:params:completionHandler:")));
+;
+- (void)seekWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                   params:(CHIPMediaPlaybackClusterSeekParams *)params
+        completionHandler:
+            (void (^)(CHIPMediaPlaybackClusterPlaybackResponseParams * _Nullable data, NSError * _Nullable error))completionHandler;
+- (void)skipBackwardWithParams:(CHIPMediaPlaybackClusterSkipBackwardParams *)params
+             completionHandler:(void (^)(CHIPMediaPlaybackClusterPlaybackResponseParams * _Nullable data,
+                                   NSError * _Nullable error))completionHandler
+    __attribute__((deprecated("Use skipBackwardWithArguments:params:completionHandler:")));
+;
+- (void)skipBackwardWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                           params:(CHIPMediaPlaybackClusterSkipBackwardParams *)params
+                completionHandler:(void (^)(CHIPMediaPlaybackClusterPlaybackResponseParams * _Nullable data,
+                                      NSError * _Nullable error))completionHandler;
+- (void)skipForwardWithParams:(CHIPMediaPlaybackClusterSkipForwardParams *)params
+            completionHandler:(void (^)(CHIPMediaPlaybackClusterPlaybackResponseParams * _Nullable data,
+                                  NSError * _Nullable error))completionHandler
+    __attribute__((deprecated("Use skipForwardWithArguments:params:completionHandler:")));
+;
+- (void)skipForwardWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                          params:(CHIPMediaPlaybackClusterSkipForwardParams *)params
+               completionHandler:(void (^)(CHIPMediaPlaybackClusterPlaybackResponseParams * _Nullable data,
+                                     NSError * _Nullable error))completionHandler;
+- (void)startOverWithCompletionHandler:
+    (void (^)(CHIPMediaPlaybackClusterPlaybackResponseParams * _Nullable data, NSError * _Nullable error))completionHandler
+    __attribute__((deprecated("Use startOverWithArguments: completionHandler:")));
+;
+- (void)startOverWithArguments:(CHIPCommandArguments * _Nullable)arguments
+             completionHandler:(void (^)(CHIPMediaPlaybackClusterPlaybackResponseParams * _Nullable data,
+                                   NSError * _Nullable error))completionHandler;
+- (void)stopPlaybackWithCompletionHandler:
+    (void (^)(CHIPMediaPlaybackClusterPlaybackResponseParams * _Nullable data, NSError * _Nullable error))completionHandler
+    __attribute__((deprecated("Use stopPlaybackWithArguments: completionHandler:")));
+;
+- (void)stopPlaybackWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                completionHandler:(void (^)(CHIPMediaPlaybackClusterPlaybackResponseParams * _Nullable data,
+                                      NSError * _Nullable error))completionHandler;
 
 - (void)readAttributeCurrentStateWithCompletionHandler:(void (^)(
                                                            NSNumber * _Nullable value, NSError * _Nullable error))completionHandler;
@@ -7481,7 +8350,12 @@ NS_ASSUME_NONNULL_BEGIN
 @interface CHIPModeSelect : CHIPCluster
 
 - (void)changeToModeWithParams:(CHIPModeSelectClusterChangeToModeParams *)params
-             completionHandler:(StatusCompletion)completionHandler;
+             completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use changeToModeWithArguments:params:completionHandler:")));
+;
+- (void)changeToModeWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                           params:(CHIPModeSelectClusterChangeToModeParams *)params
+                completionHandler:(StatusCompletion)completionHandler;
 
 - (void)readAttributeDescriptionWithCompletionHandler:(void (^)(
                                                           NSString * _Nullable value, NSError * _Nullable error))completionHandler;
@@ -7555,7 +8429,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)readAttributeStartUpModeWithCompletionHandler:(void (^)(
                                                           NSNumber * _Nullable value, NSError * _Nullable error))completionHandler;
-- (void)writeAttributeStartUpModeWithValue:(NSNumber * _Nullable)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeStartUpModeWithValue:(NSNumber * _Nullable)value
+                         completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeStartUpModeWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeStartUpModeWithValue:(NSNumber * _Nullable)value
+                                    params:(CHIPWriteParams * _Nullable)params
+                         completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -7572,7 +8452,13 @@ NS_ASSUME_NONNULL_BEGIN
                                      (void (^)(NSNumber * _Nullable value, NSError * _Nullable error))completionHandler;
 
 - (void)readAttributeOnModeWithCompletionHandler:(void (^)(NSNumber * _Nullable value, NSError * _Nullable error))completionHandler;
-- (void)writeAttributeOnModeWithValue:(NSNumber * _Nullable)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeOnModeWithValue:(NSNumber * _Nullable)value
+                    completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeOnModeWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeOnModeWithValue:(NSNumber * _Nullable)value
+                               params:(CHIPWriteParams * _Nullable)params
+                    completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -7688,22 +8574,58 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)addOrUpdateThreadNetworkWithParams:(CHIPNetworkCommissioningClusterAddOrUpdateThreadNetworkParams *)params
                          completionHandler:(void (^)(CHIPNetworkCommissioningClusterNetworkConfigResponseParams * _Nullable data,
-                                               NSError * _Nullable error))completionHandler;
+                                               NSError * _Nullable error))completionHandler
+    __attribute__((deprecated("Use addOrUpdateThreadNetworkWithArguments:params:completionHandler:")));
+;
+- (void)addOrUpdateThreadNetworkWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                       params:(CHIPNetworkCommissioningClusterAddOrUpdateThreadNetworkParams *)params
+                            completionHandler:(void (^)(CHIPNetworkCommissioningClusterNetworkConfigResponseParams * _Nullable data,
+                                                  NSError * _Nullable error))completionHandler;
 - (void)addOrUpdateWiFiNetworkWithParams:(CHIPNetworkCommissioningClusterAddOrUpdateWiFiNetworkParams *)params
                        completionHandler:(void (^)(CHIPNetworkCommissioningClusterNetworkConfigResponseParams * _Nullable data,
-                                             NSError * _Nullable error))completionHandler;
+                                             NSError * _Nullable error))completionHandler
+    __attribute__((deprecated("Use addOrUpdateWiFiNetworkWithArguments:params:completionHandler:")));
+;
+- (void)addOrUpdateWiFiNetworkWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                     params:(CHIPNetworkCommissioningClusterAddOrUpdateWiFiNetworkParams *)params
+                          completionHandler:(void (^)(CHIPNetworkCommissioningClusterNetworkConfigResponseParams * _Nullable data,
+                                                NSError * _Nullable error))completionHandler;
 - (void)connectNetworkWithParams:(CHIPNetworkCommissioningClusterConnectNetworkParams *)params
                completionHandler:(void (^)(CHIPNetworkCommissioningClusterConnectNetworkResponseParams * _Nullable data,
-                                     NSError * _Nullable error))completionHandler;
+                                     NSError * _Nullable error))completionHandler
+    __attribute__((deprecated("Use connectNetworkWithArguments:params:completionHandler:")));
+;
+- (void)connectNetworkWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                             params:(CHIPNetworkCommissioningClusterConnectNetworkParams *)params
+                  completionHandler:(void (^)(CHIPNetworkCommissioningClusterConnectNetworkResponseParams * _Nullable data,
+                                        NSError * _Nullable error))completionHandler;
 - (void)removeNetworkWithParams:(CHIPNetworkCommissioningClusterRemoveNetworkParams *)params
               completionHandler:(void (^)(CHIPNetworkCommissioningClusterNetworkConfigResponseParams * _Nullable data,
-                                    NSError * _Nullable error))completionHandler;
+                                    NSError * _Nullable error))completionHandler
+    __attribute__((deprecated("Use removeNetworkWithArguments:params:completionHandler:")));
+;
+- (void)removeNetworkWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                            params:(CHIPNetworkCommissioningClusterRemoveNetworkParams *)params
+                 completionHandler:(void (^)(CHIPNetworkCommissioningClusterNetworkConfigResponseParams * _Nullable data,
+                                       NSError * _Nullable error))completionHandler;
 - (void)reorderNetworkWithParams:(CHIPNetworkCommissioningClusterReorderNetworkParams *)params
                completionHandler:(void (^)(CHIPNetworkCommissioningClusterNetworkConfigResponseParams * _Nullable data,
-                                     NSError * _Nullable error))completionHandler;
+                                     NSError * _Nullable error))completionHandler
+    __attribute__((deprecated("Use reorderNetworkWithArguments:params:completionHandler:")));
+;
+- (void)reorderNetworkWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                             params:(CHIPNetworkCommissioningClusterReorderNetworkParams *)params
+                  completionHandler:(void (^)(CHIPNetworkCommissioningClusterNetworkConfigResponseParams * _Nullable data,
+                                        NSError * _Nullable error))completionHandler;
 - (void)scanNetworksWithParams:(CHIPNetworkCommissioningClusterScanNetworksParams * _Nullable)params
              completionHandler:(void (^)(CHIPNetworkCommissioningClusterScanNetworksResponseParams * _Nullable data,
-                                   NSError * _Nullable error))completionHandler;
+                                   NSError * _Nullable error))completionHandler
+    __attribute__((deprecated("Use scanNetworksWithArguments:params:completionHandler:")));
+;
+- (void)scanNetworksWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                           params:(CHIPNetworkCommissioningClusterScanNetworksParams * _Nullable)params
+                completionHandler:(void (^)(CHIPNetworkCommissioningClusterScanNetworksResponseParams * _Nullable data,
+                                      NSError * _Nullable error))completionHandler;
 
 - (void)readAttributeMaxNetworksWithCompletionHandler:(void (^)(
                                                           NSNumber * _Nullable value, NSError * _Nullable error))completionHandler;
@@ -7777,7 +8699,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)readAttributeInterfaceEnabledWithCompletionHandler:(void (^)(NSNumber * _Nullable value,
                                                                NSError * _Nullable error))completionHandler;
-- (void)writeAttributeInterfaceEnabledWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeInterfaceEnabledWithValue:(NSNumber * _Nonnull)value
+                              completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeInterfaceEnabledWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeInterfaceEnabledWithValue:(NSNumber * _Nonnull)value
+                                         params:(CHIPWriteParams * _Nullable)params
+                              completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -7932,12 +8860,29 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)applyUpdateRequestWithParams:(CHIPOtaSoftwareUpdateProviderClusterApplyUpdateRequestParams *)params
                    completionHandler:(void (^)(CHIPOtaSoftwareUpdateProviderClusterApplyUpdateResponseParams * _Nullable data,
-                                         NSError * _Nullable error))completionHandler;
+                                         NSError * _Nullable error))completionHandler
+    __attribute__((deprecated("Use applyUpdateRequestWithArguments:params:completionHandler:")));
+;
+- (void)applyUpdateRequestWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                 params:(CHIPOtaSoftwareUpdateProviderClusterApplyUpdateRequestParams *)params
+                      completionHandler:(void (^)(CHIPOtaSoftwareUpdateProviderClusterApplyUpdateResponseParams * _Nullable data,
+                                            NSError * _Nullable error))completionHandler;
 - (void)notifyUpdateAppliedWithParams:(CHIPOtaSoftwareUpdateProviderClusterNotifyUpdateAppliedParams *)params
-                    completionHandler:(StatusCompletion)completionHandler;
+                    completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use notifyUpdateAppliedWithArguments:params:completionHandler:")));
+;
+- (void)notifyUpdateAppliedWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                  params:(CHIPOtaSoftwareUpdateProviderClusterNotifyUpdateAppliedParams *)params
+                       completionHandler:(StatusCompletion)completionHandler;
 - (void)queryImageWithParams:(CHIPOtaSoftwareUpdateProviderClusterQueryImageParams *)params
            completionHandler:(void (^)(CHIPOtaSoftwareUpdateProviderClusterQueryImageResponseParams * _Nullable data,
-                                 NSError * _Nullable error))completionHandler;
+                                 NSError * _Nullable error))completionHandler
+    __attribute__((deprecated("Use queryImageWithArguments:params:completionHandler:")));
+;
+- (void)queryImageWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                         params:(CHIPOtaSoftwareUpdateProviderClusterQueryImageParams *)params
+              completionHandler:(void (^)(CHIPOtaSoftwareUpdateProviderClusterQueryImageResponseParams * _Nullable data,
+                                    NSError * _Nullable error))completionHandler;
 
 - (void)readAttributeAttributeListWithCompletionHandler:(void (^)(
                                                             NSArray * _Nullable value, NSError * _Nullable error))completionHandler;
@@ -7984,12 +8929,23 @@ NS_ASSUME_NONNULL_BEGIN
 @interface CHIPOtaSoftwareUpdateRequestor : CHIPCluster
 
 - (void)announceOtaProviderWithParams:(CHIPOtaSoftwareUpdateRequestorClusterAnnounceOtaProviderParams *)params
-                    completionHandler:(StatusCompletion)completionHandler;
+                    completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use announceOtaProviderWithArguments:params:completionHandler:")));
+;
+- (void)announceOtaProviderWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                  params:(CHIPOtaSoftwareUpdateRequestorClusterAnnounceOtaProviderParams *)params
+                       completionHandler:(StatusCompletion)completionHandler;
 
 - (void)readAttributeDefaultOtaProvidersWithParams:(CHIPReadParams * _Nullable)params
                                  completionHandler:
                                      (void (^)(NSArray * _Nullable value, NSError * _Nullable error))completionHandler;
-- (void)writeAttributeDefaultOtaProvidersWithValue:(NSArray * _Nonnull)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeDefaultOtaProvidersWithValue:(NSArray * _Nonnull)value
+                                 completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeDefaultOtaProvidersWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeDefaultOtaProvidersWithValue:(NSArray * _Nonnull)value
+                                            params:(CHIPWriteParams * _Nullable)params
+                                 completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -8241,13 +9197,37 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @interface CHIPOnOff : CHIPCluster
 
-- (void)offWithCompletionHandler:(StatusCompletion)completionHandler;
-- (void)offWithEffectWithParams:(CHIPOnOffClusterOffWithEffectParams *)params completionHandler:(StatusCompletion)completionHandler;
-- (void)onWithCompletionHandler:(StatusCompletion)completionHandler;
-- (void)onWithRecallGlobalSceneWithCompletionHandler:(StatusCompletion)completionHandler;
+- (void)offWithCompletionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use offWithArguments: completionHandler:")));
+;
+- (void)offWithArguments:(CHIPCommandArguments * _Nullable)arguments completionHandler:(StatusCompletion)completionHandler;
+- (void)offWithEffectWithParams:(CHIPOnOffClusterOffWithEffectParams *)params
+              completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use offWithEffectWithArguments:params:completionHandler:")));
+;
+- (void)offWithEffectWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                            params:(CHIPOnOffClusterOffWithEffectParams *)params
+                 completionHandler:(StatusCompletion)completionHandler;
+- (void)onWithCompletionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use onWithArguments: completionHandler:")));
+;
+- (void)onWithArguments:(CHIPCommandArguments * _Nullable)arguments completionHandler:(StatusCompletion)completionHandler;
+- (void)onWithRecallGlobalSceneWithCompletionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use onWithRecallGlobalSceneWithArguments: completionHandler:")));
+;
+- (void)onWithRecallGlobalSceneWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                           completionHandler:(StatusCompletion)completionHandler;
 - (void)onWithTimedOffWithParams:(CHIPOnOffClusterOnWithTimedOffParams *)params
-               completionHandler:(StatusCompletion)completionHandler;
-- (void)toggleWithCompletionHandler:(StatusCompletion)completionHandler;
+               completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use onWithTimedOffWithArguments:params:completionHandler:")));
+;
+- (void)onWithTimedOffWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                             params:(CHIPOnOffClusterOnWithTimedOffParams *)params
+                  completionHandler:(StatusCompletion)completionHandler;
+- (void)toggleWithCompletionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use toggleWithArguments: completionHandler:")));
+;
+- (void)toggleWithArguments:(CHIPCommandArguments * _Nullable)arguments completionHandler:(StatusCompletion)completionHandler;
 
 - (void)readAttributeOnOffWithCompletionHandler:(void (^)(NSNumber * _Nullable value, NSError * _Nullable error))completionHandler;
 /**
@@ -8283,7 +9263,13 @@ NS_ASSUME_NONNULL_BEGIN
                                             (void (^)(NSNumber * _Nullable value, NSError * _Nullable error))completionHandler;
 
 - (void)readAttributeOnTimeWithCompletionHandler:(void (^)(NSNumber * _Nullable value, NSError * _Nullable error))completionHandler;
-- (void)writeAttributeOnTimeWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeOnTimeWithValue:(NSNumber * _Nonnull)value
+                    completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeOnTimeWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeOnTimeWithValue:(NSNumber * _Nonnull)value
+                               params:(CHIPWriteParams * _Nullable)params
+                    completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -8300,7 +9286,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)readAttributeOffWaitTimeWithCompletionHandler:(void (^)(
                                                           NSNumber * _Nullable value, NSError * _Nullable error))completionHandler;
-- (void)writeAttributeOffWaitTimeWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeOffWaitTimeWithValue:(NSNumber * _Nonnull)value
+                         completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeOffWaitTimeWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeOffWaitTimeWithValue:(NSNumber * _Nonnull)value
+                                    params:(CHIPWriteParams * _Nullable)params
+                         completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -8318,7 +9310,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)readAttributeStartUpOnOffWithCompletionHandler:(void (^)(
                                                            NSNumber * _Nullable value, NSError * _Nullable error))completionHandler;
-- (void)writeAttributeStartUpOnOffWithValue:(NSNumber * _Nullable)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeStartUpOnOffWithValue:(NSNumber * _Nullable)value
+                          completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeStartUpOnOffWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeStartUpOnOffWithValue:(NSNumber * _Nullable)value
+                                     params:(CHIPWriteParams * _Nullable)params
+                          completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -8453,7 +9451,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)readAttributeSwitchActionsWithCompletionHandler:(void (^)(NSNumber * _Nullable value,
                                                             NSError * _Nullable error))completionHandler;
-- (void)writeAttributeSwitchActionsWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeSwitchActionsWithValue:(NSNumber * _Nonnull)value
+                           completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeSwitchActionsWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeSwitchActionsWithValue:(NSNumber * _Nonnull)value
+                                      params:(CHIPWriteParams * _Nullable)params
+                           completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -8554,30 +9558,83 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)addNOCWithParams:(CHIPOperationalCredentialsClusterAddNOCParams *)params
        completionHandler:(void (^)(CHIPOperationalCredentialsClusterNOCResponseParams * _Nullable data,
-                             NSError * _Nullable error))completionHandler;
+                             NSError * _Nullable error))completionHandler
+    __attribute__((deprecated("Use addNOCWithArguments:params:completionHandler:")));
+;
+- (void)addNOCWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                     params:(CHIPOperationalCredentialsClusterAddNOCParams *)params
+          completionHandler:(void (^)(CHIPOperationalCredentialsClusterNOCResponseParams * _Nullable data,
+                                NSError * _Nullable error))completionHandler;
 - (void)addTrustedRootCertificateWithParams:(CHIPOperationalCredentialsClusterAddTrustedRootCertificateParams *)params
-                          completionHandler:(StatusCompletion)completionHandler;
+                          completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use addTrustedRootCertificateWithArguments:params:completionHandler:")));
+;
+- (void)addTrustedRootCertificateWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                        params:(CHIPOperationalCredentialsClusterAddTrustedRootCertificateParams *)params
+                             completionHandler:(StatusCompletion)completionHandler;
 - (void)attestationRequestWithParams:(CHIPOperationalCredentialsClusterAttestationRequestParams *)params
                    completionHandler:(void (^)(CHIPOperationalCredentialsClusterAttestationResponseParams * _Nullable data,
-                                         NSError * _Nullable error))completionHandler;
+                                         NSError * _Nullable error))completionHandler
+    __attribute__((deprecated("Use attestationRequestWithArguments:params:completionHandler:")));
+;
+- (void)attestationRequestWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                 params:(CHIPOperationalCredentialsClusterAttestationRequestParams *)params
+                      completionHandler:(void (^)(CHIPOperationalCredentialsClusterAttestationResponseParams * _Nullable data,
+                                            NSError * _Nullable error))completionHandler;
 - (void)CSRRequestWithParams:(CHIPOperationalCredentialsClusterCSRRequestParams *)params
            completionHandler:(void (^)(CHIPOperationalCredentialsClusterCSRResponseParams * _Nullable data,
-                                 NSError * _Nullable error))completionHandler;
+                                 NSError * _Nullable error))completionHandler
+    __attribute__((deprecated("Use CSRRequestWithArguments:params:completionHandler:")));
+;
+- (void)CSRRequestWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                         params:(CHIPOperationalCredentialsClusterCSRRequestParams *)params
+              completionHandler:(void (^)(CHIPOperationalCredentialsClusterCSRResponseParams * _Nullable data,
+                                    NSError * _Nullable error))completionHandler;
 - (void)certificateChainRequestWithParams:(CHIPOperationalCredentialsClusterCertificateChainRequestParams *)params
                         completionHandler:
                             (void (^)(CHIPOperationalCredentialsClusterCertificateChainResponseParams * _Nullable data,
-                                NSError * _Nullable error))completionHandler;
+                                NSError * _Nullable error))completionHandler
+    __attribute__((deprecated("Use certificateChainRequestWithArguments:params:completionHandler:")));
+;
+- (void)certificateChainRequestWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                      params:(CHIPOperationalCredentialsClusterCertificateChainRequestParams *)params
+                           completionHandler:
+                               (void (^)(CHIPOperationalCredentialsClusterCertificateChainResponseParams * _Nullable data,
+                                   NSError * _Nullable error))completionHandler;
 - (void)removeFabricWithParams:(CHIPOperationalCredentialsClusterRemoveFabricParams *)params
              completionHandler:(void (^)(CHIPOperationalCredentialsClusterNOCResponseParams * _Nullable data,
-                                   NSError * _Nullable error))completionHandler;
+                                   NSError * _Nullable error))completionHandler
+    __attribute__((deprecated("Use removeFabricWithArguments:params:completionHandler:")));
+;
+- (void)removeFabricWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                           params:(CHIPOperationalCredentialsClusterRemoveFabricParams *)params
+                completionHandler:(void (^)(CHIPOperationalCredentialsClusterNOCResponseParams * _Nullable data,
+                                      NSError * _Nullable error))completionHandler;
 - (void)removeTrustedRootCertificateWithParams:(CHIPOperationalCredentialsClusterRemoveTrustedRootCertificateParams *)params
-                             completionHandler:(StatusCompletion)completionHandler;
+                             completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use removeTrustedRootCertificateWithArguments:params:completionHandler:")));
+;
+- (void)removeTrustedRootCertificateWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                           params:(CHIPOperationalCredentialsClusterRemoveTrustedRootCertificateParams *)params
+                                completionHandler:(StatusCompletion)completionHandler;
 - (void)updateFabricLabelWithParams:(CHIPOperationalCredentialsClusterUpdateFabricLabelParams *)params
                   completionHandler:(void (^)(CHIPOperationalCredentialsClusterNOCResponseParams * _Nullable data,
-                                        NSError * _Nullable error))completionHandler;
+                                        NSError * _Nullable error))completionHandler
+    __attribute__((deprecated("Use updateFabricLabelWithArguments:params:completionHandler:")));
+;
+- (void)updateFabricLabelWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                params:(CHIPOperationalCredentialsClusterUpdateFabricLabelParams *)params
+                     completionHandler:(void (^)(CHIPOperationalCredentialsClusterNOCResponseParams * _Nullable data,
+                                           NSError * _Nullable error))completionHandler;
 - (void)updateNOCWithParams:(CHIPOperationalCredentialsClusterUpdateNOCParams *)params
           completionHandler:(void (^)(CHIPOperationalCredentialsClusterNOCResponseParams * _Nullable data,
-                                NSError * _Nullable error))completionHandler;
+                                NSError * _Nullable error))completionHandler
+    __attribute__((deprecated("Use updateNOCWithArguments:params:completionHandler:")));
+;
+- (void)updateNOCWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                        params:(CHIPOperationalCredentialsClusterUpdateNOCParams *)params
+             completionHandler:(void (^)(CHIPOperationalCredentialsClusterNOCResponseParams * _Nullable data,
+                                   NSError * _Nullable error))completionHandler;
 
 - (void)readAttributeNOCsWithParams:(CHIPReadParams * _Nullable)params
                   completionHandler:(void (^)(NSArray * _Nullable value, NSError * _Nullable error))completionHandler;
@@ -9537,6 +10594,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)readAttributeLifetimeRunningHoursWithCompletionHandler:(void (^)(NSNumber * _Nullable value,
                                                                    NSError * _Nullable error))completionHandler;
 - (void)writeAttributeLifetimeRunningHoursWithValue:(NSNumber * _Nullable)value
+                                  completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeLifetimeRunningHoursWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeLifetimeRunningHoursWithValue:(NSNumber * _Nullable)value
+                                             params:(CHIPWriteParams * _Nullable)params
                                   completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
@@ -9573,6 +10635,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)readAttributeLifetimeEnergyConsumedWithCompletionHandler:(void (^)(NSNumber * _Nullable value,
                                                                      NSError * _Nullable error))completionHandler;
 - (void)writeAttributeLifetimeEnergyConsumedWithValue:(NSNumber * _Nullable)value
+                                    completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeLifetimeEnergyConsumedWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeLifetimeEnergyConsumedWithValue:(NSNumber * _Nullable)value
+                                               params:(CHIPWriteParams * _Nullable)params
                                     completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
@@ -9593,7 +10660,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)readAttributeOperationModeWithCompletionHandler:(void (^)(NSNumber * _Nullable value,
                                                             NSError * _Nullable error))completionHandler;
-- (void)writeAttributeOperationModeWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeOperationModeWithValue:(NSNumber * _Nonnull)value
+                           completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeOperationModeWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeOperationModeWithValue:(NSNumber * _Nonnull)value
+                                      params:(CHIPWriteParams * _Nullable)params
+                           completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -9612,7 +10685,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)readAttributeControlModeWithCompletionHandler:(void (^)(
                                                           NSNumber * _Nullable value, NSError * _Nullable error))completionHandler;
-- (void)writeAttributeControlModeWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeControlModeWithValue:(NSNumber * _Nonnull)value
+                         completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeControlModeWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeControlModeWithValue:(NSNumber * _Nonnull)value
+                                    params:(CHIPWriteParams * _Nullable)params
+                         completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -9897,23 +10976,65 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)addSceneWithParams:(CHIPScenesClusterAddSceneParams *)params
          completionHandler:
-             (void (^)(CHIPScenesClusterAddSceneResponseParams * _Nullable data, NSError * _Nullable error))completionHandler;
+             (void (^)(CHIPScenesClusterAddSceneResponseParams * _Nullable data, NSError * _Nullable error))completionHandler
+    __attribute__((deprecated("Use addSceneWithArguments:params:completionHandler:")));
+;
+- (void)addSceneWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                       params:(CHIPScenesClusterAddSceneParams *)params
+            completionHandler:
+                (void (^)(CHIPScenesClusterAddSceneResponseParams * _Nullable data, NSError * _Nullable error))completionHandler;
 - (void)getSceneMembershipWithParams:(CHIPScenesClusterGetSceneMembershipParams *)params
                    completionHandler:(void (^)(CHIPScenesClusterGetSceneMembershipResponseParams * _Nullable data,
-                                         NSError * _Nullable error))completionHandler;
-- (void)recallSceneWithParams:(CHIPScenesClusterRecallSceneParams *)params completionHandler:(StatusCompletion)completionHandler;
+                                         NSError * _Nullable error))completionHandler
+    __attribute__((deprecated("Use getSceneMembershipWithArguments:params:completionHandler:")));
+;
+- (void)getSceneMembershipWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                 params:(CHIPScenesClusterGetSceneMembershipParams *)params
+                      completionHandler:(void (^)(CHIPScenesClusterGetSceneMembershipResponseParams * _Nullable data,
+                                            NSError * _Nullable error))completionHandler;
+- (void)recallSceneWithParams:(CHIPScenesClusterRecallSceneParams *)params
+            completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use recallSceneWithArguments:params:completionHandler:")));
+;
+- (void)recallSceneWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                          params:(CHIPScenesClusterRecallSceneParams *)params
+               completionHandler:(StatusCompletion)completionHandler;
 - (void)removeAllScenesWithParams:(CHIPScenesClusterRemoveAllScenesParams *)params
                 completionHandler:(void (^)(CHIPScenesClusterRemoveAllScenesResponseParams * _Nullable data,
-                                      NSError * _Nullable error))completionHandler;
+                                      NSError * _Nullable error))completionHandler
+    __attribute__((deprecated("Use removeAllScenesWithArguments:params:completionHandler:")));
+;
+- (void)removeAllScenesWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                              params:(CHIPScenesClusterRemoveAllScenesParams *)params
+                   completionHandler:(void (^)(CHIPScenesClusterRemoveAllScenesResponseParams * _Nullable data,
+                                         NSError * _Nullable error))completionHandler;
 - (void)removeSceneWithParams:(CHIPScenesClusterRemoveSceneParams *)params
             completionHandler:
-                (void (^)(CHIPScenesClusterRemoveSceneResponseParams * _Nullable data, NSError * _Nullable error))completionHandler;
+                (void (^)(CHIPScenesClusterRemoveSceneResponseParams * _Nullable data, NSError * _Nullable error))completionHandler
+    __attribute__((deprecated("Use removeSceneWithArguments:params:completionHandler:")));
+;
+- (void)removeSceneWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                          params:(CHIPScenesClusterRemoveSceneParams *)params
+               completionHandler:(void (^)(CHIPScenesClusterRemoveSceneResponseParams * _Nullable data,
+                                     NSError * _Nullable error))completionHandler;
 - (void)storeSceneWithParams:(CHIPScenesClusterStoreSceneParams *)params
            completionHandler:
-               (void (^)(CHIPScenesClusterStoreSceneResponseParams * _Nullable data, NSError * _Nullable error))completionHandler;
+               (void (^)(CHIPScenesClusterStoreSceneResponseParams * _Nullable data, NSError * _Nullable error))completionHandler
+    __attribute__((deprecated("Use storeSceneWithArguments:params:completionHandler:")));
+;
+- (void)storeSceneWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                         params:(CHIPScenesClusterStoreSceneParams *)params
+              completionHandler:(void (^)(CHIPScenesClusterStoreSceneResponseParams * _Nullable data,
+                                    NSError * _Nullable error))completionHandler;
 - (void)viewSceneWithParams:(CHIPScenesClusterViewSceneParams *)params
           completionHandler:
-              (void (^)(CHIPScenesClusterViewSceneResponseParams * _Nullable data, NSError * _Nullable error))completionHandler;
+              (void (^)(CHIPScenesClusterViewSceneResponseParams * _Nullable data, NSError * _Nullable error))completionHandler
+    __attribute__((deprecated("Use viewSceneWithArguments:params:completionHandler:")));
+;
+- (void)viewSceneWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                        params:(CHIPScenesClusterViewSceneParams *)params
+             completionHandler:
+                 (void (^)(CHIPScenesClusterViewSceneResponseParams * _Nullable data, NSError * _Nullable error))completionHandler;
 
 - (void)readAttributeSceneCountWithCompletionHandler:(void (^)(
                                                          NSNumber * _Nullable value, NSError * _Nullable error))completionHandler;
@@ -10084,7 +11205,11 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @interface CHIPSoftwareDiagnostics : CHIPCluster
 
-- (void)resetWatermarksWithCompletionHandler:(StatusCompletion)completionHandler;
+- (void)resetWatermarksWithCompletionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use resetWatermarksWithArguments: completionHandler:")));
+;
+- (void)resetWatermarksWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                   completionHandler:(StatusCompletion)completionHandler;
 
 - (void)readAttributeThreadMetricsWithCompletionHandler:(void (^)(
                                                             NSArray * _Nullable value, NSError * _Nullable error))completionHandler;
@@ -10413,7 +11538,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)navigateTargetWithParams:(CHIPTargetNavigatorClusterNavigateTargetParams *)params
                completionHandler:(void (^)(CHIPTargetNavigatorClusterNavigateTargetResponseParams * _Nullable data,
-                                     NSError * _Nullable error))completionHandler;
+                                     NSError * _Nullable error))completionHandler
+    __attribute__((deprecated("Use navigateTargetWithArguments:params:completionHandler:")));
+;
+- (void)navigateTargetWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                             params:(CHIPTargetNavigatorClusterNavigateTargetParams *)params
+                  completionHandler:(void (^)(CHIPTargetNavigatorClusterNavigateTargetResponseParams * _Nullable data,
+                                        NSError * _Nullable error))completionHandler;
 
 - (void)readAttributeTargetListWithCompletionHandler:(void (^)(
                                                          NSArray * _Nullable value, NSError * _Nullable error))completionHandler;
@@ -10647,54 +11778,161 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)simpleStructEchoRequestWithParams:(CHIPTestClusterClusterSimpleStructEchoRequestParams *)params
                         completionHandler:(void (^)(CHIPTestClusterClusterSimpleStructResponseParams * _Nullable data,
-                                              NSError * _Nullable error))completionHandler;
-- (void)testWithCompletionHandler:(StatusCompletion)completionHandler;
+                                              NSError * _Nullable error))completionHandler
+    __attribute__((deprecated("Use simpleStructEchoRequestWithArguments:params:completionHandler:")));
+;
+- (void)simpleStructEchoRequestWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                      params:(CHIPTestClusterClusterSimpleStructEchoRequestParams *)params
+                           completionHandler:(void (^)(CHIPTestClusterClusterSimpleStructResponseParams * _Nullable data,
+                                                 NSError * _Nullable error))completionHandler;
+- (void)testWithCompletionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use testWithArguments: completionHandler:")));
+;
+- (void)testWithArguments:(CHIPCommandArguments * _Nullable)arguments completionHandler:(StatusCompletion)completionHandler;
 - (void)testAddArgumentsWithParams:(CHIPTestClusterClusterTestAddArgumentsParams *)params
                  completionHandler:(void (^)(CHIPTestClusterClusterTestAddArgumentsResponseParams * _Nullable data,
-                                       NSError * _Nullable error))completionHandler;
+                                       NSError * _Nullable error))completionHandler
+    __attribute__((deprecated("Use testAddArgumentsWithArguments:params:completionHandler:")));
+;
+- (void)testAddArgumentsWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                               params:(CHIPTestClusterClusterTestAddArgumentsParams *)params
+                    completionHandler:(void (^)(CHIPTestClusterClusterTestAddArgumentsResponseParams * _Nullable data,
+                                          NSError * _Nullable error))completionHandler;
 - (void)testEmitTestEventRequestWithParams:(CHIPTestClusterClusterTestEmitTestEventRequestParams *)params
                          completionHandler:(void (^)(CHIPTestClusterClusterTestEmitTestEventResponseParams * _Nullable data,
-                                               NSError * _Nullable error))completionHandler;
+                                               NSError * _Nullable error))completionHandler
+    __attribute__((deprecated("Use testEmitTestEventRequestWithArguments:params:completionHandler:")));
+;
+- (void)testEmitTestEventRequestWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                       params:(CHIPTestClusterClusterTestEmitTestEventRequestParams *)params
+                            completionHandler:(void (^)(CHIPTestClusterClusterTestEmitTestEventResponseParams * _Nullable data,
+                                                  NSError * _Nullable error))completionHandler;
 - (void)testEnumsRequestWithParams:(CHIPTestClusterClusterTestEnumsRequestParams *)params
                  completionHandler:(void (^)(CHIPTestClusterClusterTestEnumsResponseParams * _Nullable data,
-                                       NSError * _Nullable error))completionHandler;
+                                       NSError * _Nullable error))completionHandler
+    __attribute__((deprecated("Use testEnumsRequestWithArguments:params:completionHandler:")));
+;
+- (void)testEnumsRequestWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                               params:(CHIPTestClusterClusterTestEnumsRequestParams *)params
+                    completionHandler:(void (^)(CHIPTestClusterClusterTestEnumsResponseParams * _Nullable data,
+                                          NSError * _Nullable error))completionHandler;
 - (void)testListInt8UArgumentRequestWithParams:(CHIPTestClusterClusterTestListInt8UArgumentRequestParams *)params
                              completionHandler:(void (^)(CHIPTestClusterClusterBooleanResponseParams * _Nullable data,
-                                                   NSError * _Nullable error))completionHandler;
+                                                   NSError * _Nullable error))completionHandler
+    __attribute__((deprecated("Use testListInt8UArgumentRequestWithArguments:params:completionHandler:")));
+;
+- (void)testListInt8UArgumentRequestWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                           params:(CHIPTestClusterClusterTestListInt8UArgumentRequestParams *)params
+                                completionHandler:(void (^)(CHIPTestClusterClusterBooleanResponseParams * _Nullable data,
+                                                      NSError * _Nullable error))completionHandler;
 - (void)testListInt8UReverseRequestWithParams:(CHIPTestClusterClusterTestListInt8UReverseRequestParams *)params
                             completionHandler:(void (^)(CHIPTestClusterClusterTestListInt8UReverseResponseParams * _Nullable data,
-                                                  NSError * _Nullable error))completionHandler;
+                                                  NSError * _Nullable error))completionHandler
+    __attribute__((deprecated("Use testListInt8UReverseRequestWithArguments:params:completionHandler:")));
+;
+- (void)testListInt8UReverseRequestWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                          params:(CHIPTestClusterClusterTestListInt8UReverseRequestParams *)params
+                               completionHandler:
+                                   (void (^)(CHIPTestClusterClusterTestListInt8UReverseResponseParams * _Nullable data,
+                                       NSError * _Nullable error))completionHandler;
 - (void)testListNestedStructListArgumentRequestWithParams:
             (CHIPTestClusterClusterTestListNestedStructListArgumentRequestParams *)params
                                         completionHandler:(void (^)(CHIPTestClusterClusterBooleanResponseParams * _Nullable data,
-                                                              NSError * _Nullable error))completionHandler;
+                                                              NSError * _Nullable error))completionHandler
+    __attribute__((deprecated("Use testListNestedStructListArgumentRequestWithArguments:params:completionHandler:")));
+;
+- (void)testListNestedStructListArgumentRequestWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                                      params:(CHIPTestClusterClusterTestListNestedStructListArgumentRequestParams *)
+                                                                 params
+                                           completionHandler:(void (^)(CHIPTestClusterClusterBooleanResponseParams * _Nullable data,
+                                                                 NSError * _Nullable error))completionHandler;
 - (void)testListStructArgumentRequestWithParams:(CHIPTestClusterClusterTestListStructArgumentRequestParams *)params
                               completionHandler:(void (^)(CHIPTestClusterClusterBooleanResponseParams * _Nullable data,
-                                                    NSError * _Nullable error))completionHandler;
+                                                    NSError * _Nullable error))completionHandler
+    __attribute__((deprecated("Use testListStructArgumentRequestWithArguments:params:completionHandler:")));
+;
+- (void)testListStructArgumentRequestWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                            params:(CHIPTestClusterClusterTestListStructArgumentRequestParams *)params
+                                 completionHandler:(void (^)(CHIPTestClusterClusterBooleanResponseParams * _Nullable data,
+                                                       NSError * _Nullable error))completionHandler;
 - (void)testNestedStructArgumentRequestWithParams:(CHIPTestClusterClusterTestNestedStructArgumentRequestParams *)params
                                 completionHandler:(void (^)(CHIPTestClusterClusterBooleanResponseParams * _Nullable data,
-                                                      NSError * _Nullable error))completionHandler;
+                                                      NSError * _Nullable error))completionHandler
+    __attribute__((deprecated("Use testNestedStructArgumentRequestWithArguments:params:completionHandler:")));
+;
+- (void)testNestedStructArgumentRequestWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                              params:(CHIPTestClusterClusterTestNestedStructArgumentRequestParams *)params
+                                   completionHandler:(void (^)(CHIPTestClusterClusterBooleanResponseParams * _Nullable data,
+                                                         NSError * _Nullable error))completionHandler;
 - (void)testNestedStructListArgumentRequestWithParams:(CHIPTestClusterClusterTestNestedStructListArgumentRequestParams *)params
                                     completionHandler:(void (^)(CHIPTestClusterClusterBooleanResponseParams * _Nullable data,
-                                                          NSError * _Nullable error))completionHandler;
-- (void)testNotHandledWithCompletionHandler:(StatusCompletion)completionHandler;
+                                                          NSError * _Nullable error))completionHandler
+    __attribute__((deprecated("Use testNestedStructListArgumentRequestWithArguments:params:completionHandler:")));
+;
+- (void)testNestedStructListArgumentRequestWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                                  params:(CHIPTestClusterClusterTestNestedStructListArgumentRequestParams *)params
+                                       completionHandler:(void (^)(CHIPTestClusterClusterBooleanResponseParams * _Nullable data,
+                                                             NSError * _Nullable error))completionHandler;
+- (void)testNotHandledWithCompletionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use testNotHandledWithArguments: completionHandler:")));
+;
+- (void)testNotHandledWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                  completionHandler:(StatusCompletion)completionHandler;
 - (void)testNullableOptionalRequestWithParams:(CHIPTestClusterClusterTestNullableOptionalRequestParams * _Nullable)params
                             completionHandler:(void (^)(CHIPTestClusterClusterTestNullableOptionalResponseParams * _Nullable data,
-                                                  NSError * _Nullable error))completionHandler;
+                                                  NSError * _Nullable error))completionHandler
+    __attribute__((deprecated("Use testNullableOptionalRequestWithArguments:params:completionHandler:")));
+;
+- (void)testNullableOptionalRequestWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                          params:(CHIPTestClusterClusterTestNullableOptionalRequestParams * _Nullable)params
+                               completionHandler:
+                                   (void (^)(CHIPTestClusterClusterTestNullableOptionalResponseParams * _Nullable data,
+                                       NSError * _Nullable error))completionHandler;
 - (void)testSimpleOptionalArgumentRequestWithParams:
             (CHIPTestClusterClusterTestSimpleOptionalArgumentRequestParams * _Nullable)params
-                                  completionHandler:(StatusCompletion)completionHandler;
-- (void)testSpecificWithCompletionHandler:(void (^)(CHIPTestClusterClusterTestSpecificResponseParams * _Nullable data,
-                                              NSError * _Nullable error))completionHandler;
+                                  completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use testSimpleOptionalArgumentRequestWithArguments:params:completionHandler:")));
+;
+- (void)
+    testSimpleOptionalArgumentRequestWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                            params:(CHIPTestClusterClusterTestSimpleOptionalArgumentRequestParams * _Nullable)params
+                                 completionHandler:(StatusCompletion)completionHandler;
+- (void)testSpecificWithCompletionHandler:
+    (void (^)(CHIPTestClusterClusterTestSpecificResponseParams * _Nullable data, NSError * _Nullable error))completionHandler
+    __attribute__((deprecated("Use testSpecificWithArguments: completionHandler:")));
+;
+- (void)testSpecificWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                completionHandler:(void (^)(CHIPTestClusterClusterTestSpecificResponseParams * _Nullable data,
+                                      NSError * _Nullable error))completionHandler;
 - (void)testStructArgumentRequestWithParams:(CHIPTestClusterClusterTestStructArgumentRequestParams *)params
                           completionHandler:(void (^)(CHIPTestClusterClusterBooleanResponseParams * _Nullable data,
-                                                NSError * _Nullable error))completionHandler;
-- (void)testUnknownCommandWithCompletionHandler:(StatusCompletion)completionHandler;
-- (void)timedInvokeRequestWithCompletionHandler:(StatusCompletion)completionHandler;
+                                                NSError * _Nullable error))completionHandler
+    __attribute__((deprecated("Use testStructArgumentRequestWithArguments:params:completionHandler:")));
+;
+- (void)testStructArgumentRequestWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                        params:(CHIPTestClusterClusterTestStructArgumentRequestParams *)params
+                             completionHandler:(void (^)(CHIPTestClusterClusterBooleanResponseParams * _Nullable data,
+                                                   NSError * _Nullable error))completionHandler;
+- (void)testUnknownCommandWithCompletionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use testUnknownCommandWithArguments: completionHandler:")));
+;
+- (void)testUnknownCommandWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                      completionHandler:(StatusCompletion)completionHandler;
+- (void)timedInvokeRequestWithCompletionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use timedInvokeRequestWithArguments: completionHandler:")));
+;
+- (void)timedInvokeRequestWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                      completionHandler:(StatusCompletion)completionHandler;
 
 - (void)readAttributeBooleanWithCompletionHandler:(void (^)(
                                                       NSNumber * _Nullable value, NSError * _Nullable error))completionHandler;
-- (void)writeAttributeBooleanWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeBooleanWithValue:(NSNumber * _Nonnull)value
+                     completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeBooleanWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeBooleanWithValue:(NSNumber * _Nonnull)value
+                                params:(CHIPWriteParams * _Nullable)params
+                     completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -10711,7 +11949,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)readAttributeBitmap8WithCompletionHandler:(void (^)(
                                                       NSNumber * _Nullable value, NSError * _Nullable error))completionHandler;
-- (void)writeAttributeBitmap8WithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeBitmap8WithValue:(NSNumber * _Nonnull)value
+                     completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeBitmap8WithValue:params:completionHandler:")));
+;
+- (void)writeAttributeBitmap8WithValue:(NSNumber * _Nonnull)value
+                                params:(CHIPWriteParams * _Nullable)params
+                     completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -10728,7 +11972,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)readAttributeBitmap16WithCompletionHandler:(void (^)(
                                                        NSNumber * _Nullable value, NSError * _Nullable error))completionHandler;
-- (void)writeAttributeBitmap16WithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeBitmap16WithValue:(NSNumber * _Nonnull)value
+                      completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeBitmap16WithValue:params:completionHandler:")));
+;
+- (void)writeAttributeBitmap16WithValue:(NSNumber * _Nonnull)value
+                                 params:(CHIPWriteParams * _Nullable)params
+                      completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -10745,7 +11995,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)readAttributeBitmap32WithCompletionHandler:(void (^)(
                                                        NSNumber * _Nullable value, NSError * _Nullable error))completionHandler;
-- (void)writeAttributeBitmap32WithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeBitmap32WithValue:(NSNumber * _Nonnull)value
+                      completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeBitmap32WithValue:params:completionHandler:")));
+;
+- (void)writeAttributeBitmap32WithValue:(NSNumber * _Nonnull)value
+                                 params:(CHIPWriteParams * _Nullable)params
+                      completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -10762,7 +12018,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)readAttributeBitmap64WithCompletionHandler:(void (^)(
                                                        NSNumber * _Nullable value, NSError * _Nullable error))completionHandler;
-- (void)writeAttributeBitmap64WithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeBitmap64WithValue:(NSNumber * _Nonnull)value
+                      completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeBitmap64WithValue:params:completionHandler:")));
+;
+- (void)writeAttributeBitmap64WithValue:(NSNumber * _Nonnull)value
+                                 params:(CHIPWriteParams * _Nullable)params
+                      completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -10778,7 +12040,13 @@ NS_ASSUME_NONNULL_BEGIN
                               completionHandler:(void (^)(NSNumber * _Nullable value, NSError * _Nullable error))completionHandler;
 
 - (void)readAttributeInt8uWithCompletionHandler:(void (^)(NSNumber * _Nullable value, NSError * _Nullable error))completionHandler;
-- (void)writeAttributeInt8uWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeInt8uWithValue:(NSNumber * _Nonnull)value
+                   completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeInt8uWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeInt8uWithValue:(NSNumber * _Nonnull)value
+                              params:(CHIPWriteParams * _Nullable)params
+                   completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -10794,7 +12062,13 @@ NS_ASSUME_NONNULL_BEGIN
                            completionHandler:(void (^)(NSNumber * _Nullable value, NSError * _Nullable error))completionHandler;
 
 - (void)readAttributeInt16uWithCompletionHandler:(void (^)(NSNumber * _Nullable value, NSError * _Nullable error))completionHandler;
-- (void)writeAttributeInt16uWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeInt16uWithValue:(NSNumber * _Nonnull)value
+                    completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeInt16uWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeInt16uWithValue:(NSNumber * _Nonnull)value
+                               params:(CHIPWriteParams * _Nullable)params
+                    completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -10810,7 +12084,13 @@ NS_ASSUME_NONNULL_BEGIN
                             completionHandler:(void (^)(NSNumber * _Nullable value, NSError * _Nullable error))completionHandler;
 
 - (void)readAttributeInt24uWithCompletionHandler:(void (^)(NSNumber * _Nullable value, NSError * _Nullable error))completionHandler;
-- (void)writeAttributeInt24uWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeInt24uWithValue:(NSNumber * _Nonnull)value
+                    completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeInt24uWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeInt24uWithValue:(NSNumber * _Nonnull)value
+                               params:(CHIPWriteParams * _Nullable)params
+                    completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -10826,7 +12106,13 @@ NS_ASSUME_NONNULL_BEGIN
                             completionHandler:(void (^)(NSNumber * _Nullable value, NSError * _Nullable error))completionHandler;
 
 - (void)readAttributeInt32uWithCompletionHandler:(void (^)(NSNumber * _Nullable value, NSError * _Nullable error))completionHandler;
-- (void)writeAttributeInt32uWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeInt32uWithValue:(NSNumber * _Nonnull)value
+                    completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeInt32uWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeInt32uWithValue:(NSNumber * _Nonnull)value
+                               params:(CHIPWriteParams * _Nullable)params
+                    completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -10842,7 +12128,13 @@ NS_ASSUME_NONNULL_BEGIN
                             completionHandler:(void (^)(NSNumber * _Nullable value, NSError * _Nullable error))completionHandler;
 
 - (void)readAttributeInt40uWithCompletionHandler:(void (^)(NSNumber * _Nullable value, NSError * _Nullable error))completionHandler;
-- (void)writeAttributeInt40uWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeInt40uWithValue:(NSNumber * _Nonnull)value
+                    completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeInt40uWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeInt40uWithValue:(NSNumber * _Nonnull)value
+                               params:(CHIPWriteParams * _Nullable)params
+                    completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -10858,7 +12150,13 @@ NS_ASSUME_NONNULL_BEGIN
                             completionHandler:(void (^)(NSNumber * _Nullable value, NSError * _Nullable error))completionHandler;
 
 - (void)readAttributeInt48uWithCompletionHandler:(void (^)(NSNumber * _Nullable value, NSError * _Nullable error))completionHandler;
-- (void)writeAttributeInt48uWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeInt48uWithValue:(NSNumber * _Nonnull)value
+                    completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeInt48uWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeInt48uWithValue:(NSNumber * _Nonnull)value
+                               params:(CHIPWriteParams * _Nullable)params
+                    completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -10874,7 +12172,13 @@ NS_ASSUME_NONNULL_BEGIN
                             completionHandler:(void (^)(NSNumber * _Nullable value, NSError * _Nullable error))completionHandler;
 
 - (void)readAttributeInt56uWithCompletionHandler:(void (^)(NSNumber * _Nullable value, NSError * _Nullable error))completionHandler;
-- (void)writeAttributeInt56uWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeInt56uWithValue:(NSNumber * _Nonnull)value
+                    completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeInt56uWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeInt56uWithValue:(NSNumber * _Nonnull)value
+                               params:(CHIPWriteParams * _Nullable)params
+                    completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -10890,7 +12194,13 @@ NS_ASSUME_NONNULL_BEGIN
                             completionHandler:(void (^)(NSNumber * _Nullable value, NSError * _Nullable error))completionHandler;
 
 - (void)readAttributeInt64uWithCompletionHandler:(void (^)(NSNumber * _Nullable value, NSError * _Nullable error))completionHandler;
-- (void)writeAttributeInt64uWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeInt64uWithValue:(NSNumber * _Nonnull)value
+                    completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeInt64uWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeInt64uWithValue:(NSNumber * _Nonnull)value
+                               params:(CHIPWriteParams * _Nullable)params
+                    completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -10906,7 +12216,13 @@ NS_ASSUME_NONNULL_BEGIN
                             completionHandler:(void (^)(NSNumber * _Nullable value, NSError * _Nullable error))completionHandler;
 
 - (void)readAttributeInt8sWithCompletionHandler:(void (^)(NSNumber * _Nullable value, NSError * _Nullable error))completionHandler;
-- (void)writeAttributeInt8sWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeInt8sWithValue:(NSNumber * _Nonnull)value
+                   completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeInt8sWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeInt8sWithValue:(NSNumber * _Nonnull)value
+                              params:(CHIPWriteParams * _Nullable)params
+                   completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -10922,7 +12238,13 @@ NS_ASSUME_NONNULL_BEGIN
                            completionHandler:(void (^)(NSNumber * _Nullable value, NSError * _Nullable error))completionHandler;
 
 - (void)readAttributeInt16sWithCompletionHandler:(void (^)(NSNumber * _Nullable value, NSError * _Nullable error))completionHandler;
-- (void)writeAttributeInt16sWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeInt16sWithValue:(NSNumber * _Nonnull)value
+                    completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeInt16sWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeInt16sWithValue:(NSNumber * _Nonnull)value
+                               params:(CHIPWriteParams * _Nullable)params
+                    completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -10938,7 +12260,13 @@ NS_ASSUME_NONNULL_BEGIN
                             completionHandler:(void (^)(NSNumber * _Nullable value, NSError * _Nullable error))completionHandler;
 
 - (void)readAttributeInt24sWithCompletionHandler:(void (^)(NSNumber * _Nullable value, NSError * _Nullable error))completionHandler;
-- (void)writeAttributeInt24sWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeInt24sWithValue:(NSNumber * _Nonnull)value
+                    completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeInt24sWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeInt24sWithValue:(NSNumber * _Nonnull)value
+                               params:(CHIPWriteParams * _Nullable)params
+                    completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -10954,7 +12282,13 @@ NS_ASSUME_NONNULL_BEGIN
                             completionHandler:(void (^)(NSNumber * _Nullable value, NSError * _Nullable error))completionHandler;
 
 - (void)readAttributeInt32sWithCompletionHandler:(void (^)(NSNumber * _Nullable value, NSError * _Nullable error))completionHandler;
-- (void)writeAttributeInt32sWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeInt32sWithValue:(NSNumber * _Nonnull)value
+                    completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeInt32sWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeInt32sWithValue:(NSNumber * _Nonnull)value
+                               params:(CHIPWriteParams * _Nullable)params
+                    completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -10970,7 +12304,13 @@ NS_ASSUME_NONNULL_BEGIN
                             completionHandler:(void (^)(NSNumber * _Nullable value, NSError * _Nullable error))completionHandler;
 
 - (void)readAttributeInt40sWithCompletionHandler:(void (^)(NSNumber * _Nullable value, NSError * _Nullable error))completionHandler;
-- (void)writeAttributeInt40sWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeInt40sWithValue:(NSNumber * _Nonnull)value
+                    completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeInt40sWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeInt40sWithValue:(NSNumber * _Nonnull)value
+                               params:(CHIPWriteParams * _Nullable)params
+                    completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -10986,7 +12326,13 @@ NS_ASSUME_NONNULL_BEGIN
                             completionHandler:(void (^)(NSNumber * _Nullable value, NSError * _Nullable error))completionHandler;
 
 - (void)readAttributeInt48sWithCompletionHandler:(void (^)(NSNumber * _Nullable value, NSError * _Nullable error))completionHandler;
-- (void)writeAttributeInt48sWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeInt48sWithValue:(NSNumber * _Nonnull)value
+                    completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeInt48sWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeInt48sWithValue:(NSNumber * _Nonnull)value
+                               params:(CHIPWriteParams * _Nullable)params
+                    completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -11002,7 +12348,13 @@ NS_ASSUME_NONNULL_BEGIN
                             completionHandler:(void (^)(NSNumber * _Nullable value, NSError * _Nullable error))completionHandler;
 
 - (void)readAttributeInt56sWithCompletionHandler:(void (^)(NSNumber * _Nullable value, NSError * _Nullable error))completionHandler;
-- (void)writeAttributeInt56sWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeInt56sWithValue:(NSNumber * _Nonnull)value
+                    completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeInt56sWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeInt56sWithValue:(NSNumber * _Nonnull)value
+                               params:(CHIPWriteParams * _Nullable)params
+                    completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -11018,7 +12370,13 @@ NS_ASSUME_NONNULL_BEGIN
                             completionHandler:(void (^)(NSNumber * _Nullable value, NSError * _Nullable error))completionHandler;
 
 - (void)readAttributeInt64sWithCompletionHandler:(void (^)(NSNumber * _Nullable value, NSError * _Nullable error))completionHandler;
-- (void)writeAttributeInt64sWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeInt64sWithValue:(NSNumber * _Nonnull)value
+                    completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeInt64sWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeInt64sWithValue:(NSNumber * _Nonnull)value
+                               params:(CHIPWriteParams * _Nullable)params
+                    completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -11034,7 +12392,13 @@ NS_ASSUME_NONNULL_BEGIN
                             completionHandler:(void (^)(NSNumber * _Nullable value, NSError * _Nullable error))completionHandler;
 
 - (void)readAttributeEnum8WithCompletionHandler:(void (^)(NSNumber * _Nullable value, NSError * _Nullable error))completionHandler;
-- (void)writeAttributeEnum8WithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeEnum8WithValue:(NSNumber * _Nonnull)value
+                   completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeEnum8WithValue:params:completionHandler:")));
+;
+- (void)writeAttributeEnum8WithValue:(NSNumber * _Nonnull)value
+                              params:(CHIPWriteParams * _Nullable)params
+                   completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -11050,7 +12414,13 @@ NS_ASSUME_NONNULL_BEGIN
                            completionHandler:(void (^)(NSNumber * _Nullable value, NSError * _Nullable error))completionHandler;
 
 - (void)readAttributeEnum16WithCompletionHandler:(void (^)(NSNumber * _Nullable value, NSError * _Nullable error))completionHandler;
-- (void)writeAttributeEnum16WithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeEnum16WithValue:(NSNumber * _Nonnull)value
+                    completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeEnum16WithValue:params:completionHandler:")));
+;
+- (void)writeAttributeEnum16WithValue:(NSNumber * _Nonnull)value
+                               params:(CHIPWriteParams * _Nullable)params
+                    completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -11067,7 +12437,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)readAttributeFloatSingleWithCompletionHandler:(void (^)(
                                                           NSNumber * _Nullable value, NSError * _Nullable error))completionHandler;
-- (void)writeAttributeFloatSingleWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeFloatSingleWithValue:(NSNumber * _Nonnull)value
+                         completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeFloatSingleWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeFloatSingleWithValue:(NSNumber * _Nonnull)value
+                                    params:(CHIPWriteParams * _Nullable)params
+                         completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -11085,7 +12461,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)readAttributeFloatDoubleWithCompletionHandler:(void (^)(
                                                           NSNumber * _Nullable value, NSError * _Nullable error))completionHandler;
-- (void)writeAttributeFloatDoubleWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeFloatDoubleWithValue:(NSNumber * _Nonnull)value
+                         completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeFloatDoubleWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeFloatDoubleWithValue:(NSNumber * _Nonnull)value
+                                    params:(CHIPWriteParams * _Nullable)params
+                         completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -11103,7 +12485,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)readAttributeOctetStringWithCompletionHandler:(void (^)(
                                                           NSData * _Nullable value, NSError * _Nullable error))completionHandler;
-- (void)writeAttributeOctetStringWithValue:(NSData * _Nonnull)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeOctetStringWithValue:(NSData * _Nonnull)value
+                         completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeOctetStringWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeOctetStringWithValue:(NSData * _Nonnull)value
+                                    params:(CHIPWriteParams * _Nullable)params
+                         completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -11120,7 +12508,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)readAttributeListInt8uWithCompletionHandler:(void (^)(
                                                         NSArray * _Nullable value, NSError * _Nullable error))completionHandler;
-- (void)writeAttributeListInt8uWithValue:(NSArray * _Nonnull)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeListInt8uWithValue:(NSArray * _Nonnull)value
+                       completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeListInt8uWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeListInt8uWithValue:(NSArray * _Nonnull)value
+                                  params:(CHIPWriteParams * _Nullable)params
+                       completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -11137,7 +12531,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)readAttributeListOctetStringWithCompletionHandler:(void (^)(NSArray * _Nullable value,
                                                               NSError * _Nullable error))completionHandler;
-- (void)writeAttributeListOctetStringWithValue:(NSArray * _Nonnull)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeListOctetStringWithValue:(NSArray * _Nonnull)value
+                             completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeListOctetStringWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeListOctetStringWithValue:(NSArray * _Nonnull)value
+                                        params:(CHIPWriteParams * _Nullable)params
+                             completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -11157,6 +12557,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)readAttributeListStructOctetStringWithCompletionHandler:(void (^)(NSArray * _Nullable value,
                                                                     NSError * _Nullable error))completionHandler;
 - (void)writeAttributeListStructOctetStringWithValue:(NSArray * _Nonnull)value
+                                   completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeListStructOctetStringWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeListStructOctetStringWithValue:(NSArray * _Nonnull)value
+                                              params:(CHIPWriteParams * _Nullable)params
                                    completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
@@ -11177,7 +12582,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)readAttributeLongOctetStringWithCompletionHandler:(void (^)(NSData * _Nullable value,
                                                               NSError * _Nullable error))completionHandler;
-- (void)writeAttributeLongOctetStringWithValue:(NSData * _Nonnull)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeLongOctetStringWithValue:(NSData * _Nonnull)value
+                             completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeLongOctetStringWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeLongOctetStringWithValue:(NSData * _Nonnull)value
+                                        params:(CHIPWriteParams * _Nullable)params
+                             completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -11196,7 +12607,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)readAttributeCharStringWithCompletionHandler:(void (^)(
                                                          NSString * _Nullable value, NSError * _Nullable error))completionHandler;
-- (void)writeAttributeCharStringWithValue:(NSString * _Nonnull)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeCharStringWithValue:(NSString * _Nonnull)value
+                        completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeCharStringWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeCharStringWithValue:(NSString * _Nonnull)value
+                                   params:(CHIPWriteParams * _Nullable)params
+                        completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -11214,7 +12631,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)readAttributeLongCharStringWithCompletionHandler:(void (^)(NSString * _Nullable value,
                                                              NSError * _Nullable error))completionHandler;
-- (void)writeAttributeLongCharStringWithValue:(NSString * _Nonnull)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeLongCharStringWithValue:(NSString * _Nonnull)value
+                            completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeLongCharStringWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeLongCharStringWithValue:(NSString * _Nonnull)value
+                                       params:(CHIPWriteParams * _Nullable)params
+                            completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -11233,7 +12656,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)readAttributeEpochUsWithCompletionHandler:(void (^)(
                                                       NSNumber * _Nullable value, NSError * _Nullable error))completionHandler;
-- (void)writeAttributeEpochUsWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeEpochUsWithValue:(NSNumber * _Nonnull)value
+                     completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeEpochUsWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeEpochUsWithValue:(NSNumber * _Nonnull)value
+                                params:(CHIPWriteParams * _Nullable)params
+                     completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -11249,7 +12678,13 @@ NS_ASSUME_NONNULL_BEGIN
                              completionHandler:(void (^)(NSNumber * _Nullable value, NSError * _Nullable error))completionHandler;
 
 - (void)readAttributeEpochSWithCompletionHandler:(void (^)(NSNumber * _Nullable value, NSError * _Nullable error))completionHandler;
-- (void)writeAttributeEpochSWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeEpochSWithValue:(NSNumber * _Nonnull)value
+                    completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeEpochSWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeEpochSWithValue:(NSNumber * _Nonnull)value
+                               params:(CHIPWriteParams * _Nullable)params
+                    completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -11266,7 +12701,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)readAttributeVendorIdWithCompletionHandler:(void (^)(
                                                        NSNumber * _Nullable value, NSError * _Nullable error))completionHandler;
-- (void)writeAttributeVendorIdWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeVendorIdWithValue:(NSNumber * _Nonnull)value
+                      completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeVendorIdWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeVendorIdWithValue:(NSNumber * _Nonnull)value
+                                 params:(CHIPWriteParams * _Nullable)params
+                      completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -11284,6 +12725,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)readAttributeListNullablesAndOptionalsStructWithCompletionHandler:(void (^)(NSArray * _Nullable value,
                                                                               NSError * _Nullable error))completionHandler;
 - (void)writeAttributeListNullablesAndOptionalsStructWithValue:(NSArray * _Nonnull)value
+                                             completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeListNullablesAndOptionalsStructWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeListNullablesAndOptionalsStructWithValue:(NSArray * _Nonnull)value
+                                                        params:(CHIPWriteParams * _Nullable)params
                                              completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
@@ -11304,7 +12750,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)readAttributeEnumAttrWithCompletionHandler:(void (^)(
                                                        NSNumber * _Nullable value, NSError * _Nullable error))completionHandler;
-- (void)writeAttributeEnumAttrWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeEnumAttrWithValue:(NSNumber * _Nonnull)value
+                      completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeEnumAttrWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeEnumAttrWithValue:(NSNumber * _Nonnull)value
+                                 params:(CHIPWriteParams * _Nullable)params
+                      completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -11322,6 +12774,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)readAttributeStructAttrWithCompletionHandler:(void (^)(CHIPTestClusterClusterSimpleStruct * _Nullable value,
                                                          NSError * _Nullable error))completionHandler;
 - (void)writeAttributeStructAttrWithValue:(CHIPTestClusterClusterSimpleStruct * _Nonnull)value
+                        completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeStructAttrWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeStructAttrWithValue:(CHIPTestClusterClusterSimpleStruct * _Nonnull)value
+                                   params:(CHIPWriteParams * _Nullable)params
                         completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
@@ -11342,6 +12799,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)readAttributeRangeRestrictedInt8uWithCompletionHandler:(void (^)(NSNumber * _Nullable value,
                                                                    NSError * _Nullable error))completionHandler;
 - (void)writeAttributeRangeRestrictedInt8uWithValue:(NSNumber * _Nonnull)value
+                                  completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeRangeRestrictedInt8uWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeRangeRestrictedInt8uWithValue:(NSNumber * _Nonnull)value
+                                             params:(CHIPWriteParams * _Nullable)params
                                   completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
@@ -11363,6 +12825,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)readAttributeRangeRestrictedInt8sWithCompletionHandler:(void (^)(NSNumber * _Nullable value,
                                                                    NSError * _Nullable error))completionHandler;
 - (void)writeAttributeRangeRestrictedInt8sWithValue:(NSNumber * _Nonnull)value
+                                  completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeRangeRestrictedInt8sWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeRangeRestrictedInt8sWithValue:(NSNumber * _Nonnull)value
+                                             params:(CHIPWriteParams * _Nullable)params
                                   completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
@@ -11384,6 +12851,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)readAttributeRangeRestrictedInt16uWithCompletionHandler:(void (^)(NSNumber * _Nullable value,
                                                                     NSError * _Nullable error))completionHandler;
 - (void)writeAttributeRangeRestrictedInt16uWithValue:(NSNumber * _Nonnull)value
+                                   completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeRangeRestrictedInt16uWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeRangeRestrictedInt16uWithValue:(NSNumber * _Nonnull)value
+                                              params:(CHIPWriteParams * _Nullable)params
                                    completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
@@ -11405,6 +12877,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)readAttributeRangeRestrictedInt16sWithCompletionHandler:(void (^)(NSNumber * _Nullable value,
                                                                     NSError * _Nullable error))completionHandler;
 - (void)writeAttributeRangeRestrictedInt16sWithValue:(NSNumber * _Nonnull)value
+                                   completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeRangeRestrictedInt16sWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeRangeRestrictedInt16sWithValue:(NSNumber * _Nonnull)value
+                                              params:(CHIPWriteParams * _Nullable)params
                                    completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
@@ -11425,7 +12902,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)readAttributeListLongOctetStringWithCompletionHandler:(void (^)(NSArray * _Nullable value,
                                                                   NSError * _Nullable error))completionHandler;
-- (void)writeAttributeListLongOctetStringWithValue:(NSArray * _Nonnull)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeListLongOctetStringWithValue:(NSArray * _Nonnull)value
+                                 completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeListLongOctetStringWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeListLongOctetStringWithValue:(NSArray * _Nonnull)value
+                                            params:(CHIPWriteParams * _Nullable)params
+                                 completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -11445,7 +12928,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)readAttributeListFabricScopedWithParams:(CHIPReadParams * _Nullable)params
                               completionHandler:(void (^)(NSArray * _Nullable value, NSError * _Nullable error))completionHandler;
-- (void)writeAttributeListFabricScopedWithValue:(NSArray * _Nonnull)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeListFabricScopedWithValue:(NSArray * _Nonnull)value
+                              completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeListFabricScopedWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeListFabricScopedWithValue:(NSArray * _Nonnull)value
+                                         params:(CHIPWriteParams * _Nullable)params
+                              completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -11464,7 +12953,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)readAttributeTimedWriteBooleanWithCompletionHandler:(void (^)(NSNumber * _Nullable value,
                                                                 NSError * _Nullable error))completionHandler;
-- (void)writeAttributeTimedWriteBooleanWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeTimedWriteBooleanWithValue:(NSNumber * _Nonnull)value
+                               completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeTimedWriteBooleanWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeTimedWriteBooleanWithValue:(NSNumber * _Nonnull)value
+                                          params:(CHIPWriteParams * _Nullable)params
+                               completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -11483,7 +12978,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)readAttributeGeneralErrorBooleanWithCompletionHandler:(void (^)(NSNumber * _Nullable value,
                                                                   NSError * _Nullable error))completionHandler;
-- (void)writeAttributeGeneralErrorBooleanWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeGeneralErrorBooleanWithValue:(NSNumber * _Nonnull)value
+                                 completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeGeneralErrorBooleanWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeGeneralErrorBooleanWithValue:(NSNumber * _Nonnull)value
+                                            params:(CHIPWriteParams * _Nullable)params
+                                 completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -11503,7 +13004,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)readAttributeClusterErrorBooleanWithCompletionHandler:(void (^)(NSNumber * _Nullable value,
                                                                   NSError * _Nullable error))completionHandler;
-- (void)writeAttributeClusterErrorBooleanWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeClusterErrorBooleanWithValue:(NSNumber * _Nonnull)value
+                                 completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeClusterErrorBooleanWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeClusterErrorBooleanWithValue:(NSNumber * _Nonnull)value
+                                            params:(CHIPWriteParams * _Nullable)params
+                                 completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -11523,7 +13030,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)readAttributeUnsupportedWithCompletionHandler:(void (^)(
                                                           NSNumber * _Nullable value, NSError * _Nullable error))completionHandler;
-- (void)writeAttributeUnsupportedWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeUnsupportedWithValue:(NSNumber * _Nonnull)value
+                         completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeUnsupportedWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeUnsupportedWithValue:(NSNumber * _Nonnull)value
+                                    params:(CHIPWriteParams * _Nullable)params
+                         completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -11541,7 +13054,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)readAttributeNullableBooleanWithCompletionHandler:(void (^)(NSNumber * _Nullable value,
                                                               NSError * _Nullable error))completionHandler;
-- (void)writeAttributeNullableBooleanWithValue:(NSNumber * _Nullable)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeNullableBooleanWithValue:(NSNumber * _Nullable)value
+                             completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeNullableBooleanWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeNullableBooleanWithValue:(NSNumber * _Nullable)value
+                                        params:(CHIPWriteParams * _Nullable)params
+                             completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -11560,7 +13079,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)readAttributeNullableBitmap8WithCompletionHandler:(void (^)(NSNumber * _Nullable value,
                                                               NSError * _Nullable error))completionHandler;
-- (void)writeAttributeNullableBitmap8WithValue:(NSNumber * _Nullable)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeNullableBitmap8WithValue:(NSNumber * _Nullable)value
+                             completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeNullableBitmap8WithValue:params:completionHandler:")));
+;
+- (void)writeAttributeNullableBitmap8WithValue:(NSNumber * _Nullable)value
+                                        params:(CHIPWriteParams * _Nullable)params
+                             completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -11579,7 +13104,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)readAttributeNullableBitmap16WithCompletionHandler:(void (^)(NSNumber * _Nullable value,
                                                                NSError * _Nullable error))completionHandler;
-- (void)writeAttributeNullableBitmap16WithValue:(NSNumber * _Nullable)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeNullableBitmap16WithValue:(NSNumber * _Nullable)value
+                              completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeNullableBitmap16WithValue:params:completionHandler:")));
+;
+- (void)writeAttributeNullableBitmap16WithValue:(NSNumber * _Nullable)value
+                                         params:(CHIPWriteParams * _Nullable)params
+                              completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -11598,7 +13129,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)readAttributeNullableBitmap32WithCompletionHandler:(void (^)(NSNumber * _Nullable value,
                                                                NSError * _Nullable error))completionHandler;
-- (void)writeAttributeNullableBitmap32WithValue:(NSNumber * _Nullable)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeNullableBitmap32WithValue:(NSNumber * _Nullable)value
+                              completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeNullableBitmap32WithValue:params:completionHandler:")));
+;
+- (void)writeAttributeNullableBitmap32WithValue:(NSNumber * _Nullable)value
+                                         params:(CHIPWriteParams * _Nullable)params
+                              completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -11617,7 +13154,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)readAttributeNullableBitmap64WithCompletionHandler:(void (^)(NSNumber * _Nullable value,
                                                                NSError * _Nullable error))completionHandler;
-- (void)writeAttributeNullableBitmap64WithValue:(NSNumber * _Nullable)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeNullableBitmap64WithValue:(NSNumber * _Nullable)value
+                              completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeNullableBitmap64WithValue:params:completionHandler:")));
+;
+- (void)writeAttributeNullableBitmap64WithValue:(NSNumber * _Nullable)value
+                                         params:(CHIPWriteParams * _Nullable)params
+                              completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -11636,7 +13179,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)readAttributeNullableInt8uWithCompletionHandler:(void (^)(NSNumber * _Nullable value,
                                                             NSError * _Nullable error))completionHandler;
-- (void)writeAttributeNullableInt8uWithValue:(NSNumber * _Nullable)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeNullableInt8uWithValue:(NSNumber * _Nullable)value
+                           completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeNullableInt8uWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeNullableInt8uWithValue:(NSNumber * _Nullable)value
+                                      params:(CHIPWriteParams * _Nullable)params
+                           completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -11655,7 +13204,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)readAttributeNullableInt16uWithCompletionHandler:(void (^)(NSNumber * _Nullable value,
                                                              NSError * _Nullable error))completionHandler;
-- (void)writeAttributeNullableInt16uWithValue:(NSNumber * _Nullable)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeNullableInt16uWithValue:(NSNumber * _Nullable)value
+                            completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeNullableInt16uWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeNullableInt16uWithValue:(NSNumber * _Nullable)value
+                                       params:(CHIPWriteParams * _Nullable)params
+                            completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -11674,7 +13229,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)readAttributeNullableInt24uWithCompletionHandler:(void (^)(NSNumber * _Nullable value,
                                                              NSError * _Nullable error))completionHandler;
-- (void)writeAttributeNullableInt24uWithValue:(NSNumber * _Nullable)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeNullableInt24uWithValue:(NSNumber * _Nullable)value
+                            completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeNullableInt24uWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeNullableInt24uWithValue:(NSNumber * _Nullable)value
+                                       params:(CHIPWriteParams * _Nullable)params
+                            completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -11693,7 +13254,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)readAttributeNullableInt32uWithCompletionHandler:(void (^)(NSNumber * _Nullable value,
                                                              NSError * _Nullable error))completionHandler;
-- (void)writeAttributeNullableInt32uWithValue:(NSNumber * _Nullable)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeNullableInt32uWithValue:(NSNumber * _Nullable)value
+                            completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeNullableInt32uWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeNullableInt32uWithValue:(NSNumber * _Nullable)value
+                                       params:(CHIPWriteParams * _Nullable)params
+                            completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -11712,7 +13279,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)readAttributeNullableInt40uWithCompletionHandler:(void (^)(NSNumber * _Nullable value,
                                                              NSError * _Nullable error))completionHandler;
-- (void)writeAttributeNullableInt40uWithValue:(NSNumber * _Nullable)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeNullableInt40uWithValue:(NSNumber * _Nullable)value
+                            completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeNullableInt40uWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeNullableInt40uWithValue:(NSNumber * _Nullable)value
+                                       params:(CHIPWriteParams * _Nullable)params
+                            completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -11731,7 +13304,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)readAttributeNullableInt48uWithCompletionHandler:(void (^)(NSNumber * _Nullable value,
                                                              NSError * _Nullable error))completionHandler;
-- (void)writeAttributeNullableInt48uWithValue:(NSNumber * _Nullable)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeNullableInt48uWithValue:(NSNumber * _Nullable)value
+                            completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeNullableInt48uWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeNullableInt48uWithValue:(NSNumber * _Nullable)value
+                                       params:(CHIPWriteParams * _Nullable)params
+                            completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -11750,7 +13329,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)readAttributeNullableInt56uWithCompletionHandler:(void (^)(NSNumber * _Nullable value,
                                                              NSError * _Nullable error))completionHandler;
-- (void)writeAttributeNullableInt56uWithValue:(NSNumber * _Nullable)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeNullableInt56uWithValue:(NSNumber * _Nullable)value
+                            completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeNullableInt56uWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeNullableInt56uWithValue:(NSNumber * _Nullable)value
+                                       params:(CHIPWriteParams * _Nullable)params
+                            completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -11769,7 +13354,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)readAttributeNullableInt64uWithCompletionHandler:(void (^)(NSNumber * _Nullable value,
                                                              NSError * _Nullable error))completionHandler;
-- (void)writeAttributeNullableInt64uWithValue:(NSNumber * _Nullable)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeNullableInt64uWithValue:(NSNumber * _Nullable)value
+                            completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeNullableInt64uWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeNullableInt64uWithValue:(NSNumber * _Nullable)value
+                                       params:(CHIPWriteParams * _Nullable)params
+                            completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -11788,7 +13379,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)readAttributeNullableInt8sWithCompletionHandler:(void (^)(NSNumber * _Nullable value,
                                                             NSError * _Nullable error))completionHandler;
-- (void)writeAttributeNullableInt8sWithValue:(NSNumber * _Nullable)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeNullableInt8sWithValue:(NSNumber * _Nullable)value
+                           completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeNullableInt8sWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeNullableInt8sWithValue:(NSNumber * _Nullable)value
+                                      params:(CHIPWriteParams * _Nullable)params
+                           completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -11807,7 +13404,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)readAttributeNullableInt16sWithCompletionHandler:(void (^)(NSNumber * _Nullable value,
                                                              NSError * _Nullable error))completionHandler;
-- (void)writeAttributeNullableInt16sWithValue:(NSNumber * _Nullable)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeNullableInt16sWithValue:(NSNumber * _Nullable)value
+                            completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeNullableInt16sWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeNullableInt16sWithValue:(NSNumber * _Nullable)value
+                                       params:(CHIPWriteParams * _Nullable)params
+                            completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -11826,7 +13429,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)readAttributeNullableInt24sWithCompletionHandler:(void (^)(NSNumber * _Nullable value,
                                                              NSError * _Nullable error))completionHandler;
-- (void)writeAttributeNullableInt24sWithValue:(NSNumber * _Nullable)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeNullableInt24sWithValue:(NSNumber * _Nullable)value
+                            completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeNullableInt24sWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeNullableInt24sWithValue:(NSNumber * _Nullable)value
+                                       params:(CHIPWriteParams * _Nullable)params
+                            completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -11845,7 +13454,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)readAttributeNullableInt32sWithCompletionHandler:(void (^)(NSNumber * _Nullable value,
                                                              NSError * _Nullable error))completionHandler;
-- (void)writeAttributeNullableInt32sWithValue:(NSNumber * _Nullable)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeNullableInt32sWithValue:(NSNumber * _Nullable)value
+                            completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeNullableInt32sWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeNullableInt32sWithValue:(NSNumber * _Nullable)value
+                                       params:(CHIPWriteParams * _Nullable)params
+                            completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -11864,7 +13479,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)readAttributeNullableInt40sWithCompletionHandler:(void (^)(NSNumber * _Nullable value,
                                                              NSError * _Nullable error))completionHandler;
-- (void)writeAttributeNullableInt40sWithValue:(NSNumber * _Nullable)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeNullableInt40sWithValue:(NSNumber * _Nullable)value
+                            completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeNullableInt40sWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeNullableInt40sWithValue:(NSNumber * _Nullable)value
+                                       params:(CHIPWriteParams * _Nullable)params
+                            completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -11883,7 +13504,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)readAttributeNullableInt48sWithCompletionHandler:(void (^)(NSNumber * _Nullable value,
                                                              NSError * _Nullable error))completionHandler;
-- (void)writeAttributeNullableInt48sWithValue:(NSNumber * _Nullable)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeNullableInt48sWithValue:(NSNumber * _Nullable)value
+                            completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeNullableInt48sWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeNullableInt48sWithValue:(NSNumber * _Nullable)value
+                                       params:(CHIPWriteParams * _Nullable)params
+                            completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -11902,7 +13529,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)readAttributeNullableInt56sWithCompletionHandler:(void (^)(NSNumber * _Nullable value,
                                                              NSError * _Nullable error))completionHandler;
-- (void)writeAttributeNullableInt56sWithValue:(NSNumber * _Nullable)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeNullableInt56sWithValue:(NSNumber * _Nullable)value
+                            completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeNullableInt56sWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeNullableInt56sWithValue:(NSNumber * _Nullable)value
+                                       params:(CHIPWriteParams * _Nullable)params
+                            completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -11921,7 +13554,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)readAttributeNullableInt64sWithCompletionHandler:(void (^)(NSNumber * _Nullable value,
                                                              NSError * _Nullable error))completionHandler;
-- (void)writeAttributeNullableInt64sWithValue:(NSNumber * _Nullable)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeNullableInt64sWithValue:(NSNumber * _Nullable)value
+                            completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeNullableInt64sWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeNullableInt64sWithValue:(NSNumber * _Nullable)value
+                                       params:(CHIPWriteParams * _Nullable)params
+                            completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -11940,7 +13579,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)readAttributeNullableEnum8WithCompletionHandler:(void (^)(NSNumber * _Nullable value,
                                                             NSError * _Nullable error))completionHandler;
-- (void)writeAttributeNullableEnum8WithValue:(NSNumber * _Nullable)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeNullableEnum8WithValue:(NSNumber * _Nullable)value
+                           completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeNullableEnum8WithValue:params:completionHandler:")));
+;
+- (void)writeAttributeNullableEnum8WithValue:(NSNumber * _Nullable)value
+                                      params:(CHIPWriteParams * _Nullable)params
+                           completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -11959,7 +13604,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)readAttributeNullableEnum16WithCompletionHandler:(void (^)(NSNumber * _Nullable value,
                                                              NSError * _Nullable error))completionHandler;
-- (void)writeAttributeNullableEnum16WithValue:(NSNumber * _Nullable)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeNullableEnum16WithValue:(NSNumber * _Nullable)value
+                            completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeNullableEnum16WithValue:params:completionHandler:")));
+;
+- (void)writeAttributeNullableEnum16WithValue:(NSNumber * _Nullable)value
+                                       params:(CHIPWriteParams * _Nullable)params
+                            completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -11979,6 +13630,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)readAttributeNullableFloatSingleWithCompletionHandler:(void (^)(NSNumber * _Nullable value,
                                                                   NSError * _Nullable error))completionHandler;
 - (void)writeAttributeNullableFloatSingleWithValue:(NSNumber * _Nullable)value
+                                 completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeNullableFloatSingleWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeNullableFloatSingleWithValue:(NSNumber * _Nullable)value
+                                            params:(CHIPWriteParams * _Nullable)params
                                  completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
@@ -12000,6 +13656,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)readAttributeNullableFloatDoubleWithCompletionHandler:(void (^)(NSNumber * _Nullable value,
                                                                   NSError * _Nullable error))completionHandler;
 - (void)writeAttributeNullableFloatDoubleWithValue:(NSNumber * _Nullable)value
+                                 completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeNullableFloatDoubleWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeNullableFloatDoubleWithValue:(NSNumber * _Nullable)value
+                                            params:(CHIPWriteParams * _Nullable)params
                                  completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
@@ -12020,7 +13681,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)readAttributeNullableOctetStringWithCompletionHandler:(void (^)(NSData * _Nullable value,
                                                                   NSError * _Nullable error))completionHandler;
-- (void)writeAttributeNullableOctetStringWithValue:(NSData * _Nullable)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeNullableOctetStringWithValue:(NSData * _Nullable)value
+                                 completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeNullableOctetStringWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeNullableOctetStringWithValue:(NSData * _Nullable)value
+                                            params:(CHIPWriteParams * _Nullable)params
+                                 completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -12040,7 +13707,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)readAttributeNullableCharStringWithCompletionHandler:(void (^)(NSString * _Nullable value,
                                                                  NSError * _Nullable error))completionHandler;
-- (void)writeAttributeNullableCharStringWithValue:(NSString * _Nullable)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeNullableCharStringWithValue:(NSString * _Nullable)value
+                                completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeNullableCharStringWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeNullableCharStringWithValue:(NSString * _Nullable)value
+                                           params:(CHIPWriteParams * _Nullable)params
+                                completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -12059,7 +13732,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)readAttributeNullableEnumAttrWithCompletionHandler:(void (^)(NSNumber * _Nullable value,
                                                                NSError * _Nullable error))completionHandler;
-- (void)writeAttributeNullableEnumAttrWithValue:(NSNumber * _Nullable)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeNullableEnumAttrWithValue:(NSNumber * _Nullable)value
+                              completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeNullableEnumAttrWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeNullableEnumAttrWithValue:(NSNumber * _Nullable)value
+                                         params:(CHIPWriteParams * _Nullable)params
+                              completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -12079,6 +13758,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)readAttributeNullableStructWithCompletionHandler:(void (^)(CHIPTestClusterClusterSimpleStruct * _Nullable value,
                                                              NSError * _Nullable error))completionHandler;
 - (void)writeAttributeNullableStructWithValue:(CHIPTestClusterClusterSimpleStruct * _Nullable)value
+                            completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeNullableStructWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeNullableStructWithValue:(CHIPTestClusterClusterSimpleStruct * _Nullable)value
+                                       params:(CHIPWriteParams * _Nullable)params
                             completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
@@ -12099,6 +13783,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)readAttributeNullableRangeRestrictedInt8uWithCompletionHandler:(void (^)(NSNumber * _Nullable value,
                                                                            NSError * _Nullable error))completionHandler;
 - (void)writeAttributeNullableRangeRestrictedInt8uWithValue:(NSNumber * _Nullable)value
+                                          completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeNullableRangeRestrictedInt8uWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeNullableRangeRestrictedInt8uWithValue:(NSNumber * _Nullable)value
+                                                     params:(CHIPWriteParams * _Nullable)params
                                           completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
@@ -12120,6 +13809,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)readAttributeNullableRangeRestrictedInt8sWithCompletionHandler:(void (^)(NSNumber * _Nullable value,
                                                                            NSError * _Nullable error))completionHandler;
 - (void)writeAttributeNullableRangeRestrictedInt8sWithValue:(NSNumber * _Nullable)value
+                                          completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeNullableRangeRestrictedInt8sWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeNullableRangeRestrictedInt8sWithValue:(NSNumber * _Nullable)value
+                                                     params:(CHIPWriteParams * _Nullable)params
                                           completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
@@ -12141,6 +13835,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)readAttributeNullableRangeRestrictedInt16uWithCompletionHandler:(void (^)(NSNumber * _Nullable value,
                                                                             NSError * _Nullable error))completionHandler;
 - (void)writeAttributeNullableRangeRestrictedInt16uWithValue:(NSNumber * _Nullable)value
+                                           completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeNullableRangeRestrictedInt16uWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeNullableRangeRestrictedInt16uWithValue:(NSNumber * _Nullable)value
+                                                      params:(CHIPWriteParams * _Nullable)params
                                            completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
@@ -12162,6 +13861,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)readAttributeNullableRangeRestrictedInt16sWithCompletionHandler:(void (^)(NSNumber * _Nullable value,
                                                                             NSError * _Nullable error))completionHandler;
 - (void)writeAttributeNullableRangeRestrictedInt16sWithValue:(NSNumber * _Nullable)value
+                                           completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeNullableRangeRestrictedInt16sWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeNullableRangeRestrictedInt16sWithValue:(NSNumber * _Nullable)value
+                                                      params:(CHIPWriteParams * _Nullable)params
                                            completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
@@ -12262,16 +13966,41 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @interface CHIPThermostat : CHIPCluster
 
-- (void)clearWeeklyScheduleWithCompletionHandler:(StatusCompletion)completionHandler;
-- (void)getRelayStatusLogWithCompletionHandler:(void (^)(CHIPThermostatClusterGetRelayStatusLogResponseParams * _Nullable data,
-                                                   NSError * _Nullable error))completionHandler;
+- (void)clearWeeklyScheduleWithCompletionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use clearWeeklyScheduleWithArguments: completionHandler:")));
+;
+- (void)clearWeeklyScheduleWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                       completionHandler:(StatusCompletion)completionHandler;
+- (void)getRelayStatusLogWithCompletionHandler:
+    (void (^)(CHIPThermostatClusterGetRelayStatusLogResponseParams * _Nullable data, NSError * _Nullable error))completionHandler
+    __attribute__((deprecated("Use getRelayStatusLogWithArguments: completionHandler:")));
+;
+- (void)getRelayStatusLogWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                     completionHandler:(void (^)(CHIPThermostatClusterGetRelayStatusLogResponseParams * _Nullable data,
+                                           NSError * _Nullable error))completionHandler;
 - (void)getWeeklyScheduleWithParams:(CHIPThermostatClusterGetWeeklyScheduleParams *)params
                   completionHandler:(void (^)(CHIPThermostatClusterGetWeeklyScheduleResponseParams * _Nullable data,
-                                        NSError * _Nullable error))completionHandler;
+                                        NSError * _Nullable error))completionHandler
+    __attribute__((deprecated("Use getWeeklyScheduleWithArguments:params:completionHandler:")));
+;
+- (void)getWeeklyScheduleWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                params:(CHIPThermostatClusterGetWeeklyScheduleParams *)params
+                     completionHandler:(void (^)(CHIPThermostatClusterGetWeeklyScheduleResponseParams * _Nullable data,
+                                           NSError * _Nullable error))completionHandler;
 - (void)setWeeklyScheduleWithParams:(CHIPThermostatClusterSetWeeklyScheduleParams *)params
-                  completionHandler:(StatusCompletion)completionHandler;
+                  completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use setWeeklyScheduleWithArguments:params:completionHandler:")));
+;
+- (void)setWeeklyScheduleWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                params:(CHIPThermostatClusterSetWeeklyScheduleParams *)params
+                     completionHandler:(StatusCompletion)completionHandler;
 - (void)setpointRaiseLowerWithParams:(CHIPThermostatClusterSetpointRaiseLowerParams *)params
-                   completionHandler:(StatusCompletion)completionHandler;
+                   completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use setpointRaiseLowerWithArguments:params:completionHandler:")));
+;
+- (void)setpointRaiseLowerWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                 params:(CHIPThermostatClusterSetpointRaiseLowerParams *)params
+                      completionHandler:(StatusCompletion)completionHandler;
 
 - (void)readAttributeLocalTemperatureWithCompletionHandler:(void (^)(NSNumber * _Nullable value,
                                                                NSError * _Nullable error))completionHandler;
@@ -12370,6 +14099,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)readAttributeOccupiedCoolingSetpointWithCompletionHandler:(void (^)(NSNumber * _Nullable value,
                                                                       NSError * _Nullable error))completionHandler;
 - (void)writeAttributeOccupiedCoolingSetpointWithValue:(NSNumber * _Nonnull)value
+                                     completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeOccupiedCoolingSetpointWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeOccupiedCoolingSetpointWithValue:(NSNumber * _Nonnull)value
+                                                params:(CHIPWriteParams * _Nullable)params
                                      completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
@@ -12391,6 +14125,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)readAttributeOccupiedHeatingSetpointWithCompletionHandler:(void (^)(NSNumber * _Nullable value,
                                                                       NSError * _Nullable error))completionHandler;
 - (void)writeAttributeOccupiedHeatingSetpointWithValue:(NSNumber * _Nonnull)value
+                                     completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeOccupiedHeatingSetpointWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeOccupiedHeatingSetpointWithValue:(NSNumber * _Nonnull)value
+                                                params:(CHIPWriteParams * _Nullable)params
                                      completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
@@ -12412,6 +14151,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)readAttributeMinHeatSetpointLimitWithCompletionHandler:(void (^)(NSNumber * _Nullable value,
                                                                    NSError * _Nullable error))completionHandler;
 - (void)writeAttributeMinHeatSetpointLimitWithValue:(NSNumber * _Nonnull)value
+                                  completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeMinHeatSetpointLimitWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeMinHeatSetpointLimitWithValue:(NSNumber * _Nonnull)value
+                                             params:(CHIPWriteParams * _Nullable)params
                                   completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
@@ -12433,6 +14177,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)readAttributeMaxHeatSetpointLimitWithCompletionHandler:(void (^)(NSNumber * _Nullable value,
                                                                    NSError * _Nullable error))completionHandler;
 - (void)writeAttributeMaxHeatSetpointLimitWithValue:(NSNumber * _Nonnull)value
+                                  completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeMaxHeatSetpointLimitWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeMaxHeatSetpointLimitWithValue:(NSNumber * _Nonnull)value
+                                             params:(CHIPWriteParams * _Nullable)params
                                   completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
@@ -12454,6 +14203,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)readAttributeMinCoolSetpointLimitWithCompletionHandler:(void (^)(NSNumber * _Nullable value,
                                                                    NSError * _Nullable error))completionHandler;
 - (void)writeAttributeMinCoolSetpointLimitWithValue:(NSNumber * _Nonnull)value
+                                  completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeMinCoolSetpointLimitWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeMinCoolSetpointLimitWithValue:(NSNumber * _Nonnull)value
+                                             params:(CHIPWriteParams * _Nullable)params
                                   completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
@@ -12475,6 +14229,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)readAttributeMaxCoolSetpointLimitWithCompletionHandler:(void (^)(NSNumber * _Nullable value,
                                                                    NSError * _Nullable error))completionHandler;
 - (void)writeAttributeMaxCoolSetpointLimitWithValue:(NSNumber * _Nonnull)value
+                                  completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeMaxCoolSetpointLimitWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeMaxCoolSetpointLimitWithValue:(NSNumber * _Nonnull)value
+                                             params:(CHIPWriteParams * _Nullable)params
                                   completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
@@ -12495,7 +14254,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)readAttributeMinSetpointDeadBandWithCompletionHandler:(void (^)(NSNumber * _Nullable value,
                                                                   NSError * _Nullable error))completionHandler;
-- (void)writeAttributeMinSetpointDeadBandWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeMinSetpointDeadBandWithValue:(NSNumber * _Nonnull)value
+                                 completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeMinSetpointDeadBandWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeMinSetpointDeadBandWithValue:(NSNumber * _Nonnull)value
+                                            params:(CHIPWriteParams * _Nullable)params
+                                 completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -12516,6 +14281,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)readAttributeControlSequenceOfOperationWithCompletionHandler:(void (^)(NSNumber * _Nullable value,
                                                                          NSError * _Nullable error))completionHandler;
 - (void)writeAttributeControlSequenceOfOperationWithValue:(NSNumber * _Nonnull)value
+                                        completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeControlSequenceOfOperationWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeControlSequenceOfOperationWithValue:(NSNumber * _Nonnull)value
+                                                   params:(CHIPWriteParams * _Nullable)params
                                         completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
@@ -12536,7 +14306,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)readAttributeSystemModeWithCompletionHandler:(void (^)(
                                                          NSNumber * _Nullable value, NSError * _Nullable error))completionHandler;
-- (void)writeAttributeSystemModeWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeSystemModeWithValue:(NSNumber * _Nonnull)value
+                        completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeSystemModeWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeSystemModeWithValue:(NSNumber * _Nonnull)value
+                                   params:(CHIPWriteParams * _Nullable)params
+                        completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -12671,6 +14447,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)readAttributeTemperatureDisplayModeWithCompletionHandler:(void (^)(NSNumber * _Nullable value,
                                                                      NSError * _Nullable error))completionHandler;
 - (void)writeAttributeTemperatureDisplayModeWithValue:(NSNumber * _Nonnull)value
+                                    completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeTemperatureDisplayModeWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeTemperatureDisplayModeWithValue:(NSNumber * _Nonnull)value
+                                               params:(CHIPWriteParams * _Nullable)params
                                     completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
@@ -12691,7 +14472,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)readAttributeKeypadLockoutWithCompletionHandler:(void (^)(NSNumber * _Nullable value,
                                                             NSError * _Nullable error))completionHandler;
-- (void)writeAttributeKeypadLockoutWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeKeypadLockoutWithValue:(NSNumber * _Nonnull)value
+                           completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeKeypadLockoutWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeKeypadLockoutWithValue:(NSNumber * _Nonnull)value
+                                      params:(CHIPWriteParams * _Nullable)params
+                           completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -12711,6 +14498,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)readAttributeScheduleProgrammingVisibilityWithCompletionHandler:(void (^)(NSNumber * _Nullable value,
                                                                             NSError * _Nullable error))completionHandler;
 - (void)writeAttributeScheduleProgrammingVisibilityWithValue:(NSNumber * _Nonnull)value
+                                           completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeScheduleProgrammingVisibilityWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeScheduleProgrammingVisibilityWithValue:(NSNumber * _Nonnull)value
+                                                      params:(CHIPWriteParams * _Nullable)params
                                            completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
@@ -12811,7 +14603,10 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @interface CHIPThreadNetworkDiagnostics : CHIPCluster
 
-- (void)resetCountsWithCompletionHandler:(StatusCompletion)completionHandler;
+- (void)resetCountsWithCompletionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use resetCountsWithArguments: completionHandler:")));
+;
+- (void)resetCountsWithArguments:(CHIPCommandArguments * _Nullable)arguments completionHandler:(StatusCompletion)completionHandler;
 
 - (void)readAttributeChannelWithCompletionHandler:(void (^)(
                                                       NSNumber * _Nullable value, NSError * _Nullable error))completionHandler;
@@ -14045,7 +15840,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)readAttributeHourFormatWithCompletionHandler:(void (^)(
                                                          NSNumber * _Nullable value, NSError * _Nullable error))completionHandler;
-- (void)writeAttributeHourFormatWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeHourFormatWithValue:(NSNumber * _Nonnull)value
+                        completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeHourFormatWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeHourFormatWithValue:(NSNumber * _Nonnull)value
+                                   params:(CHIPWriteParams * _Nullable)params
+                        completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -14063,7 +15864,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)readAttributeActiveCalendarTypeWithCompletionHandler:(void (^)(NSNumber * _Nullable value,
                                                                  NSError * _Nullable error))completionHandler;
-- (void)writeAttributeActiveCalendarTypeWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeActiveCalendarTypeWithValue:(NSNumber * _Nonnull)value
+                                completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeActiveCalendarTypeWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeActiveCalendarTypeWithValue:(NSNumber * _Nonnull)value
+                                           params:(CHIPWriteParams * _Nullable)params
+                                completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -14165,7 +15972,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)readAttributeTemperatureUnitWithCompletionHandler:(void (^)(NSNumber * _Nullable value,
                                                               NSError * _Nullable error))completionHandler;
-- (void)writeAttributeTemperatureUnitWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeTemperatureUnitWithValue:(NSNumber * _Nonnull)value
+                             completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeTemperatureUnitWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeTemperatureUnitWithValue:(NSNumber * _Nonnull)value
+                                        params:(CHIPWriteParams * _Nullable)params
+                             completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -14245,7 +16058,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)readAttributeLabelListWithCompletionHandler:(void (^)(
                                                         NSArray * _Nullable value, NSError * _Nullable error))completionHandler;
-- (void)writeAttributeLabelListWithValue:(NSArray * _Nonnull)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeLabelListWithValue:(NSArray * _Nonnull)value
+                       completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeLabelListWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeLabelListWithValue:(NSArray * _Nonnull)value
+                                  params:(CHIPWriteParams * _Nullable)params
+                       completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.
@@ -14423,7 +16242,10 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @interface CHIPWiFiNetworkDiagnostics : CHIPCluster
 
-- (void)resetCountsWithCompletionHandler:(StatusCompletion)completionHandler;
+- (void)resetCountsWithCompletionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use resetCountsWithArguments: completionHandler:")));
+;
+- (void)resetCountsWithArguments:(CHIPCommandArguments * _Nullable)arguments completionHandler:(StatusCompletion)completionHandler;
 
 - (void)readAttributeBssidWithCompletionHandler:(void (^)(NSData * _Nullable value, NSError * _Nullable error))completionHandler;
 /**
@@ -14755,17 +16577,46 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @interface CHIPWindowCovering : CHIPCluster
 
-- (void)downOrCloseWithCompletionHandler:(StatusCompletion)completionHandler;
+- (void)downOrCloseWithCompletionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use downOrCloseWithArguments: completionHandler:")));
+;
+- (void)downOrCloseWithArguments:(CHIPCommandArguments * _Nullable)arguments completionHandler:(StatusCompletion)completionHandler;
 - (void)goToLiftPercentageWithParams:(CHIPWindowCoveringClusterGoToLiftPercentageParams *)params
-                   completionHandler:(StatusCompletion)completionHandler;
+                   completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use goToLiftPercentageWithArguments:params:completionHandler:")));
+;
+- (void)goToLiftPercentageWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                 params:(CHIPWindowCoveringClusterGoToLiftPercentageParams *)params
+                      completionHandler:(StatusCompletion)completionHandler;
 - (void)goToLiftValueWithParams:(CHIPWindowCoveringClusterGoToLiftValueParams *)params
-              completionHandler:(StatusCompletion)completionHandler;
+              completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use goToLiftValueWithArguments:params:completionHandler:")));
+;
+- (void)goToLiftValueWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                            params:(CHIPWindowCoveringClusterGoToLiftValueParams *)params
+                 completionHandler:(StatusCompletion)completionHandler;
 - (void)goToTiltPercentageWithParams:(CHIPWindowCoveringClusterGoToTiltPercentageParams *)params
-                   completionHandler:(StatusCompletion)completionHandler;
+                   completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use goToTiltPercentageWithArguments:params:completionHandler:")));
+;
+- (void)goToTiltPercentageWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                 params:(CHIPWindowCoveringClusterGoToTiltPercentageParams *)params
+                      completionHandler:(StatusCompletion)completionHandler;
 - (void)goToTiltValueWithParams:(CHIPWindowCoveringClusterGoToTiltValueParams *)params
-              completionHandler:(StatusCompletion)completionHandler;
-- (void)stopMotionWithCompletionHandler:(StatusCompletion)completionHandler;
-- (void)upOrOpenWithCompletionHandler:(StatusCompletion)completionHandler;
+              completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use goToTiltValueWithArguments:params:completionHandler:")));
+;
+- (void)goToTiltValueWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                            params:(CHIPWindowCoveringClusterGoToTiltValueParams *)params
+                 completionHandler:(StatusCompletion)completionHandler;
+- (void)stopMotionWithCompletionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use stopMotionWithArguments: completionHandler:")));
+;
+- (void)stopMotionWithArguments:(CHIPCommandArguments * _Nullable)arguments completionHandler:(StatusCompletion)completionHandler;
+- (void)upOrOpenWithCompletionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use upOrOpenWithArguments: completionHandler:")));
+;
+- (void)upOrOpenWithArguments:(CHIPCommandArguments * _Nullable)arguments completionHandler:(StatusCompletion)completionHandler;
 
 - (void)readAttributeTypeWithCompletionHandler:(void (^)(NSNumber * _Nullable value, NSError * _Nullable error))completionHandler;
 /**
@@ -15065,7 +16916,13 @@ NS_ASSUME_NONNULL_BEGIN
                                                                     NSError * _Nullable error))completionHandler;
 
 - (void)readAttributeModeWithCompletionHandler:(void (^)(NSNumber * _Nullable value, NSError * _Nullable error))completionHandler;
-- (void)writeAttributeModeWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler;
+- (void)writeAttributeModeWithValue:(NSNumber * _Nonnull)value
+                  completionHandler:(StatusCompletion)completionHandler
+    __attribute__((deprecated("Use writeAttributeModeWithValue:params:completionHandler:")));
+;
+- (void)writeAttributeModeWithValue:(NSNumber * _Nonnull)value
+                             params:(CHIPWriteParams * _Nullable)params
+                  completionHandler:(StatusCompletion)completionHandler;
 /**
  * This API does not support setting autoResubscribe to NO in the
  * CHIPSubscribeParams.

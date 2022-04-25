@@ -57,6 +57,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeAclWithValue:(NSArray * _Nonnull)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeAclWithValue:(NSArray * _Nonnull) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeAclWithValue:(NSArray * _Nonnull)value
+                            params:(CHIPWriteParams * _Nullable)params
+                 completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -167,7 +178,8 @@ using namespace chip::app::Clusters;
             }
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -235,6 +247,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeExtensionWithValue:(NSArray * _Nonnull)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeExtensionWithValue:(NSArray * _Nonnull) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeExtensionWithValue:(NSArray * _Nonnull)value
+                                  params:(CHIPWriteParams * _Nullable)params
+                       completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -269,7 +292,8 @@ using namespace chip::app::Clusters;
             }
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -780,22 +804,51 @@ using namespace chip::app::Clusters;
             completionHandler:(void (^)(CHIPAccountLoginClusterGetSetupPINResponseParams * _Nullable data,
                                   NSError * _Nullable error))completionHandler
 {
+    CHIPCommandArguments * arguments;
+    arguments = [CHIPCommandArguments new];
+    arguments.timedInvokeTimeoutMs = @10000;
+    [self getSetupPINWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)getSetupPINWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                          params:(CHIPAccountLoginClusterGetSetupPINParams *)params
+               completionHandler:(void (^)(CHIPAccountLoginClusterGetSetupPINResponseParams * _Nullable data,
+                                     NSError * _Nullable error))completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     AccountLogin::Commands::GetSetupPIN::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.tempAccountIdentifier = [self asCharSpan:params.tempAccountIdentifier];
 
     new CHIPAccountLoginClusterGetSetupPINResponseCallbackBridge(
         self.callbackQueue, completionHandler, ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPAccountLoginClusterGetSetupPINResponseCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, 10000);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
 - (void)loginWithParams:(CHIPAccountLoginClusterLoginParams *)params completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPCommandArguments * arguments;
+    arguments = [CHIPCommandArguments new];
+    arguments.timedInvokeTimeoutMs = @10000;
+    [self loginWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)loginWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                    params:(CHIPAccountLoginClusterLoginParams *)params
+         completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     AccountLogin::Commands::Login::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.tempAccountIdentifier = [self asCharSpan:params.tempAccountIdentifier];
     request.setupPIN = [self asCharSpan:params.setupPIN];
 
@@ -807,14 +860,26 @@ using namespace chip::app::Clusters;
         ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPCommandSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, 10000);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
 - (void)logoutWithCompletionHandler:(StatusCompletion)completionHandler
 {
+    CHIPCommandArguments * arguments;
+    arguments = [CHIPCommandArguments new];
+    arguments.timedInvokeTimeoutMs = @10000;
+    [self logoutWithArguments:arguments completionHandler:completionHandler];
+}
+- (void)logoutWithArguments:(CHIPCommandArguments * _Nullable)arguments completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     AccountLogin::Commands::Logout::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
 
     new CHIPCommandSuccessCallbackBridge(
         self.callbackQueue,
@@ -824,7 +889,7 @@ using namespace chip::app::Clusters;
         ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPCommandSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, 10000);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
@@ -1095,8 +1160,22 @@ using namespace chip::app::Clusters;
 - (void)openBasicCommissioningWindowWithParams:(CHIPAdministratorCommissioningClusterOpenBasicCommissioningWindowParams *)params
                              completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPCommandArguments * arguments;
+    arguments = [CHIPCommandArguments new];
+    arguments.timedInvokeTimeoutMs = @10000;
+    [self openBasicCommissioningWindowWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)openBasicCommissioningWindowWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                           params:(CHIPAdministratorCommissioningClusterOpenBasicCommissioningWindowParams *)params
+                                completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     AdministratorCommissioning::Commands::OpenBasicCommissioningWindow::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.commissioningTimeout = params.commissioningTimeout.unsignedShortValue;
 
     new CHIPCommandSuccessCallbackBridge(
@@ -1107,15 +1186,29 @@ using namespace chip::app::Clusters;
         ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPCommandSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, 10000);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
 - (void)openCommissioningWindowWithParams:(CHIPAdministratorCommissioningClusterOpenCommissioningWindowParams *)params
                         completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPCommandArguments * arguments;
+    arguments = [CHIPCommandArguments new];
+    arguments.timedInvokeTimeoutMs = @10000;
+    [self openCommissioningWindowWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)openCommissioningWindowWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                      params:(CHIPAdministratorCommissioningClusterOpenCommissioningWindowParams *)params
+                           completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     AdministratorCommissioning::Commands::OpenCommissioningWindow::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.commissioningTimeout = params.commissioningTimeout.unsignedShortValue;
     request.PAKEVerifier = [self asByteSpan:params.pakeVerifier];
     request.discriminator = params.discriminator.unsignedShortValue;
@@ -1130,14 +1223,27 @@ using namespace chip::app::Clusters;
         ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPCommandSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, 10000);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
 - (void)revokeCommissioningWithCompletionHandler:(StatusCompletion)completionHandler
 {
+    CHIPCommandArguments * arguments;
+    arguments = [CHIPCommandArguments new];
+    arguments.timedInvokeTimeoutMs = @10000;
+    [self revokeCommissioningWithArguments:arguments completionHandler:completionHandler];
+}
+- (void)revokeCommissioningWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                       completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     AdministratorCommissioning::Commands::RevokeCommissioning::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
 
     new CHIPCommandSuccessCallbackBridge(
         self.callbackQueue,
@@ -1147,7 +1253,7 @@ using namespace chip::app::Clusters;
         ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPCommandSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, 10000);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
@@ -2366,8 +2472,21 @@ using namespace chip::app::Clusters;
         completionHandler:(void (^)(CHIPApplicationLauncherClusterLauncherResponseParams * _Nullable data,
                               NSError * _Nullable error))completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self hideAppWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)hideAppWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                      params:(CHIPApplicationLauncherClusterHideAppParams *)params
+           completionHandler:(void (^)(CHIPApplicationLauncherClusterLauncherResponseParams * _Nullable data,
+                                 NSError * _Nullable error))completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     ApplicationLauncher::Commands::HideApp::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.application.catalogVendorId = params.application.catalogVendorId.unsignedShortValue;
     request.application.applicationId = [self asCharSpan:params.application.applicationId];
 
@@ -2375,7 +2494,7 @@ using namespace chip::app::Clusters;
         self.callbackQueue, completionHandler, ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPApplicationLauncherClusterLauncherResponseCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
@@ -2383,8 +2502,21 @@ using namespace chip::app::Clusters;
           completionHandler:(void (^)(CHIPApplicationLauncherClusterLauncherResponseParams * _Nullable data,
                                 NSError * _Nullable error))completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self launchAppWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)launchAppWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                        params:(CHIPApplicationLauncherClusterLaunchAppParams *)params
+             completionHandler:(void (^)(CHIPApplicationLauncherClusterLauncherResponseParams * _Nullable data,
+                                   NSError * _Nullable error))completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     ApplicationLauncher::Commands::LaunchApp::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.application.catalogVendorId = params.application.catalogVendorId.unsignedShortValue;
     request.application.applicationId = [self asCharSpan:params.application.applicationId];
     if (params.data != nil) {
@@ -2396,7 +2528,7 @@ using namespace chip::app::Clusters;
         self.callbackQueue, completionHandler, ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPApplicationLauncherClusterLauncherResponseCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
@@ -2404,8 +2536,21 @@ using namespace chip::app::Clusters;
         completionHandler:(void (^)(CHIPApplicationLauncherClusterLauncherResponseParams * _Nullable data,
                               NSError * _Nullable error))completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self stopAppWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)stopAppWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                      params:(CHIPApplicationLauncherClusterStopAppParams *)params
+           completionHandler:(void (^)(CHIPApplicationLauncherClusterLauncherResponseParams * _Nullable data,
+                                 NSError * _Nullable error))completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     ApplicationLauncher::Commands::StopApp::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.application.catalogVendorId = params.application.catalogVendorId.unsignedShortValue;
     request.application.applicationId = [self asCharSpan:params.application.applicationId];
 
@@ -2413,7 +2558,7 @@ using namespace chip::app::Clusters;
         self.callbackQueue, completionHandler, ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPApplicationLauncherClusterLauncherResponseCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
@@ -2494,6 +2639,19 @@ using namespace chip::app::Clusters;
 - (void)writeAttributeCurrentAppWithValue:(CHIPApplicationLauncherClusterApplicationEP * _Nullable)value
                         completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeCurrentAppWithValue:(CHIPApplicationLauncherClusterApplicationEP * _Nullable) value
+                                     params:params
+                          completionHandler:completionHandler];
+}
+- (void)writeAttributeCurrentAppWithValue:(CHIPApplicationLauncherClusterApplicationEP * _Nullable)value
+                                   params:(CHIPWriteParams * _Nullable)params
+                        completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -2516,7 +2674,8 @@ using namespace chip::app::Clusters;
             }
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -2839,8 +2998,20 @@ using namespace chip::app::Clusters;
 - (void)renameOutputWithParams:(CHIPAudioOutputClusterRenameOutputParams *)params
              completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self renameOutputWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)renameOutputWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                           params:(CHIPAudioOutputClusterRenameOutputParams *)params
+                completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     AudioOutput::Commands::RenameOutput::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.index = params.index.unsignedCharValue;
     request.name = [self asCharSpan:params.name];
 
@@ -2852,15 +3023,27 @@ using namespace chip::app::Clusters;
         ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPCommandSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
 - (void)selectOutputWithParams:(CHIPAudioOutputClusterSelectOutputParams *)params
              completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self selectOutputWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)selectOutputWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                           params:(CHIPAudioOutputClusterSelectOutputParams *)params
+                completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     AudioOutput::Commands::SelectOutput::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.index = params.index.unsignedCharValue;
 
     new CHIPCommandSuccessCallbackBridge(
@@ -2871,7 +3054,7 @@ using namespace chip::app::Clusters;
         ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPCommandSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
@@ -3266,8 +3449,20 @@ using namespace chip::app::Clusters;
 - (void)barrierControlGoToPercentWithParams:(CHIPBarrierControlClusterBarrierControlGoToPercentParams *)params
                           completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self barrierControlGoToPercentWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)barrierControlGoToPercentWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                        params:(CHIPBarrierControlClusterBarrierControlGoToPercentParams *)params
+                             completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     BarrierControl::Commands::BarrierControlGoToPercent::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.percentOpen = params.percentOpen.unsignedCharValue;
 
     new CHIPCommandSuccessCallbackBridge(
@@ -3278,14 +3473,25 @@ using namespace chip::app::Clusters;
         ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPCommandSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
 - (void)barrierControlStopWithCompletionHandler:(StatusCompletion)completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self barrierControlStopWithArguments:arguments completionHandler:completionHandler];
+}
+- (void)barrierControlStopWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                      completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     BarrierControl::Commands::BarrierControlStop::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
 
     new CHIPCommandSuccessCallbackBridge(
         self.callbackQueue,
@@ -3295,7 +3501,7 @@ using namespace chip::app::Clusters;
         ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPCommandSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
@@ -4129,6 +4335,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeNodeLabelWithValue:(NSString * _Nonnull)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeNodeLabelWithValue:(NSString * _Nonnull) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeNodeLabelWithValue:(NSString * _Nonnull)value
+                                  params:(CHIPWriteParams * _Nullable)params
+                       completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -4141,7 +4358,8 @@ using namespace chip::app::Clusters;
             cppValue = [self asCharSpan:value];
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -4207,6 +4425,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeLocationWithValue:(NSString * _Nonnull)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeLocationWithValue:(NSString * _Nonnull) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeLocationWithValue:(NSString * _Nonnull)value
+                                 params:(CHIPWriteParams * _Nullable)params
+                      completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -4219,7 +4448,8 @@ using namespace chip::app::Clusters;
             cppValue = [self asCharSpan:value];
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -4839,6 +5069,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeLocalConfigDisabledWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeLocalConfigDisabledWithValue:(NSNumber * _Nonnull) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeLocalConfigDisabledWithValue:(NSNumber * _Nonnull)value
+                                            params:(CHIPWriteParams * _Nullable)params
+                                 completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -4851,7 +5092,8 @@ using namespace chip::app::Clusters;
             cppValue = value.boolValue;
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -5367,6 +5609,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeOutOfServiceWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeOutOfServiceWithValue:(NSNumber * _Nonnull) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeOutOfServiceWithValue:(NSNumber * _Nonnull)value
+                                     params:(CHIPWriteParams * _Nullable)params
+                          completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -5379,7 +5632,8 @@ using namespace chip::app::Clusters;
             cppValue = value.boolValue;
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -5446,6 +5700,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributePresentValueWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributePresentValueWithValue:(NSNumber * _Nonnull) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributePresentValueWithValue:(NSNumber * _Nonnull)value
+                                     params:(CHIPWriteParams * _Nullable)params
+                          completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -5458,7 +5723,8 @@ using namespace chip::app::Clusters;
             cppValue = value.boolValue;
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -5852,6 +6118,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeBindingWithValue:(NSArray * _Nonnull)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeBindingWithValue:(NSArray * _Nonnull) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeBindingWithValue:(NSArray * _Nonnull)value
+                                params:(CHIPWriteParams * _Nullable)params
+                     completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -5901,7 +6178,8 @@ using namespace chip::app::Clusters;
             }
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -6545,8 +6823,20 @@ using namespace chip::app::Clusters;
 - (void)disableActionWithParams:(CHIPBridgedActionsClusterDisableActionParams *)params
               completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self disableActionWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)disableActionWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                            params:(CHIPBridgedActionsClusterDisableActionParams *)params
+                 completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     BridgedActions::Commands::DisableAction::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.actionID = params.actionID.unsignedShortValue;
     if (params.invokeID != nil) {
         auto & definedValue_0 = request.invokeID.Emplace();
@@ -6561,15 +6851,27 @@ using namespace chip::app::Clusters;
         ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPCommandSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
 - (void)disableActionWithDurationWithParams:(CHIPBridgedActionsClusterDisableActionWithDurationParams *)params
                           completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self disableActionWithDurationWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)disableActionWithDurationWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                        params:(CHIPBridgedActionsClusterDisableActionWithDurationParams *)params
+                             completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     BridgedActions::Commands::DisableActionWithDuration::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.actionID = params.actionID.unsignedShortValue;
     if (params.invokeID != nil) {
         auto & definedValue_0 = request.invokeID.Emplace();
@@ -6585,15 +6887,27 @@ using namespace chip::app::Clusters;
         ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPCommandSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
 - (void)enableActionWithParams:(CHIPBridgedActionsClusterEnableActionParams *)params
              completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self enableActionWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)enableActionWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                           params:(CHIPBridgedActionsClusterEnableActionParams *)params
+                completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     BridgedActions::Commands::EnableAction::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.actionID = params.actionID.unsignedShortValue;
     if (params.invokeID != nil) {
         auto & definedValue_0 = request.invokeID.Emplace();
@@ -6608,15 +6922,27 @@ using namespace chip::app::Clusters;
         ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPCommandSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
 - (void)enableActionWithDurationWithParams:(CHIPBridgedActionsClusterEnableActionWithDurationParams *)params
                          completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self enableActionWithDurationWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)enableActionWithDurationWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                       params:(CHIPBridgedActionsClusterEnableActionWithDurationParams *)params
+                            completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     BridgedActions::Commands::EnableActionWithDuration::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.actionID = params.actionID.unsignedShortValue;
     if (params.invokeID != nil) {
         auto & definedValue_0 = request.invokeID.Emplace();
@@ -6632,15 +6958,27 @@ using namespace chip::app::Clusters;
         ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPCommandSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
 - (void)instantActionWithParams:(CHIPBridgedActionsClusterInstantActionParams *)params
               completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self instantActionWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)instantActionWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                            params:(CHIPBridgedActionsClusterInstantActionParams *)params
+                 completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     BridgedActions::Commands::InstantAction::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.actionID = params.actionID.unsignedShortValue;
     if (params.invokeID != nil) {
         auto & definedValue_0 = request.invokeID.Emplace();
@@ -6655,15 +6993,27 @@ using namespace chip::app::Clusters;
         ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPCommandSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
 - (void)instantActionWithTransitionWithParams:(CHIPBridgedActionsClusterInstantActionWithTransitionParams *)params
                             completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self instantActionWithTransitionWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)instantActionWithTransitionWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                          params:(CHIPBridgedActionsClusterInstantActionWithTransitionParams *)params
+                               completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     BridgedActions::Commands::InstantActionWithTransition::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.actionID = params.actionID.unsignedShortValue;
     if (params.invokeID != nil) {
         auto & definedValue_0 = request.invokeID.Emplace();
@@ -6679,15 +7029,27 @@ using namespace chip::app::Clusters;
         ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPCommandSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
 - (void)pauseActionWithParams:(CHIPBridgedActionsClusterPauseActionParams *)params
             completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self pauseActionWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)pauseActionWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                          params:(CHIPBridgedActionsClusterPauseActionParams *)params
+               completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     BridgedActions::Commands::PauseAction::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.actionID = params.actionID.unsignedShortValue;
     if (params.invokeID != nil) {
         auto & definedValue_0 = request.invokeID.Emplace();
@@ -6702,15 +7064,27 @@ using namespace chip::app::Clusters;
         ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPCommandSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
 - (void)pauseActionWithDurationWithParams:(CHIPBridgedActionsClusterPauseActionWithDurationParams *)params
                         completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self pauseActionWithDurationWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)pauseActionWithDurationWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                      params:(CHIPBridgedActionsClusterPauseActionWithDurationParams *)params
+                           completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     BridgedActions::Commands::PauseActionWithDuration::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.actionID = params.actionID.unsignedShortValue;
     if (params.invokeID != nil) {
         auto & definedValue_0 = request.invokeID.Emplace();
@@ -6726,15 +7100,27 @@ using namespace chip::app::Clusters;
         ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPCommandSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
 - (void)resumeActionWithParams:(CHIPBridgedActionsClusterResumeActionParams *)params
              completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self resumeActionWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)resumeActionWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                           params:(CHIPBridgedActionsClusterResumeActionParams *)params
+                completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     BridgedActions::Commands::ResumeAction::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.actionID = params.actionID.unsignedShortValue;
     if (params.invokeID != nil) {
         auto & definedValue_0 = request.invokeID.Emplace();
@@ -6749,15 +7135,27 @@ using namespace chip::app::Clusters;
         ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPCommandSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
 - (void)startActionWithParams:(CHIPBridgedActionsClusterStartActionParams *)params
             completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self startActionWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)startActionWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                          params:(CHIPBridgedActionsClusterStartActionParams *)params
+               completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     BridgedActions::Commands::StartAction::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.actionID = params.actionID.unsignedShortValue;
     if (params.invokeID != nil) {
         auto & definedValue_0 = request.invokeID.Emplace();
@@ -6772,15 +7170,27 @@ using namespace chip::app::Clusters;
         ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPCommandSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
 - (void)startActionWithDurationWithParams:(CHIPBridgedActionsClusterStartActionWithDurationParams *)params
                         completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self startActionWithDurationWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)startActionWithDurationWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                      params:(CHIPBridgedActionsClusterStartActionWithDurationParams *)params
+                           completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     BridgedActions::Commands::StartActionWithDuration::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.actionID = params.actionID.unsignedShortValue;
     if (params.invokeID != nil) {
         auto & definedValue_0 = request.invokeID.Emplace();
@@ -6796,15 +7206,27 @@ using namespace chip::app::Clusters;
         ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPCommandSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
 - (void)stopActionWithParams:(CHIPBridgedActionsClusterStopActionParams *)params
            completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self stopActionWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)stopActionWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                         params:(CHIPBridgedActionsClusterStopActionParams *)params
+              completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     BridgedActions::Commands::StopAction::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.actionID = params.actionID.unsignedShortValue;
     if (params.invokeID != nil) {
         auto & definedValue_0 = request.invokeID.Emplace();
@@ -6819,7 +7241,7 @@ using namespace chip::app::Clusters;
         ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPCommandSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
@@ -7466,6 +7888,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeNodeLabelWithValue:(NSString * _Nonnull)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeNodeLabelWithValue:(NSString * _Nonnull) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeNodeLabelWithValue:(NSString * _Nonnull)value
+                                  params:(CHIPWriteParams * _Nullable)params
+                       completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -7478,7 +7911,8 @@ using namespace chip::app::Clusters;
             cppValue = [self asCharSpan:value];
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -8473,23 +8907,48 @@ using namespace chip::app::Clusters;
               completionHandler:(void (^)(CHIPChannelClusterChangeChannelResponseParams * _Nullable data,
                                     NSError * _Nullable error))completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self changeChannelWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)changeChannelWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                            params:(CHIPChannelClusterChangeChannelParams *)params
+                 completionHandler:(void (^)(CHIPChannelClusterChangeChannelResponseParams * _Nullable data,
+                                       NSError * _Nullable error))completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     Channel::Commands::ChangeChannel::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.match = [self asCharSpan:params.match];
 
     new CHIPChannelClusterChangeChannelResponseCallbackBridge(
         self.callbackQueue, completionHandler, ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPChannelClusterChangeChannelResponseCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
 - (void)changeChannelByNumberWithParams:(CHIPChannelClusterChangeChannelByNumberParams *)params
                       completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self changeChannelByNumberWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)changeChannelByNumberWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                    params:(CHIPChannelClusterChangeChannelByNumberParams *)params
+                         completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     Channel::Commands::ChangeChannelByNumber::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.majorNumber = params.majorNumber.unsignedShortValue;
     request.minorNumber = params.minorNumber.unsignedShortValue;
 
@@ -8501,14 +8960,26 @@ using namespace chip::app::Clusters;
         ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPCommandSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
 - (void)skipChannelWithParams:(CHIPChannelClusterSkipChannelParams *)params completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self skipChannelWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)skipChannelWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                          params:(CHIPChannelClusterSkipChannelParams *)params
+               completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     Channel::Commands::SkipChannel::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.count = params.count.unsignedShortValue;
 
     new CHIPCommandSuccessCallbackBridge(
@@ -8519,7 +8990,7 @@ using namespace chip::app::Clusters;
         ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPCommandSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
@@ -8978,8 +9449,20 @@ using namespace chip::app::Clusters;
 - (void)colorLoopSetWithParams:(CHIPColorControlClusterColorLoopSetParams *)params
              completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self colorLoopSetWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)colorLoopSetWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                           params:(CHIPColorControlClusterColorLoopSetParams *)params
+                completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     ColorControl::Commands::ColorLoopSet::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.updateFlags = static_cast<std::remove_reference_t<decltype(request.updateFlags)>>(params.updateFlags.unsignedCharValue);
     request.action = static_cast<std::remove_reference_t<decltype(request.action)>>(params.action.unsignedCharValue);
     request.direction = static_cast<std::remove_reference_t<decltype(request.direction)>>(params.direction.unsignedCharValue);
@@ -8996,15 +9479,27 @@ using namespace chip::app::Clusters;
         ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPCommandSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
 - (void)enhancedMoveHueWithParams:(CHIPColorControlClusterEnhancedMoveHueParams *)params
                 completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self enhancedMoveHueWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)enhancedMoveHueWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                              params:(CHIPColorControlClusterEnhancedMoveHueParams *)params
+                   completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     ColorControl::Commands::EnhancedMoveHue::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.moveMode = static_cast<std::remove_reference_t<decltype(request.moveMode)>>(params.moveMode.unsignedCharValue);
     request.rate = params.rate.unsignedShortValue;
     request.optionsMask = params.optionsMask.unsignedCharValue;
@@ -9018,15 +9513,27 @@ using namespace chip::app::Clusters;
         ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPCommandSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
 - (void)enhancedMoveToHueWithParams:(CHIPColorControlClusterEnhancedMoveToHueParams *)params
                   completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self enhancedMoveToHueWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)enhancedMoveToHueWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                params:(CHIPColorControlClusterEnhancedMoveToHueParams *)params
+                     completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     ColorControl::Commands::EnhancedMoveToHue::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.enhancedHue = params.enhancedHue.unsignedShortValue;
     request.direction = static_cast<std::remove_reference_t<decltype(request.direction)>>(params.direction.unsignedCharValue);
     request.transitionTime = params.transitionTime.unsignedShortValue;
@@ -9041,15 +9548,27 @@ using namespace chip::app::Clusters;
         ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPCommandSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
 - (void)enhancedMoveToHueAndSaturationWithParams:(CHIPColorControlClusterEnhancedMoveToHueAndSaturationParams *)params
                                completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self enhancedMoveToHueAndSaturationWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)enhancedMoveToHueAndSaturationWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                             params:(CHIPColorControlClusterEnhancedMoveToHueAndSaturationParams *)params
+                                  completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     ColorControl::Commands::EnhancedMoveToHueAndSaturation::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.enhancedHue = params.enhancedHue.unsignedShortValue;
     request.saturation = params.saturation.unsignedCharValue;
     request.transitionTime = params.transitionTime.unsignedShortValue;
@@ -9064,15 +9583,27 @@ using namespace chip::app::Clusters;
         ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPCommandSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
 - (void)enhancedStepHueWithParams:(CHIPColorControlClusterEnhancedStepHueParams *)params
                 completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self enhancedStepHueWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)enhancedStepHueWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                              params:(CHIPColorControlClusterEnhancedStepHueParams *)params
+                   completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     ColorControl::Commands::EnhancedStepHue::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.stepMode = static_cast<std::remove_reference_t<decltype(request.stepMode)>>(params.stepMode.unsignedCharValue);
     request.stepSize = params.stepSize.unsignedShortValue;
     request.transitionTime = params.transitionTime.unsignedShortValue;
@@ -9087,14 +9618,26 @@ using namespace chip::app::Clusters;
         ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPCommandSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
 - (void)moveColorWithParams:(CHIPColorControlClusterMoveColorParams *)params completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self moveColorWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)moveColorWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                        params:(CHIPColorControlClusterMoveColorParams *)params
+             completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     ColorControl::Commands::MoveColor::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.rateX = params.rateX.shortValue;
     request.rateY = params.rateY.shortValue;
     request.optionsMask = params.optionsMask.unsignedCharValue;
@@ -9108,15 +9651,27 @@ using namespace chip::app::Clusters;
         ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPCommandSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
 - (void)moveColorTemperatureWithParams:(CHIPColorControlClusterMoveColorTemperatureParams *)params
                      completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self moveColorTemperatureWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)moveColorTemperatureWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                   params:(CHIPColorControlClusterMoveColorTemperatureParams *)params
+                        completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     ColorControl::Commands::MoveColorTemperature::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.moveMode = static_cast<std::remove_reference_t<decltype(request.moveMode)>>(params.moveMode.unsignedCharValue);
     request.rate = params.rate.unsignedShortValue;
     request.colorTemperatureMinimum = params.colorTemperatureMinimum.unsignedShortValue;
@@ -9132,14 +9687,26 @@ using namespace chip::app::Clusters;
         ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPCommandSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
 - (void)moveHueWithParams:(CHIPColorControlClusterMoveHueParams *)params completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self moveHueWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)moveHueWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                      params:(CHIPColorControlClusterMoveHueParams *)params
+           completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     ColorControl::Commands::MoveHue::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.moveMode = static_cast<std::remove_reference_t<decltype(request.moveMode)>>(params.moveMode.unsignedCharValue);
     request.rate = params.rate.unsignedCharValue;
     request.optionsMask = params.optionsMask.unsignedCharValue;
@@ -9153,15 +9720,27 @@ using namespace chip::app::Clusters;
         ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPCommandSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
 - (void)moveSaturationWithParams:(CHIPColorControlClusterMoveSaturationParams *)params
                completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self moveSaturationWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)moveSaturationWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                             params:(CHIPColorControlClusterMoveSaturationParams *)params
+                  completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     ColorControl::Commands::MoveSaturation::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.moveMode = static_cast<std::remove_reference_t<decltype(request.moveMode)>>(params.moveMode.unsignedCharValue);
     request.rate = params.rate.unsignedCharValue;
     request.optionsMask = params.optionsMask.unsignedCharValue;
@@ -9175,15 +9754,27 @@ using namespace chip::app::Clusters;
         ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPCommandSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
 - (void)moveToColorWithParams:(CHIPColorControlClusterMoveToColorParams *)params
             completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self moveToColorWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)moveToColorWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                          params:(CHIPColorControlClusterMoveToColorParams *)params
+               completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     ColorControl::Commands::MoveToColor::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.colorX = params.colorX.unsignedShortValue;
     request.colorY = params.colorY.unsignedShortValue;
     request.transitionTime = params.transitionTime.unsignedShortValue;
@@ -9198,15 +9789,27 @@ using namespace chip::app::Clusters;
         ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPCommandSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
 - (void)moveToColorTemperatureWithParams:(CHIPColorControlClusterMoveToColorTemperatureParams *)params
                        completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self moveToColorTemperatureWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)moveToColorTemperatureWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                     params:(CHIPColorControlClusterMoveToColorTemperatureParams *)params
+                          completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     ColorControl::Commands::MoveToColorTemperature::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.colorTemperature = params.colorTemperature.unsignedShortValue;
     request.transitionTime = params.transitionTime.unsignedShortValue;
     request.optionsMask = params.optionsMask.unsignedCharValue;
@@ -9220,14 +9823,26 @@ using namespace chip::app::Clusters;
         ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPCommandSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
 - (void)moveToHueWithParams:(CHIPColorControlClusterMoveToHueParams *)params completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self moveToHueWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)moveToHueWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                        params:(CHIPColorControlClusterMoveToHueParams *)params
+             completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     ColorControl::Commands::MoveToHue::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.hue = params.hue.unsignedCharValue;
     request.direction = static_cast<std::remove_reference_t<decltype(request.direction)>>(params.direction.unsignedCharValue);
     request.transitionTime = params.transitionTime.unsignedShortValue;
@@ -9242,15 +9857,27 @@ using namespace chip::app::Clusters;
         ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPCommandSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
 - (void)moveToHueAndSaturationWithParams:(CHIPColorControlClusterMoveToHueAndSaturationParams *)params
                        completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self moveToHueAndSaturationWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)moveToHueAndSaturationWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                     params:(CHIPColorControlClusterMoveToHueAndSaturationParams *)params
+                          completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     ColorControl::Commands::MoveToHueAndSaturation::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.hue = params.hue.unsignedCharValue;
     request.saturation = params.saturation.unsignedCharValue;
     request.transitionTime = params.transitionTime.unsignedShortValue;
@@ -9265,15 +9892,27 @@ using namespace chip::app::Clusters;
         ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPCommandSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
 - (void)moveToSaturationWithParams:(CHIPColorControlClusterMoveToSaturationParams *)params
                  completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self moveToSaturationWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)moveToSaturationWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                               params:(CHIPColorControlClusterMoveToSaturationParams *)params
+                    completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     ColorControl::Commands::MoveToSaturation::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.saturation = params.saturation.unsignedCharValue;
     request.transitionTime = params.transitionTime.unsignedShortValue;
     request.optionsMask = params.optionsMask.unsignedCharValue;
@@ -9287,14 +9926,26 @@ using namespace chip::app::Clusters;
         ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPCommandSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
 - (void)stepColorWithParams:(CHIPColorControlClusterStepColorParams *)params completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self stepColorWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)stepColorWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                        params:(CHIPColorControlClusterStepColorParams *)params
+             completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     ColorControl::Commands::StepColor::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.stepX = params.stepX.shortValue;
     request.stepY = params.stepY.shortValue;
     request.transitionTime = params.transitionTime.unsignedShortValue;
@@ -9309,15 +9960,27 @@ using namespace chip::app::Clusters;
         ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPCommandSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
 - (void)stepColorTemperatureWithParams:(CHIPColorControlClusterStepColorTemperatureParams *)params
                      completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self stepColorTemperatureWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)stepColorTemperatureWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                   params:(CHIPColorControlClusterStepColorTemperatureParams *)params
+                        completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     ColorControl::Commands::StepColorTemperature::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.stepMode = static_cast<std::remove_reference_t<decltype(request.stepMode)>>(params.stepMode.unsignedCharValue);
     request.stepSize = params.stepSize.unsignedShortValue;
     request.transitionTime = params.transitionTime.unsignedShortValue;
@@ -9334,14 +9997,26 @@ using namespace chip::app::Clusters;
         ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPCommandSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
 - (void)stepHueWithParams:(CHIPColorControlClusterStepHueParams *)params completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self stepHueWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)stepHueWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                      params:(CHIPColorControlClusterStepHueParams *)params
+           completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     ColorControl::Commands::StepHue::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.stepMode = static_cast<std::remove_reference_t<decltype(request.stepMode)>>(params.stepMode.unsignedCharValue);
     request.stepSize = params.stepSize.unsignedCharValue;
     request.transitionTime = params.transitionTime.unsignedCharValue;
@@ -9356,15 +10031,27 @@ using namespace chip::app::Clusters;
         ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPCommandSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
 - (void)stepSaturationWithParams:(CHIPColorControlClusterStepSaturationParams *)params
                completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self stepSaturationWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)stepSaturationWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                             params:(CHIPColorControlClusterStepSaturationParams *)params
+                  completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     ColorControl::Commands::StepSaturation::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.stepMode = static_cast<std::remove_reference_t<decltype(request.stepMode)>>(params.stepMode.unsignedCharValue);
     request.stepSize = params.stepSize.unsignedCharValue;
     request.transitionTime = params.transitionTime.unsignedCharValue;
@@ -9379,15 +10066,27 @@ using namespace chip::app::Clusters;
         ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPCommandSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
 - (void)stopMoveStepWithParams:(CHIPColorControlClusterStopMoveStepParams *)params
              completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self stopMoveStepWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)stopMoveStepWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                           params:(CHIPColorControlClusterStopMoveStepParams *)params
+                completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     ColorControl::Commands::StopMoveStep::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.optionsMask = params.optionsMask.unsignedCharValue;
     request.optionsOverride = params.optionsOverride.unsignedCharValue;
 
@@ -9399,7 +10098,7 @@ using namespace chip::app::Clusters;
         ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPCommandSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
@@ -9966,6 +10665,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeColorControlOptionsWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeColorControlOptionsWithValue:(NSNumber * _Nonnull) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeColorControlOptionsWithValue:(NSNumber * _Nonnull)value
+                                            params:(CHIPWriteParams * _Nullable)params
+                                 completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -9978,7 +10688,8 @@ using namespace chip::app::Clusters;
             cppValue = value.unsignedCharValue;
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -11201,6 +11912,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeWhitePointXWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeWhitePointXWithValue:(NSNumber * _Nonnull) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeWhitePointXWithValue:(NSNumber * _Nonnull)value
+                                    params:(CHIPWriteParams * _Nullable)params
+                         completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -11213,7 +11935,8 @@ using namespace chip::app::Clusters;
             cppValue = value.unsignedShortValue;
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -11280,6 +12003,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeWhitePointYWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeWhitePointYWithValue:(NSNumber * _Nonnull) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeWhitePointYWithValue:(NSNumber * _Nonnull)value
+                                    params:(CHIPWriteParams * _Nullable)params
+                         completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -11292,7 +12026,8 @@ using namespace chip::app::Clusters;
             cppValue = value.unsignedShortValue;
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -11359,6 +12094,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeColorPointRXWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeColorPointRXWithValue:(NSNumber * _Nonnull) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeColorPointRXWithValue:(NSNumber * _Nonnull)value
+                                     params:(CHIPWriteParams * _Nullable)params
+                          completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -11371,7 +12117,8 @@ using namespace chip::app::Clusters;
             cppValue = value.unsignedShortValue;
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -11438,6 +12185,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeColorPointRYWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeColorPointRYWithValue:(NSNumber * _Nonnull) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeColorPointRYWithValue:(NSNumber * _Nonnull)value
+                                     params:(CHIPWriteParams * _Nullable)params
+                          completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -11450,7 +12208,8 @@ using namespace chip::app::Clusters;
             cppValue = value.unsignedShortValue;
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -11517,6 +12276,19 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeColorPointRIntensityWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeColorPointRIntensityWithValue:(NSNumber * _Nonnull) value
+                                               params:params
+                                    completionHandler:completionHandler];
+}
+- (void)writeAttributeColorPointRIntensityWithValue:(NSNumber * _Nonnull)value
+                                             params:(CHIPWriteParams * _Nullable)params
+                                  completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -11529,7 +12301,8 @@ using namespace chip::app::Clusters;
             cppValue = value.unsignedCharValue;
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -11598,6 +12371,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeColorPointGXWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeColorPointGXWithValue:(NSNumber * _Nonnull) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeColorPointGXWithValue:(NSNumber * _Nonnull)value
+                                     params:(CHIPWriteParams * _Nullable)params
+                          completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -11610,7 +12394,8 @@ using namespace chip::app::Clusters;
             cppValue = value.unsignedShortValue;
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -11677,6 +12462,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeColorPointGYWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeColorPointGYWithValue:(NSNumber * _Nonnull) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeColorPointGYWithValue:(NSNumber * _Nonnull)value
+                                     params:(CHIPWriteParams * _Nullable)params
+                          completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -11689,7 +12485,8 @@ using namespace chip::app::Clusters;
             cppValue = value.unsignedShortValue;
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -11756,6 +12553,19 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeColorPointGIntensityWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeColorPointGIntensityWithValue:(NSNumber * _Nonnull) value
+                                               params:params
+                                    completionHandler:completionHandler];
+}
+- (void)writeAttributeColorPointGIntensityWithValue:(NSNumber * _Nonnull)value
+                                             params:(CHIPWriteParams * _Nullable)params
+                                  completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -11768,7 +12578,8 @@ using namespace chip::app::Clusters;
             cppValue = value.unsignedCharValue;
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -11837,6 +12648,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeColorPointBXWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeColorPointBXWithValue:(NSNumber * _Nonnull) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeColorPointBXWithValue:(NSNumber * _Nonnull)value
+                                     params:(CHIPWriteParams * _Nullable)params
+                          completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -11849,7 +12671,8 @@ using namespace chip::app::Clusters;
             cppValue = value.unsignedShortValue;
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -11916,6 +12739,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeColorPointBYWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeColorPointBYWithValue:(NSNumber * _Nonnull) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeColorPointBYWithValue:(NSNumber * _Nonnull)value
+                                     params:(CHIPWriteParams * _Nullable)params
+                          completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -11928,7 +12762,8 @@ using namespace chip::app::Clusters;
             cppValue = value.unsignedShortValue;
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -11995,6 +12830,19 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeColorPointBIntensityWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeColorPointBIntensityWithValue:(NSNumber * _Nonnull) value
+                                               params:params
+                                    completionHandler:completionHandler];
+}
+- (void)writeAttributeColorPointBIntensityWithValue:(NSNumber * _Nonnull)value
+                                             params:(CHIPWriteParams * _Nullable)params
+                                  completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -12007,7 +12855,8 @@ using namespace chip::app::Clusters;
             cppValue = value.unsignedCharValue;
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -12764,6 +13613,19 @@ using namespace chip::app::Clusters;
 - (void)writeAttributeStartUpColorTemperatureMiredsWithValue:(NSNumber * _Nonnull)value
                                            completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeStartUpColorTemperatureMiredsWithValue:(NSNumber * _Nonnull) value
+                                                        params:params
+                                             completionHandler:completionHandler];
+}
+- (void)writeAttributeStartUpColorTemperatureMiredsWithValue:(NSNumber * _Nonnull)value
+                                                      params:(CHIPWriteParams * _Nullable)params
+                                           completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -12776,7 +13638,8 @@ using namespace chip::app::Clusters;
             cppValue = value.unsignedShortValue;
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -13100,8 +13963,21 @@ using namespace chip::app::Clusters;
               completionHandler:(void (^)(CHIPContentLauncherClusterLaunchResponseParams * _Nullable data,
                                     NSError * _Nullable error))completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self launchContentWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)launchContentWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                            params:(CHIPContentLauncherClusterLaunchContentParams *)params
+                 completionHandler:(void (^)(CHIPContentLauncherClusterLaunchResponseParams * _Nullable data,
+                                       NSError * _Nullable error))completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     ContentLauncher::Commands::LaunchContent::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     {
         using ListType_1 = std::remove_reference_t<decltype(request.search.parameterList)>;
         using ListMemberType_1 = ListMemberTypeGetter<ListType_1>::Type;
@@ -13163,7 +14039,7 @@ using namespace chip::app::Clusters;
         self.callbackQueue, completionHandler, ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPContentLauncherClusterLaunchResponseCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
@@ -13171,8 +14047,21 @@ using namespace chip::app::Clusters;
           completionHandler:(void (^)(CHIPContentLauncherClusterLaunchResponseParams * _Nullable data,
                                 NSError * _Nullable error))completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self launchURLWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)launchURLWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                        params:(CHIPContentLauncherClusterLaunchURLParams *)params
+             completionHandler:(void (^)(CHIPContentLauncherClusterLaunchResponseParams * _Nullable data,
+                                   NSError * _Nullable error))completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     ContentLauncher::Commands::LaunchURL::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.contentURL = [self asCharSpan:params.contentURL];
     if (params.displayString != nil) {
         auto & definedValue_0 = request.displayString.Emplace();
@@ -13277,7 +14166,7 @@ using namespace chip::app::Clusters;
         self.callbackQueue, completionHandler, ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPContentLauncherClusterLaunchResponseCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
@@ -13358,6 +14247,19 @@ using namespace chip::app::Clusters;
 - (void)writeAttributeSupportedStreamingProtocolsWithValue:(NSNumber * _Nonnull)value
                                          completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeSupportedStreamingProtocolsWithValue:(NSNumber * _Nonnull) value
+                                                      params:params
+                                           completionHandler:completionHandler];
+}
+- (void)writeAttributeSupportedStreamingProtocolsWithValue:(NSNumber * _Nonnull)value
+                                                    params:(CHIPWriteParams * _Nullable)params
+                                         completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -13370,7 +14272,8 @@ using namespace chip::app::Clusters;
             cppValue = value.unsignedIntValue;
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -14205,8 +15108,21 @@ using namespace chip::app::Clusters;
                     completionHandler:(void (^)(CHIPDiagnosticLogsClusterRetrieveLogsResponseParams * _Nullable data,
                                           NSError * _Nullable error))completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self retrieveLogsRequestWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)retrieveLogsRequestWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                  params:(CHIPDiagnosticLogsClusterRetrieveLogsRequestParams *)params
+                       completionHandler:(void (^)(CHIPDiagnosticLogsClusterRetrieveLogsResponseParams * _Nullable data,
+                                             NSError * _Nullable error))completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     DiagnosticLogs::Commands::RetrieveLogsRequest::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.intent = static_cast<std::remove_reference_t<decltype(request.intent)>>(params.intent.unsignedCharValue);
     request.requestedProtocol
         = static_cast<std::remove_reference_t<decltype(request.requestedProtocol)>>(params.requestedProtocol.unsignedCharValue);
@@ -14216,7 +15132,7 @@ using namespace chip::app::Clusters;
         self.callbackQueue, completionHandler, ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPDiagnosticLogsClusterRetrieveLogsResponseCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
@@ -14425,8 +15341,22 @@ using namespace chip::app::Clusters;
 - (void)clearCredentialWithParams:(CHIPDoorLockClusterClearCredentialParams *)params
                 completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPCommandArguments * arguments;
+    arguments = [CHIPCommandArguments new];
+    arguments.timedInvokeTimeoutMs = @10000;
+    [self clearCredentialWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)clearCredentialWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                              params:(CHIPDoorLockClusterClearCredentialParams *)params
+                   completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     DoorLock::Commands::ClearCredential::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     if (params.credential == nil) {
         request.credential.SetNull();
     } else {
@@ -14444,15 +15374,27 @@ using namespace chip::app::Clusters;
         ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPCommandSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, 10000);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
 - (void)clearHolidayScheduleWithParams:(CHIPDoorLockClusterClearHolidayScheduleParams *)params
                      completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self clearHolidayScheduleWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)clearHolidayScheduleWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                   params:(CHIPDoorLockClusterClearHolidayScheduleParams *)params
+                        completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     DoorLock::Commands::ClearHolidaySchedule::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.holidayIndex = params.holidayIndex.unsignedCharValue;
 
     new CHIPCommandSuccessCallbackBridge(
@@ -14463,14 +15405,28 @@ using namespace chip::app::Clusters;
         ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPCommandSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
 - (void)clearUserWithParams:(CHIPDoorLockClusterClearUserParams *)params completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPCommandArguments * arguments;
+    arguments = [CHIPCommandArguments new];
+    arguments.timedInvokeTimeoutMs = @10000;
+    [self clearUserWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)clearUserWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                        params:(CHIPDoorLockClusterClearUserParams *)params
+             completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     DoorLock::Commands::ClearUser::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.userIndex = params.userIndex.unsignedShortValue;
 
     new CHIPCommandSuccessCallbackBridge(
@@ -14481,15 +15437,27 @@ using namespace chip::app::Clusters;
         ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPCommandSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, 10000);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
 - (void)clearWeekDayScheduleWithParams:(CHIPDoorLockClusterClearWeekDayScheduleParams *)params
                      completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self clearWeekDayScheduleWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)clearWeekDayScheduleWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                   params:(CHIPDoorLockClusterClearWeekDayScheduleParams *)params
+                        completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     DoorLock::Commands::ClearWeekDaySchedule::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.weekDayIndex = params.weekDayIndex.unsignedCharValue;
     request.userIndex = params.userIndex.unsignedShortValue;
 
@@ -14501,15 +15469,27 @@ using namespace chip::app::Clusters;
         ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPCommandSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
 - (void)clearYearDayScheduleWithParams:(CHIPDoorLockClusterClearYearDayScheduleParams *)params
                      completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self clearYearDayScheduleWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)clearYearDayScheduleWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                   params:(CHIPDoorLockClusterClearYearDayScheduleParams *)params
+                        completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     DoorLock::Commands::ClearYearDaySchedule::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.yearDayIndex = params.yearDayIndex.unsignedCharValue;
     request.userIndex = params.userIndex.unsignedShortValue;
 
@@ -14521,7 +15501,7 @@ using namespace chip::app::Clusters;
         ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPCommandSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
@@ -14529,8 +15509,21 @@ using namespace chip::app::Clusters;
                     completionHandler:(void (^)(CHIPDoorLockClusterGetCredentialStatusResponseParams * _Nullable data,
                                           NSError * _Nullable error))completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self getCredentialStatusWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)getCredentialStatusWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                  params:(CHIPDoorLockClusterGetCredentialStatusParams *)params
+                       completionHandler:(void (^)(CHIPDoorLockClusterGetCredentialStatusResponseParams * _Nullable data,
+                                             NSError * _Nullable error))completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     DoorLock::Commands::GetCredentialStatus::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.credential.credentialType = static_cast<std::remove_reference_t<decltype(request.credential.credentialType)>>(
         params.credential.credentialType.unsignedCharValue);
     request.credential.credentialIndex = params.credential.credentialIndex.unsignedShortValue;
@@ -14539,7 +15532,7 @@ using namespace chip::app::Clusters;
         self.callbackQueue, completionHandler, ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPDoorLockClusterGetCredentialStatusResponseCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
@@ -14547,15 +15540,28 @@ using namespace chip::app::Clusters;
                    completionHandler:(void (^)(CHIPDoorLockClusterGetHolidayScheduleResponseParams * _Nullable data,
                                          NSError * _Nullable error))completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self getHolidayScheduleWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)getHolidayScheduleWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                 params:(CHIPDoorLockClusterGetHolidayScheduleParams *)params
+                      completionHandler:(void (^)(CHIPDoorLockClusterGetHolidayScheduleResponseParams * _Nullable data,
+                                            NSError * _Nullable error))completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     DoorLock::Commands::GetHolidaySchedule::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.holidayIndex = params.holidayIndex.unsignedCharValue;
 
     new CHIPDoorLockClusterGetHolidayScheduleResponseCallbackBridge(
         self.callbackQueue, completionHandler, ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPDoorLockClusterGetHolidayScheduleResponseCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
@@ -14563,15 +15569,28 @@ using namespace chip::app::Clusters;
         completionHandler:
             (void (^)(CHIPDoorLockClusterGetUserResponseParams * _Nullable data, NSError * _Nullable error))completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self getUserWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)getUserWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                      params:(CHIPDoorLockClusterGetUserParams *)params
+           completionHandler:
+               (void (^)(CHIPDoorLockClusterGetUserResponseParams * _Nullable data, NSError * _Nullable error))completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     DoorLock::Commands::GetUser::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.userIndex = params.userIndex.unsignedShortValue;
 
     new CHIPDoorLockClusterGetUserResponseCallbackBridge(
         self.callbackQueue, completionHandler, ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPDoorLockClusterGetUserResponseCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
@@ -14579,8 +15598,21 @@ using namespace chip::app::Clusters;
                    completionHandler:(void (^)(CHIPDoorLockClusterGetWeekDayScheduleResponseParams * _Nullable data,
                                          NSError * _Nullable error))completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self getWeekDayScheduleWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)getWeekDayScheduleWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                 params:(CHIPDoorLockClusterGetWeekDayScheduleParams *)params
+                      completionHandler:(void (^)(CHIPDoorLockClusterGetWeekDayScheduleResponseParams * _Nullable data,
+                                            NSError * _Nullable error))completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     DoorLock::Commands::GetWeekDaySchedule::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.weekDayIndex = params.weekDayIndex.unsignedCharValue;
     request.userIndex = params.userIndex.unsignedShortValue;
 
@@ -14588,7 +15620,7 @@ using namespace chip::app::Clusters;
         self.callbackQueue, completionHandler, ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPDoorLockClusterGetWeekDayScheduleResponseCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
@@ -14596,8 +15628,21 @@ using namespace chip::app::Clusters;
                    completionHandler:(void (^)(CHIPDoorLockClusterGetYearDayScheduleResponseParams * _Nullable data,
                                          NSError * _Nullable error))completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self getYearDayScheduleWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)getYearDayScheduleWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                 params:(CHIPDoorLockClusterGetYearDayScheduleParams *)params
+                      completionHandler:(void (^)(CHIPDoorLockClusterGetYearDayScheduleResponseParams * _Nullable data,
+                                            NSError * _Nullable error))completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     DoorLock::Commands::GetYearDaySchedule::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.yearDayIndex = params.yearDayIndex.unsignedCharValue;
     request.userIndex = params.userIndex.unsignedShortValue;
 
@@ -14605,15 +15650,29 @@ using namespace chip::app::Clusters;
         self.callbackQueue, completionHandler, ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPDoorLockClusterGetYearDayScheduleResponseCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
 - (void)lockDoorWithParams:(CHIPDoorLockClusterLockDoorParams * _Nullable)params
          completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPCommandArguments * arguments;
+    arguments = [CHIPCommandArguments new];
+    arguments.timedInvokeTimeoutMs = @10000;
+    [self lockDoorWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)lockDoorWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                       params:(CHIPDoorLockClusterLockDoorParams * _Nullable)params
+            completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     DoorLock::Commands::LockDoor::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     if (params != nil) {
         if (params.pinCode != nil) {
             auto & definedValue_0 = request.pinCode.Emplace();
@@ -14629,7 +15688,7 @@ using namespace chip::app::Clusters;
         ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPCommandSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, 10000);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
@@ -14637,8 +15696,23 @@ using namespace chip::app::Clusters;
               completionHandler:(void (^)(CHIPDoorLockClusterSetCredentialResponseParams * _Nullable data,
                                     NSError * _Nullable error))completionHandler
 {
+    CHIPCommandArguments * arguments;
+    arguments = [CHIPCommandArguments new];
+    arguments.timedInvokeTimeoutMs = @10000;
+    [self setCredentialWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)setCredentialWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                            params:(CHIPDoorLockClusterSetCredentialParams *)params
+                 completionHandler:(void (^)(CHIPDoorLockClusterSetCredentialResponseParams * _Nullable data,
+                                       NSError * _Nullable error))completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     DoorLock::Commands::SetCredential::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.operationType
         = static_cast<std::remove_reference_t<decltype(request.operationType)>>(params.operationType.unsignedCharValue);
     request.credential.credentialType = static_cast<std::remove_reference_t<decltype(request.credential.credentialType)>>(
@@ -14668,15 +15742,27 @@ using namespace chip::app::Clusters;
         self.callbackQueue, completionHandler, ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPDoorLockClusterSetCredentialResponseCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, 10000);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
 - (void)setHolidayScheduleWithParams:(CHIPDoorLockClusterSetHolidayScheduleParams *)params
                    completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self setHolidayScheduleWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)setHolidayScheduleWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                 params:(CHIPDoorLockClusterSetHolidayScheduleParams *)params
+                      completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     DoorLock::Commands::SetHolidaySchedule::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.holidayIndex = params.holidayIndex.unsignedCharValue;
     request.localStartTime = params.localStartTime.unsignedIntValue;
     request.localEndTime = params.localEndTime.unsignedIntValue;
@@ -14691,14 +15777,28 @@ using namespace chip::app::Clusters;
         ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPCommandSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
 - (void)setUserWithParams:(CHIPDoorLockClusterSetUserParams *)params completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPCommandArguments * arguments;
+    arguments = [CHIPCommandArguments new];
+    arguments.timedInvokeTimeoutMs = @10000;
+    [self setUserWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)setUserWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                      params:(CHIPDoorLockClusterSetUserParams *)params
+           completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     DoorLock::Commands::SetUser::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.operationType
         = static_cast<std::remove_reference_t<decltype(request.operationType)>>(params.operationType.unsignedCharValue);
     request.userIndex = params.userIndex.unsignedShortValue;
@@ -14741,15 +15841,27 @@ using namespace chip::app::Clusters;
         ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPCommandSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, 10000);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
 - (void)setWeekDayScheduleWithParams:(CHIPDoorLockClusterSetWeekDayScheduleParams *)params
                    completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self setWeekDayScheduleWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)setWeekDayScheduleWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                 params:(CHIPDoorLockClusterSetWeekDayScheduleParams *)params
+                      completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     DoorLock::Commands::SetWeekDaySchedule::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.weekDayIndex = params.weekDayIndex.unsignedCharValue;
     request.userIndex = params.userIndex.unsignedShortValue;
     request.daysMask = static_cast<std::remove_reference_t<decltype(request.daysMask)>>(params.daysMask.unsignedCharValue);
@@ -14766,15 +15878,27 @@ using namespace chip::app::Clusters;
         ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPCommandSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
 - (void)setYearDayScheduleWithParams:(CHIPDoorLockClusterSetYearDayScheduleParams *)params
                    completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self setYearDayScheduleWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)setYearDayScheduleWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                 params:(CHIPDoorLockClusterSetYearDayScheduleParams *)params
+                      completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     DoorLock::Commands::SetYearDaySchedule::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.yearDayIndex = params.yearDayIndex.unsignedCharValue;
     request.userIndex = params.userIndex.unsignedShortValue;
     request.localStartTime = params.localStartTime.unsignedIntValue;
@@ -14788,15 +15912,29 @@ using namespace chip::app::Clusters;
         ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPCommandSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
 - (void)unlockDoorWithParams:(CHIPDoorLockClusterUnlockDoorParams * _Nullable)params
            completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPCommandArguments * arguments;
+    arguments = [CHIPCommandArguments new];
+    arguments.timedInvokeTimeoutMs = @10000;
+    [self unlockDoorWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)unlockDoorWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                         params:(CHIPDoorLockClusterUnlockDoorParams * _Nullable)params
+              completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     DoorLock::Commands::UnlockDoor::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     if (params != nil) {
         if (params.pinCode != nil) {
             auto & definedValue_0 = request.pinCode.Emplace();
@@ -14812,15 +15950,29 @@ using namespace chip::app::Clusters;
         ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPCommandSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, 10000);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
 - (void)unlockWithTimeoutWithParams:(CHIPDoorLockClusterUnlockWithTimeoutParams *)params
                   completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPCommandArguments * arguments;
+    arguments = [CHIPCommandArguments new];
+    arguments.timedInvokeTimeoutMs = @10000;
+    [self unlockWithTimeoutWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)unlockWithTimeoutWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                params:(CHIPDoorLockClusterUnlockWithTimeoutParams *)params
+                     completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     DoorLock::Commands::UnlockWithTimeout::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.timeout = params.timeout.unsignedShortValue;
     if (params.pinCode != nil) {
         auto & definedValue_0 = request.pinCode.Emplace();
@@ -14835,7 +15987,7 @@ using namespace chip::app::Clusters;
         ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPCommandSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, 10000);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
@@ -15728,6 +16880,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeLanguageWithValue:(NSString * _Nonnull)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeLanguageWithValue:(NSString * _Nonnull) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeLanguageWithValue:(NSString * _Nonnull)value
+                                 params:(CHIPWriteParams * _Nullable)params
+                      completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -15740,7 +16903,8 @@ using namespace chip::app::Clusters;
             cppValue = [self asCharSpan:value];
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -15806,6 +16970,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeAutoRelockTimeWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeAutoRelockTimeWithValue:(NSNumber * _Nonnull) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeAutoRelockTimeWithValue:(NSNumber * _Nonnull)value
+                                       params:(CHIPWriteParams * _Nullable)params
+                            completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -15818,7 +16993,8 @@ using namespace chip::app::Clusters;
             cppValue = value.unsignedIntValue;
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -15886,6 +17062,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeSoundVolumeWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeSoundVolumeWithValue:(NSNumber * _Nonnull) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeSoundVolumeWithValue:(NSNumber * _Nonnull)value
+                                    params:(CHIPWriteParams * _Nullable)params
+                         completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -15898,7 +17085,8 @@ using namespace chip::app::Clusters;
             cppValue = value.unsignedCharValue;
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -15966,6 +17154,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeOperatingModeWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeOperatingModeWithValue:(NSNumber * _Nonnull) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeOperatingModeWithValue:(NSNumber * _Nonnull)value
+                                      params:(CHIPWriteParams * _Nullable)params
+                           completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -15978,7 +17177,8 @@ using namespace chip::app::Clusters;
             cppValue = static_cast<std::remove_reference_t<decltype(cppValue)>>(value.unsignedCharValue);
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -16113,6 +17313,19 @@ using namespace chip::app::Clusters;
 - (void)writeAttributeEnableOneTouchLockingWithValue:(NSNumber * _Nonnull)value
                                    completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeEnableOneTouchLockingWithValue:(NSNumber * _Nonnull) value
+                                                params:params
+                                     completionHandler:completionHandler];
+}
+- (void)writeAttributeEnableOneTouchLockingWithValue:(NSNumber * _Nonnull)value
+                                              params:(CHIPWriteParams * _Nullable)params
+                                   completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -16125,7 +17338,8 @@ using namespace chip::app::Clusters;
             cppValue = value.boolValue;
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -16195,6 +17409,19 @@ using namespace chip::app::Clusters;
 - (void)writeAttributeEnablePrivacyModeButtonWithValue:(NSNumber * _Nonnull)value
                                      completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeEnablePrivacyModeButtonWithValue:(NSNumber * _Nonnull) value
+                                                  params:params
+                                       completionHandler:completionHandler];
+}
+- (void)writeAttributeEnablePrivacyModeButtonWithValue:(NSNumber * _Nonnull)value
+                                                params:(CHIPWriteParams * _Nullable)params
+                                     completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -16207,7 +17434,8 @@ using namespace chip::app::Clusters;
             cppValue = value.boolValue;
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -16276,6 +17504,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeWrongCodeEntryLimitWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeWrongCodeEntryLimitWithValue:(NSNumber * _Nonnull) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeWrongCodeEntryLimitWithValue:(NSNumber * _Nonnull)value
+                                            params:(CHIPWriteParams * _Nullable)params
+                                 completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -16288,7 +17527,8 @@ using namespace chip::app::Clusters;
             cppValue = value.unsignedCharValue;
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -16358,6 +17598,19 @@ using namespace chip::app::Clusters;
 - (void)writeAttributeUserCodeTemporaryDisableTimeWithValue:(NSNumber * _Nonnull)value
                                           completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeUserCodeTemporaryDisableTimeWithValue:(NSNumber * _Nonnull) value
+                                                       params:params
+                                            completionHandler:completionHandler];
+}
+- (void)writeAttributeUserCodeTemporaryDisableTimeWithValue:(NSNumber * _Nonnull)value
+                                                     params:(CHIPWriteParams * _Nullable)params
+                                          completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -16370,7 +17623,8 @@ using namespace chip::app::Clusters;
             cppValue = value.unsignedCharValue;
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -16440,6 +17694,19 @@ using namespace chip::app::Clusters;
 - (void)writeAttributeRequirePINforRemoteOperationWithValue:(NSNumber * _Nonnull)value
                                           completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeRequirePINforRemoteOperationWithValue:(NSNumber * _Nonnull) value
+                                                       params:params
+                                            completionHandler:completionHandler];
+}
+- (void)writeAttributeRequirePINforRemoteOperationWithValue:(NSNumber * _Nonnull)value
+                                                     params:(CHIPWriteParams * _Nullable)params
+                                          completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -16452,7 +17719,8 @@ using namespace chip::app::Clusters;
             cppValue = value.boolValue;
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -17663,8 +18931,18 @@ using namespace chip::app::Clusters;
 
 - (void)resetCountsWithCompletionHandler:(StatusCompletion)completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self resetCountsWithArguments:arguments completionHandler:completionHandler];
+}
+- (void)resetCountsWithArguments:(CHIPCommandArguments * _Nullable)arguments completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     EthernetNetworkDiagnostics::Commands::ResetCounts::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
 
     new CHIPCommandSuccessCallbackBridge(
         self.callbackQueue,
@@ -17674,7 +18952,7 @@ using namespace chip::app::Clusters;
         ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPCommandSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
@@ -18576,6 +19854,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeFanModeWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeFanModeWithValue:(NSNumber * _Nonnull) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeFanModeWithValue:(NSNumber * _Nonnull)value
+                                params:(CHIPWriteParams * _Nullable)params
+                     completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -18588,7 +19877,8 @@ using namespace chip::app::Clusters;
             cppValue = static_cast<std::remove_reference_t<decltype(cppValue)>>(value.unsignedCharValue);
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -18656,6 +19946,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeFanModeSequenceWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeFanModeSequenceWithValue:(NSNumber * _Nonnull) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeFanModeSequenceWithValue:(NSNumber * _Nonnull)value
+                                        params:(CHIPWriteParams * _Nullable)params
+                             completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -18668,7 +19969,8 @@ using namespace chip::app::Clusters;
             cppValue = static_cast<std::remove_reference_t<decltype(cppValue)>>(value.unsignedCharValue);
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -18737,6 +20039,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributePercentSettingWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributePercentSettingWithValue:(NSNumber * _Nonnull) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributePercentSettingWithValue:(NSNumber * _Nonnull)value
+                                       params:(CHIPWriteParams * _Nullable)params
+                            completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -18749,7 +20062,8 @@ using namespace chip::app::Clusters;
             cppValue = value.unsignedCharValue;
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -18939,6 +20253,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeSpeedSettingWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeSpeedSettingWithValue:(NSNumber * _Nonnull) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeSpeedSettingWithValue:(NSNumber * _Nonnull)value
+                                     params:(CHIPWriteParams * _Nullable)params
+                          completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -18951,7 +20276,8 @@ using namespace chip::app::Clusters;
             cppValue = value.unsignedCharValue;
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -19140,6 +20466,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeRockSettingWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeRockSettingWithValue:(NSNumber * _Nonnull) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeRockSettingWithValue:(NSNumber * _Nonnull)value
+                                    params:(CHIPWriteParams * _Nullable)params
+                         completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -19152,7 +20489,8 @@ using namespace chip::app::Clusters;
             cppValue = value.unsignedCharValue;
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -19280,6 +20618,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeWindSettingWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeWindSettingWithValue:(NSNumber * _Nonnull) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeWindSettingWithValue:(NSNumber * _Nonnull)value
+                                    params:(CHIPWriteParams * _Nullable)params
+                         completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -19292,7 +20641,8 @@ using namespace chip::app::Clusters;
             cppValue = value.unsignedCharValue;
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -20512,8 +21862,21 @@ using namespace chip::app::Clusters;
             completionHandler:(void (^)(CHIPGeneralCommissioningClusterArmFailSafeResponseParams * _Nullable data,
                                   NSError * _Nullable error))completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self armFailSafeWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)armFailSafeWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                          params:(CHIPGeneralCommissioningClusterArmFailSafeParams *)params
+               completionHandler:(void (^)(CHIPGeneralCommissioningClusterArmFailSafeResponseParams * _Nullable data,
+                                     NSError * _Nullable error))completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     GeneralCommissioning::Commands::ArmFailSafe::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.expiryLengthSeconds = params.expiryLengthSeconds.unsignedShortValue;
     request.breadcrumb = params.breadcrumb.unsignedLongLongValue;
 
@@ -20521,7 +21884,7 @@ using namespace chip::app::Clusters;
         self.callbackQueue, completionHandler, ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPGeneralCommissioningClusterArmFailSafeResponseCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
@@ -20529,15 +21892,28 @@ using namespace chip::app::Clusters;
     (void (^)(CHIPGeneralCommissioningClusterCommissioningCompleteResponseParams * _Nullable data,
         NSError * _Nullable error))completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self commissioningCompleteWithArguments:arguments completionHandler:completionHandler];
+}
+- (void)commissioningCompleteWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                         completionHandler:
+                             (void (^)(CHIPGeneralCommissioningClusterCommissioningCompleteResponseParams * _Nullable data,
+                                 NSError * _Nullable error))completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     GeneralCommissioning::Commands::CommissioningComplete::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
 
     new CHIPGeneralCommissioningClusterCommissioningCompleteResponseCallbackBridge(
         self.callbackQueue, completionHandler, ^(Cancelable * success, Cancelable * failure) {
             auto successFn
                 = Callback<CHIPGeneralCommissioningClusterCommissioningCompleteResponseCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
@@ -20545,8 +21921,22 @@ using namespace chip::app::Clusters;
                     completionHandler:(void (^)(CHIPGeneralCommissioningClusterSetRegulatoryConfigResponseParams * _Nullable data,
                                           NSError * _Nullable error))completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self setRegulatoryConfigWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)setRegulatoryConfigWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                  params:(CHIPGeneralCommissioningClusterSetRegulatoryConfigParams *)params
+                       completionHandler:
+                           (void (^)(CHIPGeneralCommissioningClusterSetRegulatoryConfigResponseParams * _Nullable data,
+                               NSError * _Nullable error))completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     GeneralCommissioning::Commands::SetRegulatoryConfig::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.newRegulatoryConfig
         = static_cast<std::remove_reference_t<decltype(request.newRegulatoryConfig)>>(params.newRegulatoryConfig.unsignedCharValue);
     request.countryCode = [self asCharSpan:params.countryCode];
@@ -20557,7 +21947,7 @@ using namespace chip::app::Clusters;
             auto successFn
                 = Callback<CHIPGeneralCommissioningClusterSetRegulatoryConfigResponseCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
@@ -20574,6 +21964,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeBreadcrumbWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeBreadcrumbWithValue:(NSNumber * _Nonnull) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeBreadcrumbWithValue:(NSNumber * _Nonnull)value
+                                   params:(CHIPWriteParams * _Nullable)params
+                        completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -20586,7 +21987,8 @@ using namespace chip::app::Clusters;
             cppValue = value.unsignedLongLongValue;
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -21934,15 +23336,28 @@ using namespace chip::app::Clusters;
            completionHandler:(void (^)(CHIPGroupKeyManagementClusterKeySetReadResponseParams * _Nullable data,
                                  NSError * _Nullable error))completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self keySetReadWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)keySetReadWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                         params:(CHIPGroupKeyManagementClusterKeySetReadParams *)params
+              completionHandler:(void (^)(CHIPGroupKeyManagementClusterKeySetReadResponseParams * _Nullable data,
+                                    NSError * _Nullable error))completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     GroupKeyManagement::Commands::KeySetRead::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.groupKeySetID = params.groupKeySetID.unsignedShortValue;
 
     new CHIPGroupKeyManagementClusterKeySetReadResponseCallbackBridge(
         self.callbackQueue, completionHandler, ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPGroupKeyManagementClusterKeySetReadResponseCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
@@ -21950,8 +23365,22 @@ using namespace chip::app::Clusters;
                      completionHandler:(void (^)(CHIPGroupKeyManagementClusterKeySetReadAllIndicesResponseParams * _Nullable data,
                                            NSError * _Nullable error))completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self keySetReadAllIndicesWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)keySetReadAllIndicesWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                   params:(CHIPGroupKeyManagementClusterKeySetReadAllIndicesParams *)params
+                        completionHandler:
+                            (void (^)(CHIPGroupKeyManagementClusterKeySetReadAllIndicesResponseParams * _Nullable data,
+                                NSError * _Nullable error))completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     GroupKeyManagement::Commands::KeySetReadAllIndices::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     {
         using ListType_0 = std::remove_reference_t<decltype(request.groupKeySetIDs)>;
         using ListMemberType_0 = ListMemberTypeGetter<ListType_0>::Type;
@@ -21980,15 +23409,27 @@ using namespace chip::app::Clusters;
             auto successFn
                 = Callback<CHIPGroupKeyManagementClusterKeySetReadAllIndicesResponseCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
 - (void)keySetRemoveWithParams:(CHIPGroupKeyManagementClusterKeySetRemoveParams *)params
              completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self keySetRemoveWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)keySetRemoveWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                           params:(CHIPGroupKeyManagementClusterKeySetRemoveParams *)params
+                completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     GroupKeyManagement::Commands::KeySetRemove::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.groupKeySetID = params.groupKeySetID.unsignedShortValue;
 
     new CHIPCommandSuccessCallbackBridge(
@@ -21999,15 +23440,27 @@ using namespace chip::app::Clusters;
         ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPCommandSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
 - (void)keySetWriteWithParams:(CHIPGroupKeyManagementClusterKeySetWriteParams *)params
             completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self keySetWriteWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)keySetWriteWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                          params:(CHIPGroupKeyManagementClusterKeySetWriteParams *)params
+               completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     GroupKeyManagement::Commands::KeySetWrite::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.groupKeySet.groupKeySetID = params.groupKeySet.groupKeySetID.unsignedShortValue;
     request.groupKeySet.groupKeySecurityPolicy
         = static_cast<std::remove_reference_t<decltype(request.groupKeySet.groupKeySecurityPolicy)>>(
@@ -22057,7 +23510,7 @@ using namespace chip::app::Clusters;
         ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPCommandSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
@@ -22076,6 +23529,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeGroupKeyMapWithValue:(NSArray * _Nonnull)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeGroupKeyMapWithValue:(NSArray * _Nonnull) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeGroupKeyMapWithValue:(NSArray * _Nonnull)value
+                                    params:(CHIPWriteParams * _Nullable)params
+                         completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -22111,7 +23575,8 @@ using namespace chip::app::Clusters;
             }
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -22621,8 +24086,21 @@ using namespace chip::app::Clusters;
          completionHandler:
              (void (^)(CHIPGroupsClusterAddGroupResponseParams * _Nullable data, NSError * _Nullable error))completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self addGroupWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)addGroupWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                       params:(CHIPGroupsClusterAddGroupParams *)params
+            completionHandler:
+                (void (^)(CHIPGroupsClusterAddGroupResponseParams * _Nullable data, NSError * _Nullable error))completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     Groups::Commands::AddGroup::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.groupId = params.groupId.unsignedShortValue;
     request.groupName = [self asCharSpan:params.groupName];
 
@@ -22630,15 +24108,27 @@ using namespace chip::app::Clusters;
         self.callbackQueue, completionHandler, ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPGroupsClusterAddGroupResponseCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
 - (void)addGroupIfIdentifyingWithParams:(CHIPGroupsClusterAddGroupIfIdentifyingParams *)params
                       completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self addGroupIfIdentifyingWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)addGroupIfIdentifyingWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                    params:(CHIPGroupsClusterAddGroupIfIdentifyingParams *)params
+                         completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     Groups::Commands::AddGroupIfIdentifying::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.groupId = params.groupId.unsignedShortValue;
     request.groupName = [self asCharSpan:params.groupName];
 
@@ -22650,7 +24140,7 @@ using namespace chip::app::Clusters;
         ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPCommandSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
@@ -22658,8 +24148,21 @@ using namespace chip::app::Clusters;
                    completionHandler:(void (^)(CHIPGroupsClusterGetGroupMembershipResponseParams * _Nullable data,
                                          NSError * _Nullable error))completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self getGroupMembershipWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)getGroupMembershipWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                 params:(CHIPGroupsClusterGetGroupMembershipParams *)params
+                      completionHandler:(void (^)(CHIPGroupsClusterGetGroupMembershipResponseParams * _Nullable data,
+                                            NSError * _Nullable error))completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     Groups::Commands::GetGroupMembership::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     {
         using ListType_0 = std::remove_reference_t<decltype(request.groupList)>;
         using ListMemberType_0 = ListMemberTypeGetter<ListType_0>::Type;
@@ -22687,14 +24190,25 @@ using namespace chip::app::Clusters;
         self.callbackQueue, completionHandler, ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPGroupsClusterGetGroupMembershipResponseCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
 - (void)removeAllGroupsWithCompletionHandler:(StatusCompletion)completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self removeAllGroupsWithArguments:arguments completionHandler:completionHandler];
+}
+- (void)removeAllGroupsWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                   completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     Groups::Commands::RemoveAllGroups::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
 
     new CHIPCommandSuccessCallbackBridge(
         self.callbackQueue,
@@ -22704,7 +24218,7 @@ using namespace chip::app::Clusters;
         ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPCommandSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
@@ -22712,15 +24226,28 @@ using namespace chip::app::Clusters;
             completionHandler:
                 (void (^)(CHIPGroupsClusterRemoveGroupResponseParams * _Nullable data, NSError * _Nullable error))completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self removeGroupWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)removeGroupWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                          params:(CHIPGroupsClusterRemoveGroupParams *)params
+               completionHandler:(void (^)(CHIPGroupsClusterRemoveGroupResponseParams * _Nullable data,
+                                     NSError * _Nullable error))completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     Groups::Commands::RemoveGroup::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.groupId = params.groupId.unsignedShortValue;
 
     new CHIPGroupsClusterRemoveGroupResponseCallbackBridge(
         self.callbackQueue, completionHandler, ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPGroupsClusterRemoveGroupResponseCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
@@ -22728,15 +24255,28 @@ using namespace chip::app::Clusters;
           completionHandler:
               (void (^)(CHIPGroupsClusterViewGroupResponseParams * _Nullable data, NSError * _Nullable error))completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self viewGroupWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)viewGroupWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                        params:(CHIPGroupsClusterViewGroupParams *)params
+             completionHandler:
+                 (void (^)(CHIPGroupsClusterViewGroupResponseParams * _Nullable data, NSError * _Nullable error))completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     Groups::Commands::ViewGroup::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.groupId = params.groupId.unsignedShortValue;
 
     new CHIPGroupsClusterViewGroupResponseCallbackBridge(
         self.callbackQueue, completionHandler, ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPGroupsClusterViewGroupResponseCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
@@ -23066,8 +24606,20 @@ using namespace chip::app::Clusters;
 
 - (void)identifyWithParams:(CHIPIdentifyClusterIdentifyParams *)params completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self identifyWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)identifyWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                       params:(CHIPIdentifyClusterIdentifyParams *)params
+            completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     Identify::Commands::Identify::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.identifyTime = params.identifyTime.unsignedShortValue;
 
     new CHIPCommandSuccessCallbackBridge(
@@ -23078,29 +24630,53 @@ using namespace chip::app::Clusters;
         ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPCommandSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
 - (void)identifyQueryWithCompletionHandler:(void (^)(CHIPIdentifyClusterIdentifyQueryResponseParams * _Nullable data,
                                                NSError * _Nullable error))completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self identifyQueryWithArguments:arguments completionHandler:completionHandler];
+}
+- (void)identifyQueryWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                 completionHandler:(void (^)(CHIPIdentifyClusterIdentifyQueryResponseParams * _Nullable data,
+                                       NSError * _Nullable error))completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     Identify::Commands::IdentifyQuery::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
 
     new CHIPIdentifyClusterIdentifyQueryResponseCallbackBridge(
         self.callbackQueue, completionHandler, ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPIdentifyClusterIdentifyQueryResponseCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
 - (void)triggerEffectWithParams:(CHIPIdentifyClusterTriggerEffectParams *)params
               completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self triggerEffectWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)triggerEffectWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                            params:(CHIPIdentifyClusterTriggerEffectParams *)params
+                 completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     Identify::Commands::TriggerEffect::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.effectIdentifier
         = static_cast<std::remove_reference_t<decltype(request.effectIdentifier)>>(params.effectIdentifier.unsignedCharValue);
     request.effectVariant
@@ -23114,7 +24690,7 @@ using namespace chip::app::Clusters;
         ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPCommandSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
@@ -23131,6 +24707,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeIdentifyTimeWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeIdentifyTimeWithValue:(NSNumber * _Nonnull) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeIdentifyTimeWithValue:(NSNumber * _Nonnull)value
+                                     params:(CHIPWriteParams * _Nullable)params
+                          completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -23143,7 +24730,8 @@ using namespace chip::app::Clusters;
             cppValue = value.unsignedShortValue;
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -24102,15 +25690,28 @@ using namespace chip::app::Clusters;
         completionHandler:
             (void (^)(CHIPKeypadInputClusterSendKeyResponseParams * _Nullable data, NSError * _Nullable error))completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self sendKeyWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)sendKeyWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                      params:(CHIPKeypadInputClusterSendKeyParams *)params
+           completionHandler:
+               (void (^)(CHIPKeypadInputClusterSendKeyResponseParams * _Nullable data, NSError * _Nullable error))completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     KeypadInput::Commands::SendKey::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.keyCode = static_cast<std::remove_reference_t<decltype(request.keyCode)>>(params.keyCode.unsignedCharValue);
 
     new CHIPKeypadInputClusterSendKeyResponseCallbackBridge(
         self.callbackQueue, completionHandler, ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPKeypadInputClusterSendKeyResponseCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
@@ -24380,8 +25981,20 @@ using namespace chip::app::Clusters;
 
 - (void)moveWithParams:(CHIPLevelControlClusterMoveParams *)params completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self moveWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)moveWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                   params:(CHIPLevelControlClusterMoveParams *)params
+        completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     LevelControl::Commands::Move::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.moveMode = static_cast<std::remove_reference_t<decltype(request.moveMode)>>(params.moveMode.unsignedCharValue);
     request.rate = params.rate.unsignedCharValue;
     request.optionMask = params.optionMask.unsignedCharValue;
@@ -24395,15 +26008,27 @@ using namespace chip::app::Clusters;
         ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPCommandSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
 - (void)moveToLevelWithParams:(CHIPLevelControlClusterMoveToLevelParams *)params
             completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self moveToLevelWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)moveToLevelWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                          params:(CHIPLevelControlClusterMoveToLevelParams *)params
+               completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     LevelControl::Commands::MoveToLevel::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.level = params.level.unsignedCharValue;
     request.transitionTime = params.transitionTime.unsignedShortValue;
     request.optionMask = params.optionMask.unsignedCharValue;
@@ -24417,15 +26042,27 @@ using namespace chip::app::Clusters;
         ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPCommandSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
 - (void)moveToLevelWithOnOffWithParams:(CHIPLevelControlClusterMoveToLevelWithOnOffParams *)params
                      completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self moveToLevelWithOnOffWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)moveToLevelWithOnOffWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                   params:(CHIPLevelControlClusterMoveToLevelWithOnOffParams *)params
+                        completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     LevelControl::Commands::MoveToLevelWithOnOff::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.level = params.level.unsignedCharValue;
     request.transitionTime = params.transitionTime.unsignedShortValue;
 
@@ -24437,15 +26074,27 @@ using namespace chip::app::Clusters;
         ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPCommandSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
 - (void)moveWithOnOffWithParams:(CHIPLevelControlClusterMoveWithOnOffParams *)params
               completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self moveWithOnOffWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)moveWithOnOffWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                            params:(CHIPLevelControlClusterMoveWithOnOffParams *)params
+                 completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     LevelControl::Commands::MoveWithOnOff::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.moveMode = static_cast<std::remove_reference_t<decltype(request.moveMode)>>(params.moveMode.unsignedCharValue);
     request.rate = params.rate.unsignedCharValue;
 
@@ -24457,14 +26106,26 @@ using namespace chip::app::Clusters;
         ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPCommandSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
 - (void)stepWithParams:(CHIPLevelControlClusterStepParams *)params completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self stepWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)stepWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                   params:(CHIPLevelControlClusterStepParams *)params
+        completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     LevelControl::Commands::Step::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.stepMode = static_cast<std::remove_reference_t<decltype(request.stepMode)>>(params.stepMode.unsignedCharValue);
     request.stepSize = params.stepSize.unsignedCharValue;
     request.transitionTime = params.transitionTime.unsignedShortValue;
@@ -24479,15 +26140,27 @@ using namespace chip::app::Clusters;
         ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPCommandSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
 - (void)stepWithOnOffWithParams:(CHIPLevelControlClusterStepWithOnOffParams *)params
               completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self stepWithOnOffWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)stepWithOnOffWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                            params:(CHIPLevelControlClusterStepWithOnOffParams *)params
+                 completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     LevelControl::Commands::StepWithOnOff::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.stepMode = static_cast<std::remove_reference_t<decltype(request.stepMode)>>(params.stepMode.unsignedCharValue);
     request.stepSize = params.stepSize.unsignedCharValue;
     request.transitionTime = params.transitionTime.unsignedShortValue;
@@ -24500,14 +26173,26 @@ using namespace chip::app::Clusters;
         ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPCommandSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
 - (void)stopWithParams:(CHIPLevelControlClusterStopParams *)params completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self stopWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)stopWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                   params:(CHIPLevelControlClusterStopParams *)params
+        completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     LevelControl::Commands::Stop::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.optionMask = params.optionMask.unsignedCharValue;
     request.optionOverride = params.optionOverride.unsignedCharValue;
 
@@ -24519,14 +26204,24 @@ using namespace chip::app::Clusters;
         ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPCommandSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
 - (void)stopWithOnOffWithCompletionHandler:(StatusCompletion)completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self stopWithOnOffWithArguments:arguments completionHandler:completionHandler];
+}
+- (void)stopWithOnOffWithArguments:(CHIPCommandArguments * _Nullable)arguments completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     LevelControl::Commands::StopWithOnOff::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
 
     new CHIPCommandSuccessCallbackBridge(
         self.callbackQueue,
@@ -24536,7 +26231,7 @@ using namespace chip::app::Clusters;
         ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPCommandSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
@@ -24979,6 +26674,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeOptionsWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeOptionsWithValue:(NSNumber * _Nonnull) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeOptionsWithValue:(NSNumber * _Nonnull)value
+                                params:(CHIPWriteParams * _Nullable)params
+                     completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -24991,7 +26697,8 @@ using namespace chip::app::Clusters;
             cppValue = value.unsignedCharValue;
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -25057,6 +26764,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeOnOffTransitionTimeWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeOnOffTransitionTimeWithValue:(NSNumber * _Nonnull) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeOnOffTransitionTimeWithValue:(NSNumber * _Nonnull)value
+                                            params:(CHIPWriteParams * _Nullable)params
+                                 completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -25069,7 +26787,8 @@ using namespace chip::app::Clusters;
             cppValue = value.unsignedShortValue;
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -25138,6 +26857,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeOnLevelWithValue:(NSNumber * _Nullable)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeOnLevelWithValue:(NSNumber * _Nullable) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeOnLevelWithValue:(NSNumber * _Nullable)value
+                                params:(CHIPWriteParams * _Nullable)params
+                     completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -25155,7 +26885,8 @@ using namespace chip::app::Clusters;
             }
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -25222,6 +26953,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeOnTransitionTimeWithValue:(NSNumber * _Nullable)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeOnTransitionTimeWithValue:(NSNumber * _Nullable) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeOnTransitionTimeWithValue:(NSNumber * _Nullable)value
+                                         params:(CHIPWriteParams * _Nullable)params
+                              completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -25239,7 +26981,8 @@ using namespace chip::app::Clusters;
             }
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -25308,6 +27051,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeOffTransitionTimeWithValue:(NSNumber * _Nullable)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeOffTransitionTimeWithValue:(NSNumber * _Nullable) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeOffTransitionTimeWithValue:(NSNumber * _Nullable)value
+                                          params:(CHIPWriteParams * _Nullable)params
+                               completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -25325,7 +27079,8 @@ using namespace chip::app::Clusters;
             }
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -25394,6 +27149,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeDefaultMoveRateWithValue:(NSNumber * _Nullable)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeDefaultMoveRateWithValue:(NSNumber * _Nullable) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeDefaultMoveRateWithValue:(NSNumber * _Nullable)value
+                                        params:(CHIPWriteParams * _Nullable)params
+                             completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -25411,7 +27177,8 @@ using namespace chip::app::Clusters;
             }
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -25480,6 +27247,19 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeStartUpCurrentLevelWithValue:(NSNumber * _Nullable)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeStartUpCurrentLevelWithValue:(NSNumber * _Nullable) value
+                                              params:params
+                                   completionHandler:completionHandler];
+}
+- (void)writeAttributeStartUpCurrentLevelWithValue:(NSNumber * _Nullable)value
+                                            params:(CHIPWriteParams * _Nullable)params
+                                 completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -25497,7 +27277,8 @@ using namespace chip::app::Clusters;
             }
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -25890,6 +27671,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeActiveLocaleWithValue:(NSString * _Nonnull)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeActiveLocaleWithValue:(NSString * _Nonnull) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeActiveLocaleWithValue:(NSString * _Nonnull)value
+                                     params:(CHIPWriteParams * _Nullable)params
+                          completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -25902,7 +27694,8 @@ using namespace chip::app::Clusters;
             cppValue = [self asCharSpan:value];
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -26225,8 +28018,18 @@ using namespace chip::app::Clusters;
 
 - (void)sleepWithCompletionHandler:(StatusCompletion)completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self sleepWithArguments:arguments completionHandler:completionHandler];
+}
+- (void)sleepWithArguments:(CHIPCommandArguments * _Nullable)arguments completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     LowPower::Commands::Sleep::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
 
     new CHIPCommandSuccessCallbackBridge(
         self.callbackQueue,
@@ -26236,7 +28039,7 @@ using namespace chip::app::Clusters;
         ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPCommandSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
@@ -26506,8 +28309,19 @@ using namespace chip::app::Clusters;
 
 - (void)hideInputStatusWithCompletionHandler:(StatusCompletion)completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self hideInputStatusWithArguments:arguments completionHandler:completionHandler];
+}
+- (void)hideInputStatusWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                   completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     MediaInput::Commands::HideInputStatus::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
 
     new CHIPCommandSuccessCallbackBridge(
         self.callbackQueue,
@@ -26517,14 +28331,26 @@ using namespace chip::app::Clusters;
         ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPCommandSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
 - (void)renameInputWithParams:(CHIPMediaInputClusterRenameInputParams *)params completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self renameInputWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)renameInputWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                          params:(CHIPMediaInputClusterRenameInputParams *)params
+               completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     MediaInput::Commands::RenameInput::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.index = params.index.unsignedCharValue;
     request.name = [self asCharSpan:params.name];
 
@@ -26536,14 +28362,26 @@ using namespace chip::app::Clusters;
         ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPCommandSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
 - (void)selectInputWithParams:(CHIPMediaInputClusterSelectInputParams *)params completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self selectInputWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)selectInputWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                          params:(CHIPMediaInputClusterSelectInputParams *)params
+               completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     MediaInput::Commands::SelectInput::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.index = params.index.unsignedCharValue;
 
     new CHIPCommandSuccessCallbackBridge(
@@ -26554,14 +28392,25 @@ using namespace chip::app::Clusters;
         ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPCommandSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
 - (void)showInputStatusWithCompletionHandler:(StatusCompletion)completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self showInputStatusWithArguments:arguments completionHandler:completionHandler];
+}
+- (void)showInputStatusWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                   completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     MediaInput::Commands::ShowInputStatus::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
 
     new CHIPCommandSuccessCallbackBridge(
         self.callbackQueue,
@@ -26571,7 +28420,7 @@ using namespace chip::app::Clusters;
         ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPCommandSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
@@ -26964,84 +28813,156 @@ using namespace chip::app::Clusters;
 - (void)fastForwardWithCompletionHandler:(void (^)(CHIPMediaPlaybackClusterPlaybackResponseParams * _Nullable data,
                                              NSError * _Nullable error))completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self fastForwardWithArguments:arguments completionHandler:completionHandler];
+}
+- (void)fastForwardWithArguments:(CHIPCommandArguments * _Nullable)arguments
+               completionHandler:(void (^)(CHIPMediaPlaybackClusterPlaybackResponseParams * _Nullable data,
+                                     NSError * _Nullable error))completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     MediaPlayback::Commands::FastForward::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
 
     new CHIPMediaPlaybackClusterPlaybackResponseCallbackBridge(
         self.callbackQueue, completionHandler, ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPMediaPlaybackClusterPlaybackResponseCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
 - (void)nextWithCompletionHandler:(void (^)(CHIPMediaPlaybackClusterPlaybackResponseParams * _Nullable data,
                                       NSError * _Nullable error))completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self nextWithArguments:arguments completionHandler:completionHandler];
+}
+- (void)nextWithArguments:(CHIPCommandArguments * _Nullable)arguments
+        completionHandler:
+            (void (^)(CHIPMediaPlaybackClusterPlaybackResponseParams * _Nullable data, NSError * _Nullable error))completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     MediaPlayback::Commands::Next::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
 
     new CHIPMediaPlaybackClusterPlaybackResponseCallbackBridge(
         self.callbackQueue, completionHandler, ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPMediaPlaybackClusterPlaybackResponseCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
 - (void)pauseWithCompletionHandler:(void (^)(CHIPMediaPlaybackClusterPlaybackResponseParams * _Nullable data,
                                        NSError * _Nullable error))completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self pauseWithArguments:arguments completionHandler:completionHandler];
+}
+- (void)pauseWithArguments:(CHIPCommandArguments * _Nullable)arguments
+         completionHandler:
+             (void (^)(CHIPMediaPlaybackClusterPlaybackResponseParams * _Nullable data, NSError * _Nullable error))completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     MediaPlayback::Commands::Pause::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
 
     new CHIPMediaPlaybackClusterPlaybackResponseCallbackBridge(
         self.callbackQueue, completionHandler, ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPMediaPlaybackClusterPlaybackResponseCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
 - (void)playWithCompletionHandler:(void (^)(CHIPMediaPlaybackClusterPlaybackResponseParams * _Nullable data,
                                       NSError * _Nullable error))completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self playWithArguments:arguments completionHandler:completionHandler];
+}
+- (void)playWithArguments:(CHIPCommandArguments * _Nullable)arguments
+        completionHandler:
+            (void (^)(CHIPMediaPlaybackClusterPlaybackResponseParams * _Nullable data, NSError * _Nullable error))completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     MediaPlayback::Commands::Play::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
 
     new CHIPMediaPlaybackClusterPlaybackResponseCallbackBridge(
         self.callbackQueue, completionHandler, ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPMediaPlaybackClusterPlaybackResponseCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
 - (void)previousWithCompletionHandler:(void (^)(CHIPMediaPlaybackClusterPlaybackResponseParams * _Nullable data,
                                           NSError * _Nullable error))completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self previousWithArguments:arguments completionHandler:completionHandler];
+}
+- (void)previousWithArguments:(CHIPCommandArguments * _Nullable)arguments
+            completionHandler:(void (^)(CHIPMediaPlaybackClusterPlaybackResponseParams * _Nullable data,
+                                  NSError * _Nullable error))completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     MediaPlayback::Commands::Previous::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
 
     new CHIPMediaPlaybackClusterPlaybackResponseCallbackBridge(
         self.callbackQueue, completionHandler, ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPMediaPlaybackClusterPlaybackResponseCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
 - (void)rewindWithCompletionHandler:(void (^)(CHIPMediaPlaybackClusterPlaybackResponseParams * _Nullable data,
                                         NSError * _Nullable error))completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self rewindWithArguments:arguments completionHandler:completionHandler];
+}
+- (void)rewindWithArguments:(CHIPCommandArguments * _Nullable)arguments
+          completionHandler:(void (^)(CHIPMediaPlaybackClusterPlaybackResponseParams * _Nullable data,
+                                NSError * _Nullable error))completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     MediaPlayback::Commands::Rewind::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
 
     new CHIPMediaPlaybackClusterPlaybackResponseCallbackBridge(
         self.callbackQueue, completionHandler, ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPMediaPlaybackClusterPlaybackResponseCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
@@ -27049,15 +28970,28 @@ using namespace chip::app::Clusters;
      completionHandler:
          (void (^)(CHIPMediaPlaybackClusterPlaybackResponseParams * _Nullable data, NSError * _Nullable error))completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self seekWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)seekWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                   params:(CHIPMediaPlaybackClusterSeekParams *)params
+        completionHandler:
+            (void (^)(CHIPMediaPlaybackClusterPlaybackResponseParams * _Nullable data, NSError * _Nullable error))completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     MediaPlayback::Commands::Seek::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.position = params.position.unsignedLongLongValue;
 
     new CHIPMediaPlaybackClusterPlaybackResponseCallbackBridge(
         self.callbackQueue, completionHandler, ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPMediaPlaybackClusterPlaybackResponseCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
@@ -27065,15 +28999,28 @@ using namespace chip::app::Clusters;
              completionHandler:(void (^)(CHIPMediaPlaybackClusterPlaybackResponseParams * _Nullable data,
                                    NSError * _Nullable error))completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self skipBackwardWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)skipBackwardWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                           params:(CHIPMediaPlaybackClusterSkipBackwardParams *)params
+                completionHandler:(void (^)(CHIPMediaPlaybackClusterPlaybackResponseParams * _Nullable data,
+                                      NSError * _Nullable error))completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     MediaPlayback::Commands::SkipBackward::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.deltaPositionMilliseconds = params.deltaPositionMilliseconds.unsignedLongLongValue;
 
     new CHIPMediaPlaybackClusterPlaybackResponseCallbackBridge(
         self.callbackQueue, completionHandler, ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPMediaPlaybackClusterPlaybackResponseCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
@@ -27081,43 +29028,80 @@ using namespace chip::app::Clusters;
             completionHandler:(void (^)(CHIPMediaPlaybackClusterPlaybackResponseParams * _Nullable data,
                                   NSError * _Nullable error))completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self skipForwardWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)skipForwardWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                          params:(CHIPMediaPlaybackClusterSkipForwardParams *)params
+               completionHandler:(void (^)(CHIPMediaPlaybackClusterPlaybackResponseParams * _Nullable data,
+                                     NSError * _Nullable error))completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     MediaPlayback::Commands::SkipForward::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.deltaPositionMilliseconds = params.deltaPositionMilliseconds.unsignedLongLongValue;
 
     new CHIPMediaPlaybackClusterPlaybackResponseCallbackBridge(
         self.callbackQueue, completionHandler, ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPMediaPlaybackClusterPlaybackResponseCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
 - (void)startOverWithCompletionHandler:(void (^)(CHIPMediaPlaybackClusterPlaybackResponseParams * _Nullable data,
                                            NSError * _Nullable error))completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self startOverWithArguments:arguments completionHandler:completionHandler];
+}
+- (void)startOverWithArguments:(CHIPCommandArguments * _Nullable)arguments
+             completionHandler:(void (^)(CHIPMediaPlaybackClusterPlaybackResponseParams * _Nullable data,
+                                   NSError * _Nullable error))completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     MediaPlayback::Commands::StartOver::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
 
     new CHIPMediaPlaybackClusterPlaybackResponseCallbackBridge(
         self.callbackQueue, completionHandler, ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPMediaPlaybackClusterPlaybackResponseCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
 - (void)stopPlaybackWithCompletionHandler:(void (^)(CHIPMediaPlaybackClusterPlaybackResponseParams * _Nullable data,
                                               NSError * _Nullable error))completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self stopPlaybackWithArguments:arguments completionHandler:completionHandler];
+}
+- (void)stopPlaybackWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                completionHandler:(void (^)(CHIPMediaPlaybackClusterPlaybackResponseParams * _Nullable data,
+                                      NSError * _Nullable error))completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     MediaPlayback::Commands::StopPlayback::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
 
     new CHIPMediaPlaybackClusterPlaybackResponseCallbackBridge(
         self.callbackQueue, completionHandler, ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPMediaPlaybackClusterPlaybackResponseCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
@@ -27824,8 +29808,20 @@ using namespace chip::app::Clusters;
 - (void)changeToModeWithParams:(CHIPModeSelectClusterChangeToModeParams *)params
              completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self changeToModeWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)changeToModeWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                           params:(CHIPModeSelectClusterChangeToModeParams *)params
+                completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     ModeSelect::Commands::ChangeToMode::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.newMode = params.newMode.unsignedCharValue;
 
     new CHIPCommandSuccessCallbackBridge(
@@ -27836,7 +29832,7 @@ using namespace chip::app::Clusters;
         ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPCommandSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
@@ -28103,6 +30099,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeStartUpModeWithValue:(NSNumber * _Nullable)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeStartUpModeWithValue:(NSNumber * _Nullable) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeStartUpModeWithValue:(NSNumber * _Nullable)value
+                                    params:(CHIPWriteParams * _Nullable)params
+                         completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -28120,7 +30127,8 @@ using namespace chip::app::Clusters;
             }
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -28187,6 +30195,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeOnModeWithValue:(NSNumber * _Nullable)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeOnModeWithValue:(NSNumber * _Nullable) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeOnModeWithValue:(NSNumber * _Nullable)value
+                               params:(CHIPWriteParams * _Nullable)params
+                    completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -28204,7 +30223,8 @@ using namespace chip::app::Clusters;
             }
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -28585,8 +30605,21 @@ using namespace chip::app::Clusters;
                          completionHandler:(void (^)(CHIPNetworkCommissioningClusterNetworkConfigResponseParams * _Nullable data,
                                                NSError * _Nullable error))completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self addOrUpdateThreadNetworkWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)addOrUpdateThreadNetworkWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                       params:(CHIPNetworkCommissioningClusterAddOrUpdateThreadNetworkParams *)params
+                            completionHandler:(void (^)(CHIPNetworkCommissioningClusterNetworkConfigResponseParams * _Nullable data,
+                                                  NSError * _Nullable error))completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     NetworkCommissioning::Commands::AddOrUpdateThreadNetwork::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.operationalDataset = [self asByteSpan:params.operationalDataset];
     if (params.breadcrumb != nil) {
         auto & definedValue_0 = request.breadcrumb.Emplace();
@@ -28597,7 +30630,7 @@ using namespace chip::app::Clusters;
         self.callbackQueue, completionHandler, ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPNetworkCommissioningClusterNetworkConfigResponseCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
@@ -28605,8 +30638,21 @@ using namespace chip::app::Clusters;
                        completionHandler:(void (^)(CHIPNetworkCommissioningClusterNetworkConfigResponseParams * _Nullable data,
                                              NSError * _Nullable error))completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self addOrUpdateWiFiNetworkWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)addOrUpdateWiFiNetworkWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                     params:(CHIPNetworkCommissioningClusterAddOrUpdateWiFiNetworkParams *)params
+                          completionHandler:(void (^)(CHIPNetworkCommissioningClusterNetworkConfigResponseParams * _Nullable data,
+                                                NSError * _Nullable error))completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     NetworkCommissioning::Commands::AddOrUpdateWiFiNetwork::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.ssid = [self asByteSpan:params.ssid];
     request.credentials = [self asByteSpan:params.credentials];
     if (params.breadcrumb != nil) {
@@ -28618,7 +30664,7 @@ using namespace chip::app::Clusters;
         self.callbackQueue, completionHandler, ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPNetworkCommissioningClusterNetworkConfigResponseCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
@@ -28626,8 +30672,21 @@ using namespace chip::app::Clusters;
                completionHandler:(void (^)(CHIPNetworkCommissioningClusterConnectNetworkResponseParams * _Nullable data,
                                      NSError * _Nullable error))completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self connectNetworkWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)connectNetworkWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                             params:(CHIPNetworkCommissioningClusterConnectNetworkParams *)params
+                  completionHandler:(void (^)(CHIPNetworkCommissioningClusterConnectNetworkResponseParams * _Nullable data,
+                                        NSError * _Nullable error))completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     NetworkCommissioning::Commands::ConnectNetwork::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.networkID = [self asByteSpan:params.networkID];
     if (params.breadcrumb != nil) {
         auto & definedValue_0 = request.breadcrumb.Emplace();
@@ -28638,7 +30697,7 @@ using namespace chip::app::Clusters;
         self.callbackQueue, completionHandler, ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPNetworkCommissioningClusterConnectNetworkResponseCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
@@ -28646,8 +30705,21 @@ using namespace chip::app::Clusters;
               completionHandler:(void (^)(CHIPNetworkCommissioningClusterNetworkConfigResponseParams * _Nullable data,
                                     NSError * _Nullable error))completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self removeNetworkWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)removeNetworkWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                            params:(CHIPNetworkCommissioningClusterRemoveNetworkParams *)params
+                 completionHandler:(void (^)(CHIPNetworkCommissioningClusterNetworkConfigResponseParams * _Nullable data,
+                                       NSError * _Nullable error))completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     NetworkCommissioning::Commands::RemoveNetwork::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.networkID = [self asByteSpan:params.networkID];
     if (params.breadcrumb != nil) {
         auto & definedValue_0 = request.breadcrumb.Emplace();
@@ -28658,7 +30730,7 @@ using namespace chip::app::Clusters;
         self.callbackQueue, completionHandler, ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPNetworkCommissioningClusterNetworkConfigResponseCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
@@ -28666,8 +30738,21 @@ using namespace chip::app::Clusters;
                completionHandler:(void (^)(CHIPNetworkCommissioningClusterNetworkConfigResponseParams * _Nullable data,
                                      NSError * _Nullable error))completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self reorderNetworkWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)reorderNetworkWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                             params:(CHIPNetworkCommissioningClusterReorderNetworkParams *)params
+                  completionHandler:(void (^)(CHIPNetworkCommissioningClusterNetworkConfigResponseParams * _Nullable data,
+                                        NSError * _Nullable error))completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     NetworkCommissioning::Commands::ReorderNetwork::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.networkID = [self asByteSpan:params.networkID];
     request.networkIndex = params.networkIndex.unsignedCharValue;
     if (params.breadcrumb != nil) {
@@ -28679,7 +30764,7 @@ using namespace chip::app::Clusters;
         self.callbackQueue, completionHandler, ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPNetworkCommissioningClusterNetworkConfigResponseCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
@@ -28687,8 +30772,21 @@ using namespace chip::app::Clusters;
              completionHandler:(void (^)(CHIPNetworkCommissioningClusterScanNetworksResponseParams * _Nullable data,
                                    NSError * _Nullable error))completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self scanNetworksWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)scanNetworksWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                           params:(CHIPNetworkCommissioningClusterScanNetworksParams * _Nullable)params
+                completionHandler:(void (^)(CHIPNetworkCommissioningClusterScanNetworksResponseParams * _Nullable data,
+                                      NSError * _Nullable error))completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     NetworkCommissioning::Commands::ScanNetworks::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     if (params != nil) {
         if (params.ssid != nil) {
             auto & definedValue_0 = request.ssid.Emplace();
@@ -28709,7 +30807,7 @@ using namespace chip::app::Clusters;
         self.callbackQueue, completionHandler, ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPNetworkCommissioningClusterScanNetworksResponseCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
@@ -28973,6 +31071,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeInterfaceEnabledWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeInterfaceEnabledWithValue:(NSNumber * _Nonnull) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeInterfaceEnabledWithValue:(NSNumber * _Nonnull)value
+                                         params:(CHIPWriteParams * _Nullable)params
+                              completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -28985,7 +31094,8 @@ using namespace chip::app::Clusters;
             cppValue = value.boolValue;
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -29501,8 +31611,21 @@ using namespace chip::app::Clusters;
                    completionHandler:(void (^)(CHIPOtaSoftwareUpdateProviderClusterApplyUpdateResponseParams * _Nullable data,
                                          NSError * _Nullable error))completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self applyUpdateRequestWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)applyUpdateRequestWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                 params:(CHIPOtaSoftwareUpdateProviderClusterApplyUpdateRequestParams *)params
+                      completionHandler:(void (^)(CHIPOtaSoftwareUpdateProviderClusterApplyUpdateResponseParams * _Nullable data,
+                                            NSError * _Nullable error))completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     OtaSoftwareUpdateProvider::Commands::ApplyUpdateRequest::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.updateToken = [self asByteSpan:params.updateToken];
     request.newVersion = params.newVersion.unsignedIntValue;
 
@@ -29510,15 +31633,27 @@ using namespace chip::app::Clusters;
         self.callbackQueue, completionHandler, ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPOtaSoftwareUpdateProviderClusterApplyUpdateResponseCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
 - (void)notifyUpdateAppliedWithParams:(CHIPOtaSoftwareUpdateProviderClusterNotifyUpdateAppliedParams *)params
                     completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self notifyUpdateAppliedWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)notifyUpdateAppliedWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                  params:(CHIPOtaSoftwareUpdateProviderClusterNotifyUpdateAppliedParams *)params
+                       completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     OtaSoftwareUpdateProvider::Commands::NotifyUpdateApplied::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.updateToken = [self asByteSpan:params.updateToken];
     request.softwareVersion = params.softwareVersion.unsignedIntValue;
 
@@ -29530,7 +31665,7 @@ using namespace chip::app::Clusters;
         ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPCommandSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
@@ -29538,8 +31673,21 @@ using namespace chip::app::Clusters;
            completionHandler:(void (^)(CHIPOtaSoftwareUpdateProviderClusterQueryImageResponseParams * _Nullable data,
                                  NSError * _Nullable error))completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self queryImageWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)queryImageWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                         params:(CHIPOtaSoftwareUpdateProviderClusterQueryImageParams *)params
+              completionHandler:(void (^)(CHIPOtaSoftwareUpdateProviderClusterQueryImageResponseParams * _Nullable data,
+                                    NSError * _Nullable error))completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     OtaSoftwareUpdateProvider::Commands::QueryImage::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.vendorId = static_cast<std::remove_reference_t<decltype(request.vendorId)>>(params.vendorId.unsignedShortValue);
     request.productId = params.productId.unsignedShortValue;
     request.softwareVersion = params.softwareVersion.unsignedIntValue;
@@ -29587,7 +31735,7 @@ using namespace chip::app::Clusters;
         self.callbackQueue, completionHandler, ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPOtaSoftwareUpdateProviderClusterQueryImageResponseCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
@@ -29728,8 +31876,20 @@ using namespace chip::app::Clusters;
 - (void)announceOtaProviderWithParams:(CHIPOtaSoftwareUpdateRequestorClusterAnnounceOtaProviderParams *)params
                     completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self announceOtaProviderWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)announceOtaProviderWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                  params:(CHIPOtaSoftwareUpdateRequestorClusterAnnounceOtaProviderParams *)params
+                       completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     OtaSoftwareUpdateRequestor::Commands::AnnounceOtaProvider::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.providerNodeId = params.providerNodeId.unsignedLongLongValue;
     request.vendorId = static_cast<std::remove_reference_t<decltype(request.vendorId)>>(params.vendorId.unsignedShortValue);
     request.announcementReason
@@ -29748,7 +31908,7 @@ using namespace chip::app::Clusters;
         ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPCommandSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
@@ -29767,6 +31927,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeDefaultOtaProvidersWithValue:(NSArray * _Nonnull)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeDefaultOtaProvidersWithValue:(NSArray * _Nonnull) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeDefaultOtaProvidersWithValue:(NSArray * _Nonnull)value
+                                            params:(CHIPWriteParams * _Nullable)params
+                                 completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -29802,7 +31973,8 @@ using namespace chip::app::Clusters;
             }
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -30639,8 +32811,18 @@ using namespace chip::app::Clusters;
 
 - (void)offWithCompletionHandler:(StatusCompletion)completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self offWithArguments:arguments completionHandler:completionHandler];
+}
+- (void)offWithArguments:(CHIPCommandArguments * _Nullable)arguments completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     OnOff::Commands::Off::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
 
     new CHIPCommandSuccessCallbackBridge(
         self.callbackQueue,
@@ -30650,14 +32832,26 @@ using namespace chip::app::Clusters;
         ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPCommandSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
 - (void)offWithEffectWithParams:(CHIPOnOffClusterOffWithEffectParams *)params completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self offWithEffectWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)offWithEffectWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                            params:(CHIPOnOffClusterOffWithEffectParams *)params
+                 completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     OnOff::Commands::OffWithEffect::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.effectId = static_cast<std::remove_reference_t<decltype(request.effectId)>>(params.effectId.unsignedCharValue);
     request.effectVariant
         = static_cast<std::remove_reference_t<decltype(request.effectVariant)>>(params.effectVariant.unsignedCharValue);
@@ -30670,14 +32864,24 @@ using namespace chip::app::Clusters;
         ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPCommandSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
 - (void)onWithCompletionHandler:(StatusCompletion)completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self onWithArguments:arguments completionHandler:completionHandler];
+}
+- (void)onWithArguments:(CHIPCommandArguments * _Nullable)arguments completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     OnOff::Commands::On::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
 
     new CHIPCommandSuccessCallbackBridge(
         self.callbackQueue,
@@ -30687,14 +32891,25 @@ using namespace chip::app::Clusters;
         ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPCommandSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
 - (void)onWithRecallGlobalSceneWithCompletionHandler:(StatusCompletion)completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self onWithRecallGlobalSceneWithArguments:arguments completionHandler:completionHandler];
+}
+- (void)onWithRecallGlobalSceneWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                           completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     OnOff::Commands::OnWithRecallGlobalScene::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
 
     new CHIPCommandSuccessCallbackBridge(
         self.callbackQueue,
@@ -30704,15 +32919,27 @@ using namespace chip::app::Clusters;
         ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPCommandSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
 - (void)onWithTimedOffWithParams:(CHIPOnOffClusterOnWithTimedOffParams *)params
                completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self onWithTimedOffWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)onWithTimedOffWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                             params:(CHIPOnOffClusterOnWithTimedOffParams *)params
+                  completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     OnOff::Commands::OnWithTimedOff::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.onOffControl
         = static_cast<std::remove_reference_t<decltype(request.onOffControl)>>(params.onOffControl.unsignedCharValue);
     request.onTime = params.onTime.unsignedShortValue;
@@ -30726,14 +32953,24 @@ using namespace chip::app::Clusters;
         ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPCommandSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
 - (void)toggleWithCompletionHandler:(StatusCompletion)completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self toggleWithArguments:arguments completionHandler:completionHandler];
+}
+- (void)toggleWithArguments:(CHIPCommandArguments * _Nullable)arguments completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     OnOff::Commands::Toggle::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
 
     new CHIPCommandSuccessCallbackBridge(
         self.callbackQueue,
@@ -30743,7 +32980,7 @@ using namespace chip::app::Clusters;
         ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPCommandSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
@@ -30880,6 +33117,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeOnTimeWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeOnTimeWithValue:(NSNumber * _Nonnull) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeOnTimeWithValue:(NSNumber * _Nonnull)value
+                               params:(CHIPWriteParams * _Nullable)params
+                    completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -30892,7 +33140,8 @@ using namespace chip::app::Clusters;
             cppValue = value.unsignedShortValue;
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -30958,6 +33207,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeOffWaitTimeWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeOffWaitTimeWithValue:(NSNumber * _Nonnull) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeOffWaitTimeWithValue:(NSNumber * _Nonnull)value
+                                    params:(CHIPWriteParams * _Nullable)params
+                         completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -30970,7 +33230,8 @@ using namespace chip::app::Clusters;
             cppValue = value.unsignedShortValue;
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -31038,6 +33299,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeStartUpOnOffWithValue:(NSNumber * _Nullable)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeStartUpOnOffWithValue:(NSNumber * _Nullable) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeStartUpOnOffWithValue:(NSNumber * _Nullable)value
+                                     params:(CHIPWriteParams * _Nullable)params
+                          completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -31055,7 +33327,8 @@ using namespace chip::app::Clusters;
             }
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -31506,6 +33779,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeSwitchActionsWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeSwitchActionsWithValue:(NSNumber * _Nonnull) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeSwitchActionsWithValue:(NSNumber * _Nonnull)value
+                                      params:(CHIPWriteParams * _Nullable)params
+                           completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -31518,7 +33802,8 @@ using namespace chip::app::Clusters;
             cppValue = value.unsignedCharValue;
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -31843,8 +34128,21 @@ using namespace chip::app::Clusters;
        completionHandler:(void (^)(CHIPOperationalCredentialsClusterNOCResponseParams * _Nullable data,
                              NSError * _Nullable error))completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self addNOCWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)addNOCWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                     params:(CHIPOperationalCredentialsClusterAddNOCParams *)params
+          completionHandler:(void (^)(CHIPOperationalCredentialsClusterNOCResponseParams * _Nullable data,
+                                NSError * _Nullable error))completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     OperationalCredentials::Commands::AddNOC::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.NOCValue = [self asByteSpan:params.nocValue];
     if (params.icacValue != nil) {
         auto & definedValue_0 = request.ICACValue.Emplace();
@@ -31858,15 +34156,27 @@ using namespace chip::app::Clusters;
         self.callbackQueue, completionHandler, ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPOperationalCredentialsClusterNOCResponseCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
 - (void)addTrustedRootCertificateWithParams:(CHIPOperationalCredentialsClusterAddTrustedRootCertificateParams *)params
                           completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self addTrustedRootCertificateWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)addTrustedRootCertificateWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                        params:(CHIPOperationalCredentialsClusterAddTrustedRootCertificateParams *)params
+                             completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     OperationalCredentials::Commands::AddTrustedRootCertificate::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.rootCertificate = [self asByteSpan:params.rootCertificate];
 
     new CHIPCommandSuccessCallbackBridge(
@@ -31877,7 +34187,7 @@ using namespace chip::app::Clusters;
         ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPCommandSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
@@ -31885,15 +34195,28 @@ using namespace chip::app::Clusters;
                    completionHandler:(void (^)(CHIPOperationalCredentialsClusterAttestationResponseParams * _Nullable data,
                                          NSError * _Nullable error))completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self attestationRequestWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)attestationRequestWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                 params:(CHIPOperationalCredentialsClusterAttestationRequestParams *)params
+                      completionHandler:(void (^)(CHIPOperationalCredentialsClusterAttestationResponseParams * _Nullable data,
+                                            NSError * _Nullable error))completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     OperationalCredentials::Commands::AttestationRequest::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.attestationNonce = [self asByteSpan:params.attestationNonce];
 
     new CHIPOperationalCredentialsClusterAttestationResponseCallbackBridge(
         self.callbackQueue, completionHandler, ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPOperationalCredentialsClusterAttestationResponseCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
@@ -31901,15 +34224,28 @@ using namespace chip::app::Clusters;
            completionHandler:(void (^)(CHIPOperationalCredentialsClusterCSRResponseParams * _Nullable data,
                                  NSError * _Nullable error))completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self CSRRequestWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)CSRRequestWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                         params:(CHIPOperationalCredentialsClusterCSRRequestParams *)params
+              completionHandler:(void (^)(CHIPOperationalCredentialsClusterCSRResponseParams * _Nullable data,
+                                    NSError * _Nullable error))completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     OperationalCredentials::Commands::CSRRequest::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.CSRNonce = [self asByteSpan:params.csrNonce];
 
     new CHIPOperationalCredentialsClusterCSRResponseCallbackBridge(
         self.callbackQueue, completionHandler, ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPOperationalCredentialsClusterCSRResponseCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
@@ -31918,8 +34254,22 @@ using namespace chip::app::Clusters;
                             (void (^)(CHIPOperationalCredentialsClusterCertificateChainResponseParams * _Nullable data,
                                 NSError * _Nullable error))completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self certificateChainRequestWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)certificateChainRequestWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                      params:(CHIPOperationalCredentialsClusterCertificateChainRequestParams *)params
+                           completionHandler:
+                               (void (^)(CHIPOperationalCredentialsClusterCertificateChainResponseParams * _Nullable data,
+                                   NSError * _Nullable error))completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     OperationalCredentials::Commands::CertificateChainRequest::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.certificateType = params.certificateType.unsignedCharValue;
 
     new CHIPOperationalCredentialsClusterCertificateChainResponseCallbackBridge(
@@ -31927,7 +34277,7 @@ using namespace chip::app::Clusters;
             auto successFn
                 = Callback<CHIPOperationalCredentialsClusterCertificateChainResponseCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
@@ -31935,23 +34285,48 @@ using namespace chip::app::Clusters;
              completionHandler:(void (^)(CHIPOperationalCredentialsClusterNOCResponseParams * _Nullable data,
                                    NSError * _Nullable error))completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self removeFabricWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)removeFabricWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                           params:(CHIPOperationalCredentialsClusterRemoveFabricParams *)params
+                completionHandler:(void (^)(CHIPOperationalCredentialsClusterNOCResponseParams * _Nullable data,
+                                      NSError * _Nullable error))completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     OperationalCredentials::Commands::RemoveFabric::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.fabricIndex = params.fabricIndex.unsignedCharValue;
 
     new CHIPOperationalCredentialsClusterNOCResponseCallbackBridge(
         self.callbackQueue, completionHandler, ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPOperationalCredentialsClusterNOCResponseCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
 - (void)removeTrustedRootCertificateWithParams:(CHIPOperationalCredentialsClusterRemoveTrustedRootCertificateParams *)params
                              completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self removeTrustedRootCertificateWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)removeTrustedRootCertificateWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                           params:(CHIPOperationalCredentialsClusterRemoveTrustedRootCertificateParams *)params
+                                completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     OperationalCredentials::Commands::RemoveTrustedRootCertificate::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.trustedRootIdentifier = [self asByteSpan:params.trustedRootIdentifier];
 
     new CHIPCommandSuccessCallbackBridge(
@@ -31962,7 +34337,7 @@ using namespace chip::app::Clusters;
         ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPCommandSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
@@ -31970,15 +34345,28 @@ using namespace chip::app::Clusters;
                   completionHandler:(void (^)(CHIPOperationalCredentialsClusterNOCResponseParams * _Nullable data,
                                         NSError * _Nullable error))completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self updateFabricLabelWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)updateFabricLabelWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                params:(CHIPOperationalCredentialsClusterUpdateFabricLabelParams *)params
+                     completionHandler:(void (^)(CHIPOperationalCredentialsClusterNOCResponseParams * _Nullable data,
+                                           NSError * _Nullable error))completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     OperationalCredentials::Commands::UpdateFabricLabel::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.label = [self asCharSpan:params.label];
 
     new CHIPOperationalCredentialsClusterNOCResponseCallbackBridge(
         self.callbackQueue, completionHandler, ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPOperationalCredentialsClusterNOCResponseCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
@@ -31986,8 +34374,21 @@ using namespace chip::app::Clusters;
           completionHandler:(void (^)(CHIPOperationalCredentialsClusterNOCResponseParams * _Nullable data,
                                 NSError * _Nullable error))completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self updateNOCWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)updateNOCWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                        params:(CHIPOperationalCredentialsClusterUpdateNOCParams *)params
+             completionHandler:(void (^)(CHIPOperationalCredentialsClusterNOCResponseParams * _Nullable data,
+                                   NSError * _Nullable error))completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     OperationalCredentials::Commands::UpdateNOC::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.NOCValue = [self asByteSpan:params.nocValue];
     if (params.icacValue != nil) {
         auto & definedValue_0 = request.ICACValue.Emplace();
@@ -31998,7 +34399,7 @@ using namespace chip::app::Clusters;
         self.callbackQueue, completionHandler, ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPOperationalCredentialsClusterNOCResponseCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
@@ -35315,6 +37716,19 @@ using namespace chip::app::Clusters;
 - (void)writeAttributeLifetimeRunningHoursWithValue:(NSNumber * _Nullable)value
                                   completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeLifetimeRunningHoursWithValue:(NSNumber * _Nullable) value
+                                               params:params
+                                    completionHandler:completionHandler];
+}
+- (void)writeAttributeLifetimeRunningHoursWithValue:(NSNumber * _Nullable)value
+                                             params:(CHIPWriteParams * _Nullable)params
+                                  completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -35332,7 +37746,8 @@ using namespace chip::app::Clusters;
             }
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -35463,6 +37878,19 @@ using namespace chip::app::Clusters;
 - (void)writeAttributeLifetimeEnergyConsumedWithValue:(NSNumber * _Nullable)value
                                     completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeLifetimeEnergyConsumedWithValue:(NSNumber * _Nullable) value
+                                                 params:params
+                                      completionHandler:completionHandler];
+}
+- (void)writeAttributeLifetimeEnergyConsumedWithValue:(NSNumber * _Nullable)value
+                                               params:(CHIPWriteParams * _Nullable)params
+                                    completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -35480,7 +37908,8 @@ using namespace chip::app::Clusters;
             }
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -35551,6 +37980,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeOperationModeWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeOperationModeWithValue:(NSNumber * _Nonnull) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeOperationModeWithValue:(NSNumber * _Nonnull)value
+                                      params:(CHIPWriteParams * _Nullable)params
+                           completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -35563,7 +38003,8 @@ using namespace chip::app::Clusters;
             cppValue = static_cast<std::remove_reference_t<decltype(cppValue)>>(value.unsignedCharValue);
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -35636,6 +38077,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeControlModeWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeControlModeWithValue:(NSNumber * _Nonnull) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeControlModeWithValue:(NSNumber * _Nonnull)value
+                                    params:(CHIPWriteParams * _Nullable)params
+                         completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -35648,7 +38100,8 @@ using namespace chip::app::Clusters;
             cppValue = static_cast<std::remove_reference_t<decltype(cppValue)>>(value.unsignedCharValue);
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -36614,8 +39067,21 @@ using namespace chip::app::Clusters;
          completionHandler:
              (void (^)(CHIPScenesClusterAddSceneResponseParams * _Nullable data, NSError * _Nullable error))completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self addSceneWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)addSceneWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                       params:(CHIPScenesClusterAddSceneParams *)params
+            completionHandler:
+                (void (^)(CHIPScenesClusterAddSceneResponseParams * _Nullable data, NSError * _Nullable error))completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     Scenes::Commands::AddScene::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.groupId = params.groupId.unsignedShortValue;
     request.sceneId = params.sceneId.unsignedCharValue;
     request.transitionTime = params.transitionTime.unsignedShortValue;
@@ -36649,7 +39115,7 @@ using namespace chip::app::Clusters;
         self.callbackQueue, completionHandler, ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPScenesClusterAddSceneResponseCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
@@ -36657,22 +39123,47 @@ using namespace chip::app::Clusters;
                    completionHandler:(void (^)(CHIPScenesClusterGetSceneMembershipResponseParams * _Nullable data,
                                          NSError * _Nullable error))completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self getSceneMembershipWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)getSceneMembershipWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                 params:(CHIPScenesClusterGetSceneMembershipParams *)params
+                      completionHandler:(void (^)(CHIPScenesClusterGetSceneMembershipResponseParams * _Nullable data,
+                                            NSError * _Nullable error))completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     Scenes::Commands::GetSceneMembership::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.groupId = params.groupId.unsignedShortValue;
 
     new CHIPScenesClusterGetSceneMembershipResponseCallbackBridge(
         self.callbackQueue, completionHandler, ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPScenesClusterGetSceneMembershipResponseCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
 - (void)recallSceneWithParams:(CHIPScenesClusterRecallSceneParams *)params completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self recallSceneWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)recallSceneWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                          params:(CHIPScenesClusterRecallSceneParams *)params
+               completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     Scenes::Commands::RecallScene::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.groupId = params.groupId.unsignedShortValue;
     request.sceneId = params.sceneId.unsignedCharValue;
     request.transitionTime = params.transitionTime.unsignedShortValue;
@@ -36685,7 +39176,7 @@ using namespace chip::app::Clusters;
         ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPCommandSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
@@ -36693,15 +39184,28 @@ using namespace chip::app::Clusters;
                 completionHandler:(void (^)(CHIPScenesClusterRemoveAllScenesResponseParams * _Nullable data,
                                       NSError * _Nullable error))completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self removeAllScenesWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)removeAllScenesWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                              params:(CHIPScenesClusterRemoveAllScenesParams *)params
+                   completionHandler:(void (^)(CHIPScenesClusterRemoveAllScenesResponseParams * _Nullable data,
+                                         NSError * _Nullable error))completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     Scenes::Commands::RemoveAllScenes::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.groupId = params.groupId.unsignedShortValue;
 
     new CHIPScenesClusterRemoveAllScenesResponseCallbackBridge(
         self.callbackQueue, completionHandler, ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPScenesClusterRemoveAllScenesResponseCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
@@ -36709,8 +39213,21 @@ using namespace chip::app::Clusters;
             completionHandler:
                 (void (^)(CHIPScenesClusterRemoveSceneResponseParams * _Nullable data, NSError * _Nullable error))completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self removeSceneWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)removeSceneWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                          params:(CHIPScenesClusterRemoveSceneParams *)params
+               completionHandler:(void (^)(CHIPScenesClusterRemoveSceneResponseParams * _Nullable data,
+                                     NSError * _Nullable error))completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     Scenes::Commands::RemoveScene::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.groupId = params.groupId.unsignedShortValue;
     request.sceneId = params.sceneId.unsignedCharValue;
 
@@ -36718,7 +39235,7 @@ using namespace chip::app::Clusters;
         self.callbackQueue, completionHandler, ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPScenesClusterRemoveSceneResponseCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
@@ -36726,8 +39243,21 @@ using namespace chip::app::Clusters;
            completionHandler:
                (void (^)(CHIPScenesClusterStoreSceneResponseParams * _Nullable data, NSError * _Nullable error))completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self storeSceneWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)storeSceneWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                         params:(CHIPScenesClusterStoreSceneParams *)params
+              completionHandler:
+                  (void (^)(CHIPScenesClusterStoreSceneResponseParams * _Nullable data, NSError * _Nullable error))completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     Scenes::Commands::StoreScene::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.groupId = params.groupId.unsignedShortValue;
     request.sceneId = params.sceneId.unsignedCharValue;
 
@@ -36735,7 +39265,7 @@ using namespace chip::app::Clusters;
         self.callbackQueue, completionHandler, ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPScenesClusterStoreSceneResponseCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
@@ -36743,8 +39273,21 @@ using namespace chip::app::Clusters;
           completionHandler:
               (void (^)(CHIPScenesClusterViewSceneResponseParams * _Nullable data, NSError * _Nullable error))completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self viewSceneWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)viewSceneWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                        params:(CHIPScenesClusterViewSceneParams *)params
+             completionHandler:
+                 (void (^)(CHIPScenesClusterViewSceneResponseParams * _Nullable data, NSError * _Nullable error))completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     Scenes::Commands::ViewScene::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.groupId = params.groupId.unsignedShortValue;
     request.sceneId = params.sceneId.unsignedCharValue;
 
@@ -36752,7 +39295,7 @@ using namespace chip::app::Clusters;
         self.callbackQueue, completionHandler, ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPScenesClusterViewSceneResponseCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
@@ -37324,8 +39867,19 @@ using namespace chip::app::Clusters;
 
 - (void)resetWatermarksWithCompletionHandler:(StatusCompletion)completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self resetWatermarksWithArguments:arguments completionHandler:completionHandler];
+}
+- (void)resetWatermarksWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                   completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     SoftwareDiagnostics::Commands::ResetWatermarks::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
 
     new CHIPCommandSuccessCallbackBridge(
         self.callbackQueue,
@@ -37335,7 +39889,7 @@ using namespace chip::app::Clusters;
         ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPCommandSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
@@ -38426,8 +40980,21 @@ using namespace chip::app::Clusters;
                completionHandler:(void (^)(CHIPTargetNavigatorClusterNavigateTargetResponseParams * _Nullable data,
                                      NSError * _Nullable error))completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self navigateTargetWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)navigateTargetWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                             params:(CHIPTargetNavigatorClusterNavigateTargetParams *)params
+                  completionHandler:(void (^)(CHIPTargetNavigatorClusterNavigateTargetResponseParams * _Nullable data,
+                                        NSError * _Nullable error))completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     TargetNavigator::Commands::NavigateTarget::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.target = params.target.unsignedCharValue;
     if (params.data != nil) {
         auto & definedValue_0 = request.data.Emplace();
@@ -38438,7 +41005,7 @@ using namespace chip::app::Clusters;
         self.callbackQueue, completionHandler, ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPTargetNavigatorClusterNavigateTargetResponseCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
@@ -39217,8 +41784,21 @@ using namespace chip::app::Clusters;
                         completionHandler:(void (^)(CHIPTestClusterClusterSimpleStructResponseParams * _Nullable data,
                                               NSError * _Nullable error))completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self simpleStructEchoRequestWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)simpleStructEchoRequestWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                      params:(CHIPTestClusterClusterSimpleStructEchoRequestParams *)params
+                           completionHandler:(void (^)(CHIPTestClusterClusterSimpleStructResponseParams * _Nullable data,
+                                                 NSError * _Nullable error))completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     TestCluster::Commands::SimpleStructEchoRequest::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.arg1.a = params.arg1.a.unsignedCharValue;
     request.arg1.b = params.arg1.b.boolValue;
     request.arg1.c = static_cast<std::remove_reference_t<decltype(request.arg1.c)>>(params.arg1.c.unsignedCharValue);
@@ -39232,14 +41812,24 @@ using namespace chip::app::Clusters;
         self.callbackQueue, completionHandler, ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPTestClusterClusterSimpleStructResponseCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
 - (void)testWithCompletionHandler:(StatusCompletion)completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self testWithArguments:arguments completionHandler:completionHandler];
+}
+- (void)testWithArguments:(CHIPCommandArguments * _Nullable)arguments completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     TestCluster::Commands::Test::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
 
     new CHIPCommandSuccessCallbackBridge(
         self.callbackQueue,
@@ -39249,7 +41839,7 @@ using namespace chip::app::Clusters;
         ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPCommandSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
@@ -39257,8 +41847,21 @@ using namespace chip::app::Clusters;
                  completionHandler:(void (^)(CHIPTestClusterClusterTestAddArgumentsResponseParams * _Nullable data,
                                        NSError * _Nullable error))completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self testAddArgumentsWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)testAddArgumentsWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                               params:(CHIPTestClusterClusterTestAddArgumentsParams *)params
+                    completionHandler:(void (^)(CHIPTestClusterClusterTestAddArgumentsResponseParams * _Nullable data,
+                                          NSError * _Nullable error))completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     TestCluster::Commands::TestAddArguments::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.arg1 = params.arg1.unsignedCharValue;
     request.arg2 = params.arg2.unsignedCharValue;
 
@@ -39266,7 +41869,7 @@ using namespace chip::app::Clusters;
         self.callbackQueue, completionHandler, ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPTestClusterClusterTestAddArgumentsResponseCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
@@ -39274,8 +41877,21 @@ using namespace chip::app::Clusters;
                          completionHandler:(void (^)(CHIPTestClusterClusterTestEmitTestEventResponseParams * _Nullable data,
                                                NSError * _Nullable error))completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self testEmitTestEventRequestWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)testEmitTestEventRequestWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                       params:(CHIPTestClusterClusterTestEmitTestEventRequestParams *)params
+                            completionHandler:(void (^)(CHIPTestClusterClusterTestEmitTestEventResponseParams * _Nullable data,
+                                                  NSError * _Nullable error))completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     TestCluster::Commands::TestEmitTestEventRequest::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.arg1 = params.arg1.unsignedCharValue;
     request.arg2 = static_cast<std::remove_reference_t<decltype(request.arg2)>>(params.arg2.unsignedCharValue);
     request.arg3 = params.arg3.boolValue;
@@ -39284,7 +41900,7 @@ using namespace chip::app::Clusters;
         self.callbackQueue, completionHandler, ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPTestClusterClusterTestEmitTestEventResponseCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
@@ -39292,8 +41908,21 @@ using namespace chip::app::Clusters;
                  completionHandler:(void (^)(CHIPTestClusterClusterTestEnumsResponseParams * _Nullable data,
                                        NSError * _Nullable error))completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self testEnumsRequestWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)testEnumsRequestWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                               params:(CHIPTestClusterClusterTestEnumsRequestParams *)params
+                    completionHandler:(void (^)(CHIPTestClusterClusterTestEnumsResponseParams * _Nullable data,
+                                          NSError * _Nullable error))completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     TestCluster::Commands::TestEnumsRequest::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.arg1 = static_cast<std::remove_reference_t<decltype(request.arg1)>>(params.arg1.unsignedShortValue);
     request.arg2 = static_cast<std::remove_reference_t<decltype(request.arg2)>>(params.arg2.unsignedCharValue);
 
@@ -39301,7 +41930,7 @@ using namespace chip::app::Clusters;
         self.callbackQueue, completionHandler, ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPTestClusterClusterTestEnumsResponseCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
@@ -39309,8 +41938,21 @@ using namespace chip::app::Clusters;
                              completionHandler:(void (^)(CHIPTestClusterClusterBooleanResponseParams * _Nullable data,
                                                    NSError * _Nullable error))completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self testListInt8UArgumentRequestWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)testListInt8UArgumentRequestWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                           params:(CHIPTestClusterClusterTestListInt8UArgumentRequestParams *)params
+                                completionHandler:(void (^)(CHIPTestClusterClusterBooleanResponseParams * _Nullable data,
+                                                      NSError * _Nullable error))completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     TestCluster::Commands::TestListInt8UArgumentRequest::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     {
         using ListType_0 = std::remove_reference_t<decltype(request.arg1)>;
         using ListMemberType_0 = ListMemberTypeGetter<ListType_0>::Type;
@@ -39338,7 +41980,7 @@ using namespace chip::app::Clusters;
         self.callbackQueue, completionHandler, ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPTestClusterClusterBooleanResponseCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
@@ -39346,8 +41988,22 @@ using namespace chip::app::Clusters;
                             completionHandler:(void (^)(CHIPTestClusterClusterTestListInt8UReverseResponseParams * _Nullable data,
                                                   NSError * _Nullable error))completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self testListInt8UReverseRequestWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)testListInt8UReverseRequestWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                          params:(CHIPTestClusterClusterTestListInt8UReverseRequestParams *)params
+                               completionHandler:
+                                   (void (^)(CHIPTestClusterClusterTestListInt8UReverseResponseParams * _Nullable data,
+                                       NSError * _Nullable error))completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     TestCluster::Commands::TestListInt8UReverseRequest::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     {
         using ListType_0 = std::remove_reference_t<decltype(request.arg1)>;
         using ListMemberType_0 = ListMemberTypeGetter<ListType_0>::Type;
@@ -39375,7 +42031,7 @@ using namespace chip::app::Clusters;
         self.callbackQueue, completionHandler, ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPTestClusterClusterTestListInt8UReverseResponseCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
@@ -39384,8 +42040,22 @@ using namespace chip::app::Clusters;
                                         completionHandler:(void (^)(CHIPTestClusterClusterBooleanResponseParams * _Nullable data,
                                                               NSError * _Nullable error))completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self testListNestedStructListArgumentRequestWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)testListNestedStructListArgumentRequestWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                                      params:(CHIPTestClusterClusterTestListNestedStructListArgumentRequestParams *)
+                                                                 params
+                                           completionHandler:(void (^)(CHIPTestClusterClusterBooleanResponseParams * _Nullable data,
+                                                                 NSError * _Nullable error))completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     TestCluster::Commands::TestListNestedStructListArgumentRequest::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     {
         using ListType_0 = std::remove_reference_t<decltype(request.arg1)>;
         using ListMemberType_0 = ListMemberTypeGetter<ListType_0>::Type;
@@ -39521,7 +42191,7 @@ using namespace chip::app::Clusters;
         self.callbackQueue, completionHandler, ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPTestClusterClusterBooleanResponseCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
@@ -39529,8 +42199,21 @@ using namespace chip::app::Clusters;
                               completionHandler:(void (^)(CHIPTestClusterClusterBooleanResponseParams * _Nullable data,
                                                     NSError * _Nullable error))completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self testListStructArgumentRequestWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)testListStructArgumentRequestWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                            params:(CHIPTestClusterClusterTestListStructArgumentRequestParams *)params
+                                 completionHandler:(void (^)(CHIPTestClusterClusterBooleanResponseParams * _Nullable data,
+                                                       NSError * _Nullable error))completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     TestCluster::Commands::TestListStructArgumentRequest::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     {
         using ListType_0 = std::remove_reference_t<decltype(request.arg1)>;
         using ListMemberType_0 = ListMemberTypeGetter<ListType_0>::Type;
@@ -39567,7 +42250,7 @@ using namespace chip::app::Clusters;
         self.callbackQueue, completionHandler, ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPTestClusterClusterBooleanResponseCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
@@ -39575,8 +42258,21 @@ using namespace chip::app::Clusters;
                                 completionHandler:(void (^)(CHIPTestClusterClusterBooleanResponseParams * _Nullable data,
                                                       NSError * _Nullable error))completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self testNestedStructArgumentRequestWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)testNestedStructArgumentRequestWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                              params:(CHIPTestClusterClusterTestNestedStructArgumentRequestParams *)params
+                                   completionHandler:(void (^)(CHIPTestClusterClusterBooleanResponseParams * _Nullable data,
+                                                         NSError * _Nullable error))completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     TestCluster::Commands::TestNestedStructArgumentRequest::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.arg1.a = params.arg1.a.unsignedCharValue;
     request.arg1.b = params.arg1.b.boolValue;
     request.arg1.c.a = params.arg1.c.a.unsignedCharValue;
@@ -39592,7 +42288,7 @@ using namespace chip::app::Clusters;
         self.callbackQueue, completionHandler, ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPTestClusterClusterBooleanResponseCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
@@ -39600,8 +42296,21 @@ using namespace chip::app::Clusters;
                                     completionHandler:(void (^)(CHIPTestClusterClusterBooleanResponseParams * _Nullable data,
                                                           NSError * _Nullable error))completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self testNestedStructListArgumentRequestWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)testNestedStructListArgumentRequestWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                                  params:(CHIPTestClusterClusterTestNestedStructListArgumentRequestParams *)params
+                                       completionHandler:(void (^)(CHIPTestClusterClusterBooleanResponseParams * _Nullable data,
+                                                             NSError * _Nullable error))completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     TestCluster::Commands::TestNestedStructListArgumentRequest::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.arg1.a = params.arg1.a.unsignedCharValue;
     request.arg1.b = params.arg1.b.boolValue;
     request.arg1.c.a = params.arg1.c.a.unsignedCharValue;
@@ -39714,14 +42423,25 @@ using namespace chip::app::Clusters;
         self.callbackQueue, completionHandler, ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPTestClusterClusterBooleanResponseCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
 - (void)testNotHandledWithCompletionHandler:(StatusCompletion)completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self testNotHandledWithArguments:arguments completionHandler:completionHandler];
+}
+- (void)testNotHandledWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                  completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     TestCluster::Commands::TestNotHandled::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
 
     new CHIPCommandSuccessCallbackBridge(
         self.callbackQueue,
@@ -39731,7 +42451,7 @@ using namespace chip::app::Clusters;
         ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPCommandSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
@@ -39739,8 +42459,22 @@ using namespace chip::app::Clusters;
                             completionHandler:(void (^)(CHIPTestClusterClusterTestNullableOptionalResponseParams * _Nullable data,
                                                   NSError * _Nullable error))completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self testNullableOptionalRequestWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)testNullableOptionalRequestWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                          params:(CHIPTestClusterClusterTestNullableOptionalRequestParams * _Nullable)params
+                               completionHandler:
+                                   (void (^)(CHIPTestClusterClusterTestNullableOptionalResponseParams * _Nullable data,
+                                       NSError * _Nullable error))completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     TestCluster::Commands::TestNullableOptionalRequest::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     if (params != nil) {
         if (params.arg1 != nil) {
             auto & definedValue_0 = request.arg1.Emplace();
@@ -39757,7 +42491,7 @@ using namespace chip::app::Clusters;
         self.callbackQueue, completionHandler, ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPTestClusterClusterTestNullableOptionalResponseCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
@@ -39765,8 +42499,21 @@ using namespace chip::app::Clusters;
             (CHIPTestClusterClusterTestSimpleOptionalArgumentRequestParams * _Nullable)params
                                   completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self testSimpleOptionalArgumentRequestWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)
+    testSimpleOptionalArgumentRequestWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                            params:(CHIPTestClusterClusterTestSimpleOptionalArgumentRequestParams * _Nullable)params
+                                 completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     TestCluster::Commands::TestSimpleOptionalArgumentRequest::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     if (params != nil) {
         if (params.arg1 != nil) {
             auto & definedValue_0 = request.arg1.Emplace();
@@ -39782,21 +42529,33 @@ using namespace chip::app::Clusters;
         ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPCommandSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
 - (void)testSpecificWithCompletionHandler:(void (^)(CHIPTestClusterClusterTestSpecificResponseParams * _Nullable data,
                                               NSError * _Nullable error))completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self testSpecificWithArguments:arguments completionHandler:completionHandler];
+}
+- (void)testSpecificWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                completionHandler:(void (^)(CHIPTestClusterClusterTestSpecificResponseParams * _Nullable data,
+                                      NSError * _Nullable error))completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     TestCluster::Commands::TestSpecific::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
 
     new CHIPTestClusterClusterTestSpecificResponseCallbackBridge(
         self.callbackQueue, completionHandler, ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPTestClusterClusterTestSpecificResponseCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
@@ -39804,8 +42563,21 @@ using namespace chip::app::Clusters;
                           completionHandler:(void (^)(CHIPTestClusterClusterBooleanResponseParams * _Nullable data,
                                                 NSError * _Nullable error))completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self testStructArgumentRequestWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)testStructArgumentRequestWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                        params:(CHIPTestClusterClusterTestStructArgumentRequestParams *)params
+                             completionHandler:(void (^)(CHIPTestClusterClusterBooleanResponseParams * _Nullable data,
+                                                   NSError * _Nullable error))completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     TestCluster::Commands::TestStructArgumentRequest::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.arg1.a = params.arg1.a.unsignedCharValue;
     request.arg1.b = params.arg1.b.boolValue;
     request.arg1.c = static_cast<std::remove_reference_t<decltype(request.arg1.c)>>(params.arg1.c.unsignedCharValue);
@@ -39819,14 +42591,25 @@ using namespace chip::app::Clusters;
         self.callbackQueue, completionHandler, ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPTestClusterClusterBooleanResponseCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
 - (void)testUnknownCommandWithCompletionHandler:(StatusCompletion)completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self testUnknownCommandWithArguments:arguments completionHandler:completionHandler];
+}
+- (void)testUnknownCommandWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                      completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     TestCluster::Commands::TestUnknownCommand::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
 
     new CHIPCommandSuccessCallbackBridge(
         self.callbackQueue,
@@ -39836,14 +42619,27 @@ using namespace chip::app::Clusters;
         ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPCommandSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
 - (void)timedInvokeRequestWithCompletionHandler:(StatusCompletion)completionHandler
 {
+    CHIPCommandArguments * arguments;
+    arguments = [CHIPCommandArguments new];
+    arguments.timedInvokeTimeoutMs = @10000;
+    [self timedInvokeRequestWithArguments:arguments completionHandler:completionHandler];
+}
+- (void)timedInvokeRequestWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                      completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     TestCluster::Commands::TimedInvokeRequest::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
 
     new CHIPCommandSuccessCallbackBridge(
         self.callbackQueue,
@@ -39853,7 +42649,7 @@ using namespace chip::app::Clusters;
         ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPCommandSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, 10000);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
@@ -39869,6 +42665,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeBooleanWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeBooleanWithValue:(NSNumber * _Nonnull) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeBooleanWithValue:(NSNumber * _Nonnull)value
+                                params:(CHIPWriteParams * _Nullable)params
+                     completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -39881,7 +42688,8 @@ using namespace chip::app::Clusters;
             cppValue = value.boolValue;
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -39947,6 +42755,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeBitmap8WithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeBitmap8WithValue:(NSNumber * _Nonnull) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeBitmap8WithValue:(NSNumber * _Nonnull)value
+                                params:(CHIPWriteParams * _Nullable)params
+                     completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -39959,7 +42778,8 @@ using namespace chip::app::Clusters;
             cppValue = static_cast<std::remove_reference_t<decltype(cppValue)>>(value.unsignedCharValue);
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -40026,6 +42846,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeBitmap16WithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeBitmap16WithValue:(NSNumber * _Nonnull) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeBitmap16WithValue:(NSNumber * _Nonnull)value
+                                 params:(CHIPWriteParams * _Nullable)params
+                      completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -40038,7 +42869,8 @@ using namespace chip::app::Clusters;
             cppValue = static_cast<std::remove_reference_t<decltype(cppValue)>>(value.unsignedShortValue);
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -40105,6 +42937,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeBitmap32WithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeBitmap32WithValue:(NSNumber * _Nonnull) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeBitmap32WithValue:(NSNumber * _Nonnull)value
+                                 params:(CHIPWriteParams * _Nullable)params
+                      completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -40117,7 +42960,8 @@ using namespace chip::app::Clusters;
             cppValue = static_cast<std::remove_reference_t<decltype(cppValue)>>(value.unsignedIntValue);
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -40184,6 +43028,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeBitmap64WithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeBitmap64WithValue:(NSNumber * _Nonnull) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeBitmap64WithValue:(NSNumber * _Nonnull)value
+                                 params:(CHIPWriteParams * _Nullable)params
+                      completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -40196,7 +43051,8 @@ using namespace chip::app::Clusters;
             cppValue = static_cast<std::remove_reference_t<decltype(cppValue)>>(value.unsignedLongLongValue);
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -40261,6 +43117,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeInt8uWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeInt8uWithValue:(NSNumber * _Nonnull) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeInt8uWithValue:(NSNumber * _Nonnull)value
+                              params:(CHIPWriteParams * _Nullable)params
+                   completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -40273,7 +43140,8 @@ using namespace chip::app::Clusters;
             cppValue = value.unsignedCharValue;
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -40338,6 +43206,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeInt16uWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeInt16uWithValue:(NSNumber * _Nonnull) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeInt16uWithValue:(NSNumber * _Nonnull)value
+                               params:(CHIPWriteParams * _Nullable)params
+                    completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -40350,7 +43229,8 @@ using namespace chip::app::Clusters;
             cppValue = value.unsignedShortValue;
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -40415,6 +43295,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeInt24uWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeInt24uWithValue:(NSNumber * _Nonnull) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeInt24uWithValue:(NSNumber * _Nonnull)value
+                               params:(CHIPWriteParams * _Nullable)params
+                    completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -40427,7 +43318,8 @@ using namespace chip::app::Clusters;
             cppValue = value.unsignedIntValue;
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -40492,6 +43384,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeInt32uWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeInt32uWithValue:(NSNumber * _Nonnull) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeInt32uWithValue:(NSNumber * _Nonnull)value
+                               params:(CHIPWriteParams * _Nullable)params
+                    completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -40504,7 +43407,8 @@ using namespace chip::app::Clusters;
             cppValue = value.unsignedIntValue;
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -40569,6 +43473,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeInt40uWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeInt40uWithValue:(NSNumber * _Nonnull) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeInt40uWithValue:(NSNumber * _Nonnull)value
+                               params:(CHIPWriteParams * _Nullable)params
+                    completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -40581,7 +43496,8 @@ using namespace chip::app::Clusters;
             cppValue = value.unsignedLongLongValue;
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -40646,6 +43562,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeInt48uWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeInt48uWithValue:(NSNumber * _Nonnull) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeInt48uWithValue:(NSNumber * _Nonnull)value
+                               params:(CHIPWriteParams * _Nullable)params
+                    completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -40658,7 +43585,8 @@ using namespace chip::app::Clusters;
             cppValue = value.unsignedLongLongValue;
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -40723,6 +43651,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeInt56uWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeInt56uWithValue:(NSNumber * _Nonnull) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeInt56uWithValue:(NSNumber * _Nonnull)value
+                               params:(CHIPWriteParams * _Nullable)params
+                    completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -40735,7 +43674,8 @@ using namespace chip::app::Clusters;
             cppValue = value.unsignedLongLongValue;
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -40800,6 +43740,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeInt64uWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeInt64uWithValue:(NSNumber * _Nonnull) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeInt64uWithValue:(NSNumber * _Nonnull)value
+                               params:(CHIPWriteParams * _Nullable)params
+                    completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -40812,7 +43763,8 @@ using namespace chip::app::Clusters;
             cppValue = value.unsignedLongLongValue;
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -40877,6 +43829,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeInt8sWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeInt8sWithValue:(NSNumber * _Nonnull) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeInt8sWithValue:(NSNumber * _Nonnull)value
+                              params:(CHIPWriteParams * _Nullable)params
+                   completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -40889,7 +43852,8 @@ using namespace chip::app::Clusters;
             cppValue = value.charValue;
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -40954,6 +43918,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeInt16sWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeInt16sWithValue:(NSNumber * _Nonnull) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeInt16sWithValue:(NSNumber * _Nonnull)value
+                               params:(CHIPWriteParams * _Nullable)params
+                    completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -40966,7 +43941,8 @@ using namespace chip::app::Clusters;
             cppValue = value.shortValue;
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -41031,6 +44007,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeInt24sWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeInt24sWithValue:(NSNumber * _Nonnull) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeInt24sWithValue:(NSNumber * _Nonnull)value
+                               params:(CHIPWriteParams * _Nullable)params
+                    completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -41043,7 +44030,8 @@ using namespace chip::app::Clusters;
             cppValue = value.intValue;
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -41108,6 +44096,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeInt32sWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeInt32sWithValue:(NSNumber * _Nonnull) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeInt32sWithValue:(NSNumber * _Nonnull)value
+                               params:(CHIPWriteParams * _Nullable)params
+                    completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -41120,7 +44119,8 @@ using namespace chip::app::Clusters;
             cppValue = value.intValue;
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -41185,6 +44185,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeInt40sWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeInt40sWithValue:(NSNumber * _Nonnull) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeInt40sWithValue:(NSNumber * _Nonnull)value
+                               params:(CHIPWriteParams * _Nullable)params
+                    completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -41197,7 +44208,8 @@ using namespace chip::app::Clusters;
             cppValue = value.longLongValue;
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -41262,6 +44274,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeInt48sWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeInt48sWithValue:(NSNumber * _Nonnull) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeInt48sWithValue:(NSNumber * _Nonnull)value
+                               params:(CHIPWriteParams * _Nullable)params
+                    completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -41274,7 +44297,8 @@ using namespace chip::app::Clusters;
             cppValue = value.longLongValue;
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -41339,6 +44363,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeInt56sWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeInt56sWithValue:(NSNumber * _Nonnull) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeInt56sWithValue:(NSNumber * _Nonnull)value
+                               params:(CHIPWriteParams * _Nullable)params
+                    completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -41351,7 +44386,8 @@ using namespace chip::app::Clusters;
             cppValue = value.longLongValue;
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -41416,6 +44452,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeInt64sWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeInt64sWithValue:(NSNumber * _Nonnull) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeInt64sWithValue:(NSNumber * _Nonnull)value
+                               params:(CHIPWriteParams * _Nullable)params
+                    completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -41428,7 +44475,8 @@ using namespace chip::app::Clusters;
             cppValue = value.longLongValue;
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -41493,6 +44541,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeEnum8WithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeEnum8WithValue:(NSNumber * _Nonnull) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeEnum8WithValue:(NSNumber * _Nonnull)value
+                              params:(CHIPWriteParams * _Nullable)params
+                   completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -41505,7 +44564,8 @@ using namespace chip::app::Clusters;
             cppValue = value.unsignedCharValue;
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -41570,6 +44630,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeEnum16WithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeEnum16WithValue:(NSNumber * _Nonnull) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeEnum16WithValue:(NSNumber * _Nonnull)value
+                               params:(CHIPWriteParams * _Nullable)params
+                    completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -41582,7 +44653,8 @@ using namespace chip::app::Clusters;
             cppValue = value.unsignedShortValue;
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -41648,6 +44720,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeFloatSingleWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeFloatSingleWithValue:(NSNumber * _Nonnull) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeFloatSingleWithValue:(NSNumber * _Nonnull)value
+                                    params:(CHIPWriteParams * _Nullable)params
+                         completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -41660,7 +44743,8 @@ using namespace chip::app::Clusters;
             cppValue = value.floatValue;
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -41727,6 +44811,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeFloatDoubleWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeFloatDoubleWithValue:(NSNumber * _Nonnull) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeFloatDoubleWithValue:(NSNumber * _Nonnull)value
+                                    params:(CHIPWriteParams * _Nullable)params
+                         completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -41739,7 +44834,8 @@ using namespace chip::app::Clusters;
             cppValue = value.doubleValue;
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -41807,6 +44903,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeOctetStringWithValue:(NSData * _Nonnull)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeOctetStringWithValue:(NSData * _Nonnull) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeOctetStringWithValue:(NSData * _Nonnull)value
+                                    params:(CHIPWriteParams * _Nullable)params
+                         completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -41819,7 +44926,8 @@ using namespace chip::app::Clusters;
             cppValue = [self asByteSpan:value];
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -41886,6 +44994,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeListInt8uWithValue:(NSArray * _Nonnull)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeListInt8uWithValue:(NSArray * _Nonnull) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeListInt8uWithValue:(NSArray * _Nonnull)value
+                                  params:(CHIPWriteParams * _Nullable)params
+                       completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -41919,7 +45038,8 @@ using namespace chip::app::Clusters;
             }
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -41987,6 +45107,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeListOctetStringWithValue:(NSArray * _Nonnull)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeListOctetStringWithValue:(NSArray * _Nonnull) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeListOctetStringWithValue:(NSArray * _Nonnull)value
+                                        params:(CHIPWriteParams * _Nullable)params
+                             completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -42020,7 +45151,8 @@ using namespace chip::app::Clusters;
             }
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -42090,6 +45222,19 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeListStructOctetStringWithValue:(NSArray * _Nonnull)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeListStructOctetStringWithValue:(NSArray * _Nonnull) value
+                                                params:params
+                                     completionHandler:completionHandler];
+}
+- (void)writeAttributeListStructOctetStringWithValue:(NSArray * _Nonnull)value
+                                              params:(CHIPWriteParams * _Nullable)params
+                                   completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -42124,7 +45269,8 @@ using namespace chip::app::Clusters;
             }
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -42195,6 +45341,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeLongOctetStringWithValue:(NSData * _Nonnull)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeLongOctetStringWithValue:(NSData * _Nonnull) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeLongOctetStringWithValue:(NSData * _Nonnull)value
+                                        params:(CHIPWriteParams * _Nullable)params
+                             completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -42207,7 +45364,8 @@ using namespace chip::app::Clusters;
             cppValue = [self asByteSpan:value];
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -42275,6 +45433,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeCharStringWithValue:(NSString * _Nonnull)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeCharStringWithValue:(NSString * _Nonnull) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeCharStringWithValue:(NSString * _Nonnull)value
+                                   params:(CHIPWriteParams * _Nullable)params
+                        completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -42287,7 +45456,8 @@ using namespace chip::app::Clusters;
             cppValue = [self asCharSpan:value];
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -42353,6 +45523,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeLongCharStringWithValue:(NSString * _Nonnull)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeLongCharStringWithValue:(NSString * _Nonnull) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeLongCharStringWithValue:(NSString * _Nonnull)value
+                                       params:(CHIPWriteParams * _Nullable)params
+                            completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -42365,7 +45546,8 @@ using namespace chip::app::Clusters;
             cppValue = [self asCharSpan:value];
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -42432,6 +45614,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeEpochUsWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeEpochUsWithValue:(NSNumber * _Nonnull) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeEpochUsWithValue:(NSNumber * _Nonnull)value
+                                params:(CHIPWriteParams * _Nullable)params
+                     completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -42444,7 +45637,8 @@ using namespace chip::app::Clusters;
             cppValue = value.unsignedLongLongValue;
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -42509,6 +45703,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeEpochSWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeEpochSWithValue:(NSNumber * _Nonnull) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeEpochSWithValue:(NSNumber * _Nonnull)value
+                               params:(CHIPWriteParams * _Nullable)params
+                    completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -42521,7 +45726,8 @@ using namespace chip::app::Clusters;
             cppValue = value.unsignedIntValue;
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -42587,6 +45793,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeVendorIdWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeVendorIdWithValue:(NSNumber * _Nonnull) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeVendorIdWithValue:(NSNumber * _Nonnull)value
+                                 params:(CHIPWriteParams * _Nullable)params
+                      completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -42599,7 +45816,8 @@ using namespace chip::app::Clusters;
             cppValue = static_cast<std::remove_reference_t<decltype(cppValue)>>(value.unsignedShortValue);
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -42667,6 +45885,19 @@ using namespace chip::app::Clusters;
 - (void)writeAttributeListNullablesAndOptionalsStructWithValue:(NSArray * _Nonnull)value
                                              completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeListNullablesAndOptionalsStructWithValue:(NSArray * _Nonnull) value
+                                                          params:params
+                                               completionHandler:completionHandler];
+}
+- (void)writeAttributeListNullablesAndOptionalsStructWithValue:(NSArray * _Nonnull)value
+                                                        params:(CHIPWriteParams * _Nullable)params
+                                             completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -42872,7 +46103,8 @@ using namespace chip::app::Clusters;
             }
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -42943,6 +46175,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeEnumAttrWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeEnumAttrWithValue:(NSNumber * _Nonnull) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeEnumAttrWithValue:(NSNumber * _Nonnull)value
+                                 params:(CHIPWriteParams * _Nullable)params
+                      completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -42955,7 +46198,8 @@ using namespace chip::app::Clusters;
             cppValue = static_cast<std::remove_reference_t<decltype(cppValue)>>(value.unsignedCharValue);
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -43024,6 +46268,19 @@ using namespace chip::app::Clusters;
 - (void)writeAttributeStructAttrWithValue:(CHIPTestClusterClusterSimpleStruct * _Nonnull)value
                         completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeStructAttrWithValue:(CHIPTestClusterClusterSimpleStruct * _Nonnull) value
+                                     params:params
+                          completionHandler:completionHandler];
+}
+- (void)writeAttributeStructAttrWithValue:(CHIPTestClusterClusterSimpleStruct * _Nonnull)value
+                                   params:(CHIPWriteParams * _Nullable)params
+                        completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -43043,7 +46300,8 @@ using namespace chip::app::Clusters;
             cppValue.h = value.h.doubleValue;
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -43112,6 +46370,19 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeRangeRestrictedInt8uWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeRangeRestrictedInt8uWithValue:(NSNumber * _Nonnull) value
+                                               params:params
+                                    completionHandler:completionHandler];
+}
+- (void)writeAttributeRangeRestrictedInt8uWithValue:(NSNumber * _Nonnull)value
+                                             params:(CHIPWriteParams * _Nullable)params
+                                  completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -43124,7 +46395,8 @@ using namespace chip::app::Clusters;
             cppValue = value.unsignedCharValue;
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -43193,6 +46465,19 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeRangeRestrictedInt8sWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeRangeRestrictedInt8sWithValue:(NSNumber * _Nonnull) value
+                                               params:params
+                                    completionHandler:completionHandler];
+}
+- (void)writeAttributeRangeRestrictedInt8sWithValue:(NSNumber * _Nonnull)value
+                                             params:(CHIPWriteParams * _Nullable)params
+                                  completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -43205,7 +46490,8 @@ using namespace chip::app::Clusters;
             cppValue = value.charValue;
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -43275,6 +46561,19 @@ using namespace chip::app::Clusters;
 - (void)writeAttributeRangeRestrictedInt16uWithValue:(NSNumber * _Nonnull)value
                                    completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeRangeRestrictedInt16uWithValue:(NSNumber * _Nonnull) value
+                                                params:params
+                                     completionHandler:completionHandler];
+}
+- (void)writeAttributeRangeRestrictedInt16uWithValue:(NSNumber * _Nonnull)value
+                                              params:(CHIPWriteParams * _Nullable)params
+                                   completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -43287,7 +46586,8 @@ using namespace chip::app::Clusters;
             cppValue = value.unsignedShortValue;
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -43357,6 +46657,19 @@ using namespace chip::app::Clusters;
 - (void)writeAttributeRangeRestrictedInt16sWithValue:(NSNumber * _Nonnull)value
                                    completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeRangeRestrictedInt16sWithValue:(NSNumber * _Nonnull) value
+                                                params:params
+                                     completionHandler:completionHandler];
+}
+- (void)writeAttributeRangeRestrictedInt16sWithValue:(NSNumber * _Nonnull)value
+                                              params:(CHIPWriteParams * _Nullable)params
+                                   completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -43369,7 +46682,8 @@ using namespace chip::app::Clusters;
             cppValue = value.shortValue;
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -43439,6 +46753,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeListLongOctetStringWithValue:(NSArray * _Nonnull)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeListLongOctetStringWithValue:(NSArray * _Nonnull) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeListLongOctetStringWithValue:(NSArray * _Nonnull)value
+                                            params:(CHIPWriteParams * _Nullable)params
+                                 completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -43472,7 +46797,8 @@ using namespace chip::app::Clusters;
             }
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -43544,6 +46870,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeListFabricScopedWithValue:(NSArray * _Nonnull)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeListFabricScopedWithValue:(NSArray * _Nonnull) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeListFabricScopedWithValue:(NSArray * _Nonnull)value
+                                         params:(CHIPWriteParams * _Nullable)params
+                              completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -43633,7 +46970,8 @@ using namespace chip::app::Clusters;
             }
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -43702,6 +47040,19 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeTimedWriteBooleanWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    params = [CHIPWriteParams new];
+    params.timedWrite = @10000;
+    [self writeAttributeTimedWriteBooleanWithValue:(NSNumber * _Nonnull) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeTimedWriteBooleanWithValue:(NSNumber * _Nonnull)value
+                                          params:(CHIPWriteParams * _Nullable)params
+                               completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -43715,7 +47066,7 @@ using namespace chip::app::Clusters;
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
             return self.cppCluster.WriteAttribute<TypeInfo>(
-                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, 10000);
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -43783,6 +47134,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeGeneralErrorBooleanWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeGeneralErrorBooleanWithValue:(NSNumber * _Nonnull) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeGeneralErrorBooleanWithValue:(NSNumber * _Nonnull)value
+                                            params:(CHIPWriteParams * _Nullable)params
+                                 completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -43795,7 +47157,8 @@ using namespace chip::app::Clusters;
             cppValue = value.boolValue;
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -43864,6 +47227,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeClusterErrorBooleanWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeClusterErrorBooleanWithValue:(NSNumber * _Nonnull) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeClusterErrorBooleanWithValue:(NSNumber * _Nonnull)value
+                                            params:(CHIPWriteParams * _Nullable)params
+                                 completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -43876,7 +47250,8 @@ using namespace chip::app::Clusters;
             cppValue = value.boolValue;
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -43945,6 +47320,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeUnsupportedWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeUnsupportedWithValue:(NSNumber * _Nonnull) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeUnsupportedWithValue:(NSNumber * _Nonnull)value
+                                    params:(CHIPWriteParams * _Nullable)params
+                         completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -43957,7 +47343,8 @@ using namespace chip::app::Clusters;
             cppValue = value.boolValue;
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -44025,6 +47412,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeNullableBooleanWithValue:(NSNumber * _Nullable)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeNullableBooleanWithValue:(NSNumber * _Nullable) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeNullableBooleanWithValue:(NSNumber * _Nullable)value
+                                        params:(CHIPWriteParams * _Nullable)params
+                             completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -44042,7 +47440,8 @@ using namespace chip::app::Clusters;
             }
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -44111,6 +47510,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeNullableBitmap8WithValue:(NSNumber * _Nullable)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeNullableBitmap8WithValue:(NSNumber * _Nullable) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeNullableBitmap8WithValue:(NSNumber * _Nullable)value
+                                        params:(CHIPWriteParams * _Nullable)params
+                             completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -44128,7 +47538,8 @@ using namespace chip::app::Clusters;
             }
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -44198,6 +47609,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeNullableBitmap16WithValue:(NSNumber * _Nullable)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeNullableBitmap16WithValue:(NSNumber * _Nullable) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeNullableBitmap16WithValue:(NSNumber * _Nullable)value
+                                         params:(CHIPWriteParams * _Nullable)params
+                              completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -44215,7 +47637,8 @@ using namespace chip::app::Clusters;
             }
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -44285,6 +47708,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeNullableBitmap32WithValue:(NSNumber * _Nullable)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeNullableBitmap32WithValue:(NSNumber * _Nullable) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeNullableBitmap32WithValue:(NSNumber * _Nullable)value
+                                         params:(CHIPWriteParams * _Nullable)params
+                              completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -44302,7 +47736,8 @@ using namespace chip::app::Clusters;
             }
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -44372,6 +47807,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeNullableBitmap64WithValue:(NSNumber * _Nullable)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeNullableBitmap64WithValue:(NSNumber * _Nullable) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeNullableBitmap64WithValue:(NSNumber * _Nullable)value
+                                         params:(CHIPWriteParams * _Nullable)params
+                              completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -44389,7 +47835,8 @@ using namespace chip::app::Clusters;
             }
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -44459,6 +47906,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeNullableInt8uWithValue:(NSNumber * _Nullable)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeNullableInt8uWithValue:(NSNumber * _Nullable) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeNullableInt8uWithValue:(NSNumber * _Nullable)value
+                                      params:(CHIPWriteParams * _Nullable)params
+                           completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -44476,7 +47934,8 @@ using namespace chip::app::Clusters;
             }
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -44545,6 +48004,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeNullableInt16uWithValue:(NSNumber * _Nullable)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeNullableInt16uWithValue:(NSNumber * _Nullable) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeNullableInt16uWithValue:(NSNumber * _Nullable)value
+                                       params:(CHIPWriteParams * _Nullable)params
+                            completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -44562,7 +48032,8 @@ using namespace chip::app::Clusters;
             }
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -44631,6 +48102,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeNullableInt24uWithValue:(NSNumber * _Nullable)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeNullableInt24uWithValue:(NSNumber * _Nullable) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeNullableInt24uWithValue:(NSNumber * _Nullable)value
+                                       params:(CHIPWriteParams * _Nullable)params
+                            completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -44648,7 +48130,8 @@ using namespace chip::app::Clusters;
             }
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -44717,6 +48200,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeNullableInt32uWithValue:(NSNumber * _Nullable)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeNullableInt32uWithValue:(NSNumber * _Nullable) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeNullableInt32uWithValue:(NSNumber * _Nullable)value
+                                       params:(CHIPWriteParams * _Nullable)params
+                            completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -44734,7 +48228,8 @@ using namespace chip::app::Clusters;
             }
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -44803,6 +48298,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeNullableInt40uWithValue:(NSNumber * _Nullable)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeNullableInt40uWithValue:(NSNumber * _Nullable) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeNullableInt40uWithValue:(NSNumber * _Nullable)value
+                                       params:(CHIPWriteParams * _Nullable)params
+                            completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -44820,7 +48326,8 @@ using namespace chip::app::Clusters;
             }
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -44889,6 +48396,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeNullableInt48uWithValue:(NSNumber * _Nullable)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeNullableInt48uWithValue:(NSNumber * _Nullable) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeNullableInt48uWithValue:(NSNumber * _Nullable)value
+                                       params:(CHIPWriteParams * _Nullable)params
+                            completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -44906,7 +48424,8 @@ using namespace chip::app::Clusters;
             }
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -44975,6 +48494,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeNullableInt56uWithValue:(NSNumber * _Nullable)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeNullableInt56uWithValue:(NSNumber * _Nullable) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeNullableInt56uWithValue:(NSNumber * _Nullable)value
+                                       params:(CHIPWriteParams * _Nullable)params
+                            completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -44992,7 +48522,8 @@ using namespace chip::app::Clusters;
             }
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -45061,6 +48592,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeNullableInt64uWithValue:(NSNumber * _Nullable)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeNullableInt64uWithValue:(NSNumber * _Nullable) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeNullableInt64uWithValue:(NSNumber * _Nullable)value
+                                       params:(CHIPWriteParams * _Nullable)params
+                            completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -45078,7 +48620,8 @@ using namespace chip::app::Clusters;
             }
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -45147,6 +48690,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeNullableInt8sWithValue:(NSNumber * _Nullable)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeNullableInt8sWithValue:(NSNumber * _Nullable) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeNullableInt8sWithValue:(NSNumber * _Nullable)value
+                                      params:(CHIPWriteParams * _Nullable)params
+                           completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -45164,7 +48718,8 @@ using namespace chip::app::Clusters;
             }
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -45233,6 +48788,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeNullableInt16sWithValue:(NSNumber * _Nullable)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeNullableInt16sWithValue:(NSNumber * _Nullable) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeNullableInt16sWithValue:(NSNumber * _Nullable)value
+                                       params:(CHIPWriteParams * _Nullable)params
+                            completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -45250,7 +48816,8 @@ using namespace chip::app::Clusters;
             }
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -45319,6 +48886,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeNullableInt24sWithValue:(NSNumber * _Nullable)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeNullableInt24sWithValue:(NSNumber * _Nullable) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeNullableInt24sWithValue:(NSNumber * _Nullable)value
+                                       params:(CHIPWriteParams * _Nullable)params
+                            completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -45336,7 +48914,8 @@ using namespace chip::app::Clusters;
             }
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -45405,6 +48984,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeNullableInt32sWithValue:(NSNumber * _Nullable)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeNullableInt32sWithValue:(NSNumber * _Nullable) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeNullableInt32sWithValue:(NSNumber * _Nullable)value
+                                       params:(CHIPWriteParams * _Nullable)params
+                            completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -45422,7 +49012,8 @@ using namespace chip::app::Clusters;
             }
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -45491,6 +49082,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeNullableInt40sWithValue:(NSNumber * _Nullable)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeNullableInt40sWithValue:(NSNumber * _Nullable) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeNullableInt40sWithValue:(NSNumber * _Nullable)value
+                                       params:(CHIPWriteParams * _Nullable)params
+                            completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -45508,7 +49110,8 @@ using namespace chip::app::Clusters;
             }
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -45577,6 +49180,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeNullableInt48sWithValue:(NSNumber * _Nullable)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeNullableInt48sWithValue:(NSNumber * _Nullable) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeNullableInt48sWithValue:(NSNumber * _Nullable)value
+                                       params:(CHIPWriteParams * _Nullable)params
+                            completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -45594,7 +49208,8 @@ using namespace chip::app::Clusters;
             }
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -45663,6 +49278,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeNullableInt56sWithValue:(NSNumber * _Nullable)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeNullableInt56sWithValue:(NSNumber * _Nullable) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeNullableInt56sWithValue:(NSNumber * _Nullable)value
+                                       params:(CHIPWriteParams * _Nullable)params
+                            completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -45680,7 +49306,8 @@ using namespace chip::app::Clusters;
             }
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -45749,6 +49376,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeNullableInt64sWithValue:(NSNumber * _Nullable)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeNullableInt64sWithValue:(NSNumber * _Nullable) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeNullableInt64sWithValue:(NSNumber * _Nullable)value
+                                       params:(CHIPWriteParams * _Nullable)params
+                            completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -45766,7 +49404,8 @@ using namespace chip::app::Clusters;
             }
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -45835,6 +49474,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeNullableEnum8WithValue:(NSNumber * _Nullable)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeNullableEnum8WithValue:(NSNumber * _Nullable) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeNullableEnum8WithValue:(NSNumber * _Nullable)value
+                                      params:(CHIPWriteParams * _Nullable)params
+                           completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -45852,7 +49502,8 @@ using namespace chip::app::Clusters;
             }
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -45921,6 +49572,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeNullableEnum16WithValue:(NSNumber * _Nullable)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeNullableEnum16WithValue:(NSNumber * _Nullable) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeNullableEnum16WithValue:(NSNumber * _Nullable)value
+                                       params:(CHIPWriteParams * _Nullable)params
+                            completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -45938,7 +49600,8 @@ using namespace chip::app::Clusters;
             }
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -46007,6 +49670,19 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeNullableFloatSingleWithValue:(NSNumber * _Nullable)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeNullableFloatSingleWithValue:(NSNumber * _Nullable) value
+                                              params:params
+                                   completionHandler:completionHandler];
+}
+- (void)writeAttributeNullableFloatSingleWithValue:(NSNumber * _Nullable)value
+                                            params:(CHIPWriteParams * _Nullable)params
+                                 completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -46024,7 +49700,8 @@ using namespace chip::app::Clusters;
             }
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -46094,6 +49771,19 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeNullableFloatDoubleWithValue:(NSNumber * _Nullable)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeNullableFloatDoubleWithValue:(NSNumber * _Nullable) value
+                                              params:params
+                                   completionHandler:completionHandler];
+}
+- (void)writeAttributeNullableFloatDoubleWithValue:(NSNumber * _Nullable)value
+                                            params:(CHIPWriteParams * _Nullable)params
+                                 completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -46111,7 +49801,8 @@ using namespace chip::app::Clusters;
             }
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -46181,6 +49872,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeNullableOctetStringWithValue:(NSData * _Nullable)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeNullableOctetStringWithValue:(NSData * _Nullable) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeNullableOctetStringWithValue:(NSData * _Nullable)value
+                                            params:(CHIPWriteParams * _Nullable)params
+                                 completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -46198,7 +49900,8 @@ using namespace chip::app::Clusters;
             }
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -46268,6 +49971,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeNullableCharStringWithValue:(NSString * _Nullable)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeNullableCharStringWithValue:(NSString * _Nullable) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeNullableCharStringWithValue:(NSString * _Nullable)value
+                                           params:(CHIPWriteParams * _Nullable)params
+                                completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -46285,7 +49999,8 @@ using namespace chip::app::Clusters;
             }
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -46354,6 +50069,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeNullableEnumAttrWithValue:(NSNumber * _Nullable)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeNullableEnumAttrWithValue:(NSNumber * _Nullable) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeNullableEnumAttrWithValue:(NSNumber * _Nullable)value
+                                         params:(CHIPWriteParams * _Nullable)params
+                              completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -46371,7 +50097,8 @@ using namespace chip::app::Clusters;
             }
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -46442,6 +50169,19 @@ using namespace chip::app::Clusters;
 - (void)writeAttributeNullableStructWithValue:(CHIPTestClusterClusterSimpleStruct * _Nullable)value
                             completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeNullableStructWithValue:(CHIPTestClusterClusterSimpleStruct * _Nullable) value
+                                         params:params
+                              completionHandler:completionHandler];
+}
+- (void)writeAttributeNullableStructWithValue:(CHIPTestClusterClusterSimpleStruct * _Nullable)value
+                                       params:(CHIPWriteParams * _Nullable)params
+                            completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -46466,7 +50206,8 @@ using namespace chip::app::Clusters;
             }
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -46537,6 +50278,19 @@ using namespace chip::app::Clusters;
 - (void)writeAttributeNullableRangeRestrictedInt8uWithValue:(NSNumber * _Nullable)value
                                           completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeNullableRangeRestrictedInt8uWithValue:(NSNumber * _Nullable) value
+                                                       params:params
+                                            completionHandler:completionHandler];
+}
+- (void)writeAttributeNullableRangeRestrictedInt8uWithValue:(NSNumber * _Nullable)value
+                                                     params:(CHIPWriteParams * _Nullable)params
+                                          completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -46554,7 +50308,8 @@ using namespace chip::app::Clusters;
             }
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -46625,6 +50380,19 @@ using namespace chip::app::Clusters;
 - (void)writeAttributeNullableRangeRestrictedInt8sWithValue:(NSNumber * _Nullable)value
                                           completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeNullableRangeRestrictedInt8sWithValue:(NSNumber * _Nullable) value
+                                                       params:params
+                                            completionHandler:completionHandler];
+}
+- (void)writeAttributeNullableRangeRestrictedInt8sWithValue:(NSNumber * _Nullable)value
+                                                     params:(CHIPWriteParams * _Nullable)params
+                                          completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -46642,7 +50410,8 @@ using namespace chip::app::Clusters;
             }
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -46713,6 +50482,19 @@ using namespace chip::app::Clusters;
 - (void)writeAttributeNullableRangeRestrictedInt16uWithValue:(NSNumber * _Nullable)value
                                            completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeNullableRangeRestrictedInt16uWithValue:(NSNumber * _Nullable) value
+                                                        params:params
+                                             completionHandler:completionHandler];
+}
+- (void)writeAttributeNullableRangeRestrictedInt16uWithValue:(NSNumber * _Nullable)value
+                                                      params:(CHIPWriteParams * _Nullable)params
+                                           completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -46730,7 +50512,8 @@ using namespace chip::app::Clusters;
             }
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -46801,6 +50584,19 @@ using namespace chip::app::Clusters;
 - (void)writeAttributeNullableRangeRestrictedInt16sWithValue:(NSNumber * _Nullable)value
                                            completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeNullableRangeRestrictedInt16sWithValue:(NSNumber * _Nullable) value
+                                                        params:params
+                                             completionHandler:completionHandler];
+}
+- (void)writeAttributeNullableRangeRestrictedInt16sWithValue:(NSNumber * _Nullable)value
+                                                      params:(CHIPWriteParams * _Nullable)params
+                                           completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -46818,7 +50614,8 @@ using namespace chip::app::Clusters;
             }
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -47140,8 +50937,19 @@ using namespace chip::app::Clusters;
 
 - (void)clearWeeklyScheduleWithCompletionHandler:(StatusCompletion)completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self clearWeeklyScheduleWithArguments:arguments completionHandler:completionHandler];
+}
+- (void)clearWeeklyScheduleWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                       completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     Thermostat::Commands::ClearWeeklySchedule::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
 
     new CHIPCommandSuccessCallbackBridge(
         self.callbackQueue,
@@ -47151,21 +50959,33 @@ using namespace chip::app::Clusters;
         ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPCommandSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
 - (void)getRelayStatusLogWithCompletionHandler:(void (^)(CHIPThermostatClusterGetRelayStatusLogResponseParams * _Nullable data,
                                                    NSError * _Nullable error))completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self getRelayStatusLogWithArguments:arguments completionHandler:completionHandler];
+}
+- (void)getRelayStatusLogWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                     completionHandler:(void (^)(CHIPThermostatClusterGetRelayStatusLogResponseParams * _Nullable data,
+                                           NSError * _Nullable error))completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     Thermostat::Commands::GetRelayStatusLog::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
 
     new CHIPThermostatClusterGetRelayStatusLogResponseCallbackBridge(
         self.callbackQueue, completionHandler, ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPThermostatClusterGetRelayStatusLogResponseCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
@@ -47173,8 +50993,21 @@ using namespace chip::app::Clusters;
                   completionHandler:(void (^)(CHIPThermostatClusterGetWeeklyScheduleResponseParams * _Nullable data,
                                         NSError * _Nullable error))completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self getWeeklyScheduleWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)getWeeklyScheduleWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                params:(CHIPThermostatClusterGetWeeklyScheduleParams *)params
+                     completionHandler:(void (^)(CHIPThermostatClusterGetWeeklyScheduleResponseParams * _Nullable data,
+                                           NSError * _Nullable error))completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     Thermostat::Commands::GetWeeklySchedule::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.daysToReturn
         = static_cast<std::remove_reference_t<decltype(request.daysToReturn)>>(params.daysToReturn.unsignedCharValue);
     request.modeToReturn
@@ -47184,15 +51017,27 @@ using namespace chip::app::Clusters;
         self.callbackQueue, completionHandler, ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPThermostatClusterGetWeeklyScheduleResponseCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
 - (void)setWeeklyScheduleWithParams:(CHIPThermostatClusterSetWeeklyScheduleParams *)params
                   completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self setWeeklyScheduleWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)setWeeklyScheduleWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                params:(CHIPThermostatClusterSetWeeklyScheduleParams *)params
+                     completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     Thermostat::Commands::SetWeeklySchedule::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.numberOfTransitionsForSequence = params.numberOfTransitionsForSequence.unsignedCharValue;
     request.dayOfWeekForSequence = static_cast<std::remove_reference_t<decltype(request.dayOfWeekForSequence)>>(
         params.dayOfWeekForSequence.unsignedCharValue);
@@ -47229,15 +51074,27 @@ using namespace chip::app::Clusters;
         ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPCommandSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
 - (void)setpointRaiseLowerWithParams:(CHIPThermostatClusterSetpointRaiseLowerParams *)params
                    completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self setpointRaiseLowerWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)setpointRaiseLowerWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                 params:(CHIPThermostatClusterSetpointRaiseLowerParams *)params
+                      completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     Thermostat::Commands::SetpointRaiseLower::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.mode = static_cast<std::remove_reference_t<decltype(request.mode)>>(params.mode.unsignedCharValue);
     request.amount = params.amount.charValue;
 
@@ -47249,7 +51106,7 @@ using namespace chip::app::Clusters;
         ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPCommandSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
@@ -47581,6 +51438,19 @@ using namespace chip::app::Clusters;
 - (void)writeAttributeOccupiedCoolingSetpointWithValue:(NSNumber * _Nonnull)value
                                      completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeOccupiedCoolingSetpointWithValue:(NSNumber * _Nonnull) value
+                                                  params:params
+                                       completionHandler:completionHandler];
+}
+- (void)writeAttributeOccupiedCoolingSetpointWithValue:(NSNumber * _Nonnull)value
+                                                params:(CHIPWriteParams * _Nullable)params
+                                     completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -47593,7 +51463,8 @@ using namespace chip::app::Clusters;
             cppValue = value.shortValue;
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -47663,6 +51534,19 @@ using namespace chip::app::Clusters;
 - (void)writeAttributeOccupiedHeatingSetpointWithValue:(NSNumber * _Nonnull)value
                                      completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeOccupiedHeatingSetpointWithValue:(NSNumber * _Nonnull) value
+                                                  params:params
+                                       completionHandler:completionHandler];
+}
+- (void)writeAttributeOccupiedHeatingSetpointWithValue:(NSNumber * _Nonnull)value
+                                                params:(CHIPWriteParams * _Nullable)params
+                                     completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -47675,7 +51559,8 @@ using namespace chip::app::Clusters;
             cppValue = value.shortValue;
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -47744,6 +51629,19 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeMinHeatSetpointLimitWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeMinHeatSetpointLimitWithValue:(NSNumber * _Nonnull) value
+                                               params:params
+                                    completionHandler:completionHandler];
+}
+- (void)writeAttributeMinHeatSetpointLimitWithValue:(NSNumber * _Nonnull)value
+                                             params:(CHIPWriteParams * _Nullable)params
+                                  completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -47756,7 +51654,8 @@ using namespace chip::app::Clusters;
             cppValue = value.shortValue;
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -47825,6 +51724,19 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeMaxHeatSetpointLimitWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeMaxHeatSetpointLimitWithValue:(NSNumber * _Nonnull) value
+                                               params:params
+                                    completionHandler:completionHandler];
+}
+- (void)writeAttributeMaxHeatSetpointLimitWithValue:(NSNumber * _Nonnull)value
+                                             params:(CHIPWriteParams * _Nullable)params
+                                  completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -47837,7 +51749,8 @@ using namespace chip::app::Clusters;
             cppValue = value.shortValue;
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -47906,6 +51819,19 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeMinCoolSetpointLimitWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeMinCoolSetpointLimitWithValue:(NSNumber * _Nonnull) value
+                                               params:params
+                                    completionHandler:completionHandler];
+}
+- (void)writeAttributeMinCoolSetpointLimitWithValue:(NSNumber * _Nonnull)value
+                                             params:(CHIPWriteParams * _Nullable)params
+                                  completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -47918,7 +51844,8 @@ using namespace chip::app::Clusters;
             cppValue = value.shortValue;
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -47987,6 +51914,19 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeMaxCoolSetpointLimitWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeMaxCoolSetpointLimitWithValue:(NSNumber * _Nonnull) value
+                                               params:params
+                                    completionHandler:completionHandler];
+}
+- (void)writeAttributeMaxCoolSetpointLimitWithValue:(NSNumber * _Nonnull)value
+                                             params:(CHIPWriteParams * _Nullable)params
+                                  completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -47999,7 +51939,8 @@ using namespace chip::app::Clusters;
             cppValue = value.shortValue;
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -48068,6 +52009,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeMinSetpointDeadBandWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeMinSetpointDeadBandWithValue:(NSNumber * _Nonnull) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeMinSetpointDeadBandWithValue:(NSNumber * _Nonnull)value
+                                            params:(CHIPWriteParams * _Nullable)params
+                                 completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -48080,7 +52032,8 @@ using namespace chip::app::Clusters;
             cppValue = value.charValue;
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -48151,6 +52104,19 @@ using namespace chip::app::Clusters;
 - (void)writeAttributeControlSequenceOfOperationWithValue:(NSNumber * _Nonnull)value
                                         completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeControlSequenceOfOperationWithValue:(NSNumber * _Nonnull) value
+                                                     params:params
+                                          completionHandler:completionHandler];
+}
+- (void)writeAttributeControlSequenceOfOperationWithValue:(NSNumber * _Nonnull)value
+                                                   params:(CHIPWriteParams * _Nullable)params
+                                        completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -48163,7 +52129,8 @@ using namespace chip::app::Clusters;
             cppValue = static_cast<std::remove_reference_t<decltype(cppValue)>>(value.unsignedCharValue);
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -48233,6 +52200,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeSystemModeWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeSystemModeWithValue:(NSNumber * _Nonnull) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeSystemModeWithValue:(NSNumber * _Nonnull)value
+                                   params:(CHIPWriteParams * _Nullable)params
+                        completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -48245,7 +52223,8 @@ using namespace chip::app::Clusters;
             cppValue = value.unsignedCharValue;
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -48693,6 +52672,19 @@ using namespace chip::app::Clusters;
 - (void)writeAttributeTemperatureDisplayModeWithValue:(NSNumber * _Nonnull)value
                                     completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeTemperatureDisplayModeWithValue:(NSNumber * _Nonnull) value
+                                                 params:params
+                                      completionHandler:completionHandler];
+}
+- (void)writeAttributeTemperatureDisplayModeWithValue:(NSNumber * _Nonnull)value
+                                               params:(CHIPWriteParams * _Nullable)params
+                                    completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -48705,7 +52697,8 @@ using namespace chip::app::Clusters;
             cppValue = value.unsignedCharValue;
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -48774,6 +52767,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeKeypadLockoutWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeKeypadLockoutWithValue:(NSNumber * _Nonnull) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeKeypadLockoutWithValue:(NSNumber * _Nonnull)value
+                                      params:(CHIPWriteParams * _Nullable)params
+                           completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -48786,7 +52790,8 @@ using namespace chip::app::Clusters;
             cppValue = value.unsignedCharValue;
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -48855,6 +52860,19 @@ using namespace chip::app::Clusters;
 - (void)writeAttributeScheduleProgrammingVisibilityWithValue:(NSNumber * _Nonnull)value
                                            completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeScheduleProgrammingVisibilityWithValue:(NSNumber * _Nonnull) value
+                                                        params:params
+                                             completionHandler:completionHandler];
+}
+- (void)writeAttributeScheduleProgrammingVisibilityWithValue:(NSNumber * _Nonnull)value
+                                                      params:(CHIPWriteParams * _Nullable)params
+                                           completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -48867,7 +52885,8 @@ using namespace chip::app::Clusters;
             cppValue = value.unsignedCharValue;
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -49203,8 +53222,18 @@ using namespace chip::app::Clusters;
 
 - (void)resetCountsWithCompletionHandler:(StatusCompletion)completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self resetCountsWithArguments:arguments completionHandler:completionHandler];
+}
+- (void)resetCountsWithArguments:(CHIPCommandArguments * _Nullable)arguments completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     ThreadNetworkDiagnostics::Commands::ResetCounts::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
 
     new CHIPCommandSuccessCallbackBridge(
         self.callbackQueue,
@@ -49214,7 +53243,7 @@ using namespace chip::app::Clusters;
         ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPCommandSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
@@ -53473,6 +57502,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeHourFormatWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeHourFormatWithValue:(NSNumber * _Nonnull) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeHourFormatWithValue:(NSNumber * _Nonnull)value
+                                   params:(CHIPWriteParams * _Nullable)params
+                        completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -53485,7 +57525,8 @@ using namespace chip::app::Clusters;
             cppValue = static_cast<std::remove_reference_t<decltype(cppValue)>>(value.unsignedCharValue);
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -53553,6 +57594,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeActiveCalendarTypeWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeActiveCalendarTypeWithValue:(NSNumber * _Nonnull) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeActiveCalendarTypeWithValue:(NSNumber * _Nonnull)value
+                                           params:(CHIPWriteParams * _Nullable)params
+                                completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -53565,7 +57617,8 @@ using namespace chip::app::Clusters;
             cppValue = static_cast<std::remove_reference_t<decltype(cppValue)>>(value.unsignedCharValue);
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -53902,6 +57955,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeTemperatureUnitWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeTemperatureUnitWithValue:(NSNumber * _Nonnull) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeTemperatureUnitWithValue:(NSNumber * _Nonnull)value
+                                        params:(CHIPWriteParams * _Nullable)params
+                             completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -53914,7 +57978,8 @@ using namespace chip::app::Clusters;
             cppValue = static_cast<std::remove_reference_t<decltype(cppValue)>>(value.unsignedCharValue);
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -54178,6 +58243,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeLabelListWithValue:(NSArray * _Nonnull)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeLabelListWithValue:(NSArray * _Nonnull) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeLabelListWithValue:(NSArray * _Nonnull)value
+                                  params:(CHIPWriteParams * _Nullable)params
+                       completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -54212,7 +58288,8 @@ using namespace chip::app::Clusters;
             }
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
@@ -54792,8 +58869,18 @@ using namespace chip::app::Clusters;
 
 - (void)resetCountsWithCompletionHandler:(StatusCompletion)completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self resetCountsWithArguments:arguments completionHandler:completionHandler];
+}
+- (void)resetCountsWithArguments:(CHIPCommandArguments * _Nullable)arguments completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     WiFiNetworkDiagnostics::Commands::ResetCounts::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
 
     new CHIPCommandSuccessCallbackBridge(
         self.callbackQueue,
@@ -54803,7 +58890,7 @@ using namespace chip::app::Clusters;
         ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPCommandSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
@@ -55946,8 +60033,18 @@ using namespace chip::app::Clusters;
 
 - (void)downOrCloseWithCompletionHandler:(StatusCompletion)completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self downOrCloseWithArguments:arguments completionHandler:completionHandler];
+}
+- (void)downOrCloseWithArguments:(CHIPCommandArguments * _Nullable)arguments completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     WindowCovering::Commands::DownOrClose::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
 
     new CHIPCommandSuccessCallbackBridge(
         self.callbackQueue,
@@ -55957,15 +60054,27 @@ using namespace chip::app::Clusters;
         ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPCommandSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
 - (void)goToLiftPercentageWithParams:(CHIPWindowCoveringClusterGoToLiftPercentageParams *)params
                    completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self goToLiftPercentageWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)goToLiftPercentageWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                 params:(CHIPWindowCoveringClusterGoToLiftPercentageParams *)params
+                      completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     WindowCovering::Commands::GoToLiftPercentage::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.liftPercentageValue = params.liftPercentageValue.unsignedCharValue;
     if (params.liftPercent100thsValue != nil) {
         auto & definedValue_0 = request.liftPercent100thsValue.Emplace();
@@ -55980,15 +60089,27 @@ using namespace chip::app::Clusters;
         ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPCommandSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
 - (void)goToLiftValueWithParams:(CHIPWindowCoveringClusterGoToLiftValueParams *)params
               completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self goToLiftValueWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)goToLiftValueWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                            params:(CHIPWindowCoveringClusterGoToLiftValueParams *)params
+                 completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     WindowCovering::Commands::GoToLiftValue::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.liftValue = params.liftValue.unsignedShortValue;
 
     new CHIPCommandSuccessCallbackBridge(
@@ -55999,15 +60120,27 @@ using namespace chip::app::Clusters;
         ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPCommandSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
 - (void)goToTiltPercentageWithParams:(CHIPWindowCoveringClusterGoToTiltPercentageParams *)params
                    completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self goToTiltPercentageWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)goToTiltPercentageWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                                 params:(CHIPWindowCoveringClusterGoToTiltPercentageParams *)params
+                      completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     WindowCovering::Commands::GoToTiltPercentage::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.tiltPercentageValue = params.tiltPercentageValue.unsignedCharValue;
     if (params.tiltPercent100thsValue != nil) {
         auto & definedValue_0 = request.tiltPercent100thsValue.Emplace();
@@ -56022,15 +60155,27 @@ using namespace chip::app::Clusters;
         ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPCommandSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
 - (void)goToTiltValueWithParams:(CHIPWindowCoveringClusterGoToTiltValueParams *)params
               completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self goToTiltValueWithArguments:arguments params:params completionHandler:completionHandler];
+}
+- (void)goToTiltValueWithArguments:(CHIPCommandArguments * _Nullable)arguments
+                            params:(CHIPWindowCoveringClusterGoToTiltValueParams *)params
+                 completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     WindowCovering::Commands::GoToTiltValue::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     request.tiltValue = params.tiltValue.unsignedShortValue;
 
     new CHIPCommandSuccessCallbackBridge(
@@ -56041,14 +60186,24 @@ using namespace chip::app::Clusters;
         ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPCommandSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
 - (void)stopMotionWithCompletionHandler:(StatusCompletion)completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self stopMotionWithArguments:arguments completionHandler:completionHandler];
+}
+- (void)stopMotionWithArguments:(CHIPCommandArguments * _Nullable)arguments completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     WindowCovering::Commands::StopMotion::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
 
     new CHIPCommandSuccessCallbackBridge(
         self.callbackQueue,
@@ -56058,14 +60213,24 @@ using namespace chip::app::Clusters;
         ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPCommandSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
 - (void)upOrOpenWithCompletionHandler:(StatusCompletion)completionHandler
 {
+    CHIPCommandArguments * arguments;
+    [self upOrOpenWithArguments:arguments completionHandler:completionHandler];
+}
+- (void)upOrOpenWithArguments:(CHIPCommandArguments * _Nullable)arguments completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     WindowCovering::Commands::UpOrOpen::Type request;
+
+    if (arguments) {
+        invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
 
     new CHIPCommandSuccessCallbackBridge(
         self.callbackQueue,
@@ -56075,7 +60240,7 @@ using namespace chip::app::Clusters;
         ^(Cancelable * success, Cancelable * failure) {
             auto successFn = Callback<CHIPCommandSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
         });
 }
 
@@ -57106,6 +61271,17 @@ using namespace chip::app::Clusters;
 
 - (void)writeAttributeModeWithValue:(NSNumber * _Nonnull)value completionHandler:(StatusCompletion)completionHandler
 {
+    CHIPWriteParams * params;
+    [self writeAttributeModeWithValue:(NSNumber * _Nonnull) value params:params completionHandler:completionHandler];
+}
+- (void)writeAttributeModeWithValue:(NSNumber * _Nonnull)value
+                             params:(CHIPWriteParams * _Nullable)params
+                  completionHandler:(StatusCompletion)completionHandler
+{
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+        timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIPDefaultSuccessCallbackBridge(
         self.callbackQueue,
         ^(id _Nullable ignored, NSError * _Nullable error) {
@@ -57118,7 +61294,8 @@ using namespace chip::app::Clusters;
             cppValue = static_cast<std::remove_reference_t<decltype(cppValue)>>(value.unsignedCharValue);
             auto successFn = Callback<CHIPDefaultSuccessCallbackType>::FromCancelable(success);
             auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-            return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall);
+            return self.cppCluster.WriteAttribute<TypeInfo>(
+                cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
         });
 }
 
