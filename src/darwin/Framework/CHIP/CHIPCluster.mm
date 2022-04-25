@@ -60,6 +60,28 @@ using namespace ::chip;
 }
 @end
 
+@implementation CHIPCommandArguments
+- (instancetype)init
+{
+    if (self = [super init]) {
+        _timedInvokeTimeoutMs = nil;
+    }
+    return self;
+}
+
+@end
+
+@implementation CHIPWriteParams
+- (instancetype)init
+{
+    if (self = [super init]) {
+        _timedWrite = nil;
+    }
+    return self;
+}
+
+@end
+
 @implementation CHIPReadParams
 - (instancetype)init
 {

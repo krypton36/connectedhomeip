@@ -34,6 +34,38 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 /**
+ * CHIPCommandArguments
+ *    This is used to control the behavior of cluster commands.
+ *    If not provided (i.e. nil passed for the CHIPCommandArguments argument), will be
+ *    treated as if no arguments were passed in.
+ */
+@interface CHIPCommandArguments : NSObject
+
+/**
+ *
+ */
+@property (strong, nonatomic, nullable) NSNumber * timedInvokeTimeoutMs;
+
+- (instancetype)init;
+@end
+
+/**
+ * CHIPWriteParams
+ *    This is used to control the behavior of cluster writes.
+ *    If not provided (i.e. nil passed for the CHIPWriteParams argument), will be
+ *    treated as as if no arguments were passed in.
+ */
+@interface CHIPWriteParams : NSObject
+
+/**
+ *
+ */
+@property (strong, nonatomic, nullable) NSNumber * timedWrite;
+
+- (instancetype)init;
+@end
+
+/**
  * CHIPReadParams
  *    This is used to control the behavior of attribute reads and subscribes.
  *    If not provided (i.e. nil passed for the CHIPReadParams argument), will be

@@ -27,7 +27,8 @@ NS_ASSUME_NONNULL_BEGIN
 @interface CHIP{{asUpperCamelCase name}} : CHIPCluster
 
 {{#chip_cluster_commands}}
-- (void){{asLowerCamelCase name}}With{{#if (hasArguments)}}Params:(CHIP{{asUpperCamelCase parent.name}}Cluster{{asUpperCamelCase name}}Params * {{#unless (commandHasRequiredField .)}}_Nullable{{/unless}})params completionHandler{{else}}CompletionHandler{{/if}}:({{>command_completion_type command=.}})completionHandler;
+- (void){{asLowerCamelCase name}}With{{#if (hasArguments)}}Params:(CHIP{{asUpperCamelCase parent.name}}Cluster{{asUpperCamelCase name}}Params * {{#unless (commandHasRequiredField .)}}_Nullable{{/unless}})params completionHandler{{else}}CompletionHandler{{/if}}:({{>command_completion_type command=.}})completionHandler __attribute__ ((deprecated("Use {{asLowerCamelCase name}}WithArguments:{{#if (hasArguments)}}params:completionHandler{{else}} completionHandler{{/if}}:")));;
+- (void){{asLowerCamelCase name}}WithArguments: (CHIPCommandArguments * _Nullable)arguments{{#if (hasArguments)}} params:(CHIP{{asUpperCamelCase parent.name}}Cluster{{asUpperCamelCase name}}Params * {{#unless (commandHasRequiredField .)}}_Nullable{{/unless}})params completionHandler{{else}} completionHandler{{/if}}:({{>command_completion_type command=.}})completionHandler;
 {{/chip_cluster_commands}}
 
 {{#chip_server_cluster_attributes}}
@@ -40,7 +41,8 @@ NS_ASSUME_NONNULL_BEGIN
 {{~/if_is_fabric_scoped_struct~}}
 (void (^)({{asObjectiveCClass type parent.name}} * _Nullable value, NSError * _Nullable error))completionHandler;
 {{#if isWritableAttribute}}
-- (void)write{{>attribute}}WithValue:({{asObjectiveCType type parent.name}})value completionHandler:(StatusCompletion)completionHandler;
+- (void)write{{>attribute}}WithValue:({{asObjectiveCType type parent.name}})value completionHandler:(StatusCompletion)completionHandler __attribute__ ((deprecated("Use write{{>attribute}}WithValue:params:completionHandler:")));;
+- (void)write{{>attribute}}WithValue:({{asObjectiveCType type parent.name}})value params:(CHIPWriteParams * _Nullable)params completionHandler:(StatusCompletion)completionHandler;
 {{/if}}
 {{#if isReportableAttribute}}
 /**

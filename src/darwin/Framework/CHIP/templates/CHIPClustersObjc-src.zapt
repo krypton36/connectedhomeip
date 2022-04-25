@@ -31,8 +31,22 @@ using namespace chip::app::Clusters;
 {{#*inline "callbackName"}}{{#if hasSpecificResponse}}{{asUpperCamelCase parent.name}}Cluster{{asUpperCamelCase responseName}}{{else}}CommandSuccess{{/if}}{{/inline}}
 - (void){{asLowerCamelCase name}}With{{#if (hasArguments)}}Params:(CHIP{{asUpperCamelCase parent.name}}Cluster{{asUpperCamelCase name}}Params * {{#unless (commandHasRequiredField .)}}_Nullable{{/unless}})params completionHandler{{else}}CompletionHandler{{/if}}:({{>command_completion_type command=.}})completionHandler
 {
+  CHIPCommandArguments * arguments;
+  {{#if mustUseTimedInvoke}}
+  arguments = [CHIPCommandArguments new];
+  arguments.timedInvokeTimeoutMs = @10000;
+  {{/if}}
+  [self {{asLowerCamelCase name}}WithArguments: arguments{{#if (hasArguments)}} params:params completionHandler{{else}} completionHandler{{/if}}:completionHandler];
+}
+- (void){{asLowerCamelCase name}}WithArguments: (CHIPCommandArguments * _Nullable)arguments{{#if (hasArguments)}} params:(CHIP{{asUpperCamelCase parent.name}}Cluster{{asUpperCamelCase name}}Params * {{#unless (commandHasRequiredField .)}}_Nullable{{/unless}})params completionHandler{{else}} completionHandler{{/if}}:({{>command_completion_type command=.}})completionHandler
+{
+    chip::Optional<uint16_t> invokeTimeOutMs;
     ListFreer listFreer;
     {{asUpperCamelCase parent.name}}::Commands::{{asUpperCamelCase name}}::Type request;
+
+    if (arguments) {
+      invokeTimeOutMs.SetValue(arguments.timedInvokeTimeoutMs.unsignedShortValue);
+    }
     {{#chip_cluster_command_arguments}}
       {{#first}}
         {{#unless (commandHasRequiredField parent)}}
@@ -63,12 +77,7 @@ using namespace chip::app::Clusters;
       ^(Cancelable * success, Cancelable * failure) {
         auto successFn = Callback<CHIP{{>callbackName}}CallbackType>::FromCancelable(success);
         auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-        return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall
-        {{#if mustUseTimedInvoke}}
-          {{!TODO Fix Darwin API to pass in this information.  For now, 10 seconds.}}
-          , 10000
-          {{/if}}
-        );
+        return self.cppCluster.InvokeCommand(request, successFn->mContext, successFn->mCall, failureFn->mCall, invokeTimeOutMs);
     });
 }
 {{/chip_cluster_commands}}
@@ -101,8 +110,20 @@ using namespace chip::app::Clusters;
 
 {{#if isWritableAttribute}}
 {{#*inline "callbackName"}}DefaultSuccess{{/inline}}
-- (void)write{{>attribute}}WithValue:({{asObjectiveCType type parent.name}})value completionHandler:(StatusCompletion)completionHandler
+- (void)write{{>attribute}}WithValue:({{asObjectiveCType type parent.name}})value completionHandler:(StatusCompletion)completionHandler{
+  CHIPWriteParams * params;
+  {{#if mustUseTimedWrite}}
+  params = [CHIPWriteParams new];
+  params.timedWrite = @10000;
+  {{/if}}
+  [self write{{>attribute}}WithValue:({{asObjectiveCType type parent.name}})value params:params completionHandler:completionHandler];
+}
+- (void)write{{>attribute}}WithValue:({{asObjectiveCType type parent.name}})value params:(CHIPWriteParams * _Nullable)params completionHandler:(StatusCompletion)completionHandler
 {
+    chip::Optional<uint16_t> timedWriteOptional;
+    if (params) {
+      timedWriteOptional.SetValue(params.timedWrite.unsignedShortValue);
+    }
     new CHIP{{>callbackName}}CallbackBridge(self.callbackQueue,
       {{! For now, don't change the bridge API; instead just use an adapter
           to invoke our completion handler. This is not great from a
@@ -117,12 +138,7 @@ using namespace chip::app::Clusters;
         {{>encode_value target="cppValue" source="value" cluster=parent.name errorCode="return CHIP_ERROR_INVALID_ARGUMENT;" depth=0}}
         auto successFn = Callback<CHIP{{>callbackName}}CallbackType>::FromCancelable(success);
         auto failureFn = Callback<CHIPDefaultFailureCallbackType>::FromCancelable(failure);
-        return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall
-        {{#if mustUseTimedWrite}}
-          {{!TODO Fix Darwin API to pass in this information.  For now, 10 seconds.}}
-          , 10000
-          {{/if}}
-       );
+        return self.cppCluster.WriteAttribute<TypeInfo>(cppValue, successFn->mContext, successFn->mCall, failureFn->mCall, timedWriteOptional);
     });
 }
 
