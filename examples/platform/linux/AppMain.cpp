@@ -15,6 +15,8 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
+#include <fstream>
+#include <string>
 
 #include <platform/CHIPDeviceLayer.h>
 #include <platform/PlatformManager.h>
@@ -40,6 +42,7 @@
 #include <platform/CommissionableDataProvider.h>
 #include <platform/DiagnosticDataProvider.h>
 #include <platform/TestOnlyCommissionableDataProvider.h>
+#include <app-common/zap-generated/attributes/Accessors.h>
 
 #if CHIP_DEVICE_CONFIG_ENABLE_BOTH_COMMISSIONER_AND_COMMISSIONEE
 #include <ControllerShellCommands.h>
@@ -99,7 +102,13 @@ void EventHandler(const DeviceLayer::ChipDeviceEvent * event, intptr_t arg)
 
 void OnSignalHandler(int signum)
 {
+    // std::string content;
     ChipLogDetail(DeviceLayer, "Caught signal %d", signum);
+    std::ifstream ifs;
+    std::string name;
+    int value;
+    std::string line;
+    size_t pos = 0;
 
     // The BootReason attribute SHALL indicate the reason for the Node’s most recent boot, the real usecase
     // for this attribute is embedded system. In Linux simulation, we use different signals to tell the current
@@ -111,8 +120,39 @@ void OnSignalHandler(int signum)
         bootReason = BootReasonType::PowerOnReboot;
         break;
     case SIGALRM:
-        bootReason = BootReasonType::BrownOutReset;
-        break;
+        ifs.open("measure_value", std::ifstream::in);
+
+        while(std::getline(ifs, line)) {    
+            std::string delimiter = ":";
+            pos = line.find(delimiter);
+            name = line.substr(0, pos);
+            line.erase(0, pos + delimiter.length());
+            value = stoi(line.substr(0, line.find(delimiter)));            
+
+            if (name.compare("fan mode") == 0) {
+                ChipLogDetail(DeviceLayer, "Setting fan mode Value to %d", value);
+                FanControl::Attributes::FanMode::Set(1, (uint16_t)value);
+            }
+            if (name.compare("fan mode sequence") == 0) {
+                ChipLogDetail(DeviceLayer, "Setting fan mode Value to %d", value);
+                FanControl::Attributes::FanModeSequence::Set(1, (uint16_t)value);
+            }
+            if (name.compare("local temperature") == 0) {
+                ChipLogDetail(DeviceLayer, "Setting local temperature Value to %d", value);
+                Thermostat::Attributes::LocalTemperature::Set(1, (uint16_t)value); 
+            }
+            if (name.compare("system mode") == 0) {
+                ChipLogDetail(DeviceLayer, "Setting system mode Value to %d", value);
+                Thermostat::Attributes::SystemMode::Set(1, (uint8_t)value); 
+            }
+        }
+        // content.assign( (std::istreambuf_iterator<char>(ifs) ),
+        //         (std::istreambuf_iterator<char>()    ) );
+                
+        // value = stoi(content);
+        // ChipLogDetail(DeviceLayer, "Setting Measure Value to %d", value);
+        // LevelControl::Attributes::CurrentLevel::Set(1, (uint16_t)value);
+        return;
     case SIGILL:
         bootReason = BootReasonType::SoftwareWatchdogReset;
         break;
