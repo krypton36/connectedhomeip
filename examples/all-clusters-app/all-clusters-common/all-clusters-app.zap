@@ -12320,7 +12320,7 @@
               "singleton": 0,
               "bounded": 0,
               "defaultValue": "",
-              "reportable": 1,
+              "report"able": 1,"
               "minInterval": 1,
               "maxInterval": 65534,
               "reportableChange": 0
