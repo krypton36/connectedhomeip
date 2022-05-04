@@ -74,7 +74,7 @@ public:
         reader.Init(mData, writer.GetLengthWritten());
 
         id commandFields = NSObjectFromCHIPTLV(&reader);
-    
+
         return ClusterCommand::SendCommand(device, endpointId, mClusterId, mCommandId, commandFields);
     }
 
