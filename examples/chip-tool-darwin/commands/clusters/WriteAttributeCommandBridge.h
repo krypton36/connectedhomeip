@@ -22,10 +22,10 @@
 
 #include "ModelCommandBridge.h"
 
-class WriteAttribute : public ModelCommand
-{
+class WriteAttribute : public ModelCommand {
 public:
-    WriteAttribute() : ModelCommand("write-by-id")
+    WriteAttribute()
+        : ModelCommand("write-by-id")
     {
         AddArgument("cluster-id", 0, UINT32_MAX, &mClusterId);
         AddArgument("attribute-id", 0, UINT32_MAX, &mAttributeId);
@@ -34,8 +34,9 @@ public:
         ModelCommand::AddArguments();
     }
 
-    WriteAttribute(chip::ClusterId clusterId) :
-        ModelCommand("write-by-id"), mClusterId(clusterId)
+    WriteAttribute(chip::ClusterId clusterId)
+        : ModelCommand("write-by-id")
+        , mClusterId(clusterId)
     {
         AddArgument("attribute-id", 0, UINT32_MAX, &mAttributeId);
         AddArgument("attribute-value", &mAttributeValue);
@@ -43,8 +44,8 @@ public:
         ModelCommand::AddArguments();
     }
 
-    WriteAttribute(const char *  _Nonnull attributeName) :
-        ModelCommand("write")
+    WriteAttribute(const char * _Nonnull attributeName)
+        : ModelCommand("write")
     {
         AddArgument("timedInteractionTimeoutMs", 0, UINT16_MAX, &mTimedInteractionTimeoutMs);
         ModelCommand::AddArguments();
@@ -71,25 +72,29 @@ public:
     }
 
     CHIP_ERROR SendCommand(CHIPDevice * _Nullable device, chip::EndpointId endpointId, chip::ClusterId clusterId,
-                           chip::AttributeId attributeId, id  _Nonnull value)
+        chip::AttributeId attributeId, id _Nonnull value)
     {
-        NSDictionary * valueDict = @{ @"type" : @"Structure", @"value" : @[] };
+        NSDictionary * valueDict = @{@"type" : @"Structure", @"value" : @[]};
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         if (value != nullptr) {
-            valueDict = (NSDictionary *)value;
+            valueDict = (NSDictionary *) value;
         }
-        [device writeAttributeWithEndpointId:[NSNumber numberWithUnsignedShort:endpointId]
-                                    clusterId:[NSNumber numberWithUnsignedInteger:clusterId]
-                                    attributeId:[NSNumber numberWithUnsignedInteger:attributeId]
-                                         value:valueDict
-                             timedWriteTimeout:mTimedInteractionTimeoutMs.HasValue() ? [NSNumber numberWithUnsignedShort:mTimedInteractionTimeoutMs.Value()] : nil
-                                   clientQueue:callbackQueue
-                                   completion:^(NSArray<NSDictionary<NSString *, id> *> * _Nullable values, NSError * _Nullable error){
-                                       CHIP_ERROR chipError = [CHIPError errorToCHIPErrorCode:error];
-                                       ChipLogError(chipTool, "{{asUpperCamelCase parent.name}} {{asUpperCamelCase name}} Error: %s", chip::ErrorStr(chipError));
-                                       SetCommandExitStatus(chipError);
-                                   }];
-       return CHIP_NO_ERROR;
+        [device
+            writeAttributeWithEndpointId:[NSNumber numberWithUnsignedShort:endpointId]
+                               clusterId:[NSNumber numberWithUnsignedInteger:clusterId]
+                             attributeId:[NSNumber numberWithUnsignedInteger:attributeId]
+                                   value:valueDict
+                       timedWriteTimeout:mTimedInteractionTimeoutMs.HasValue()
+                           ? [NSNumber numberWithUnsignedShort:mTimedInteractionTimeoutMs.Value()]
+                           : nil
+                             clientQueue:callbackQueue
+                              completion:^(NSArray<NSDictionary<NSString *, id> *> * _Nullable values, NSError * _Nullable error) {
+                                  CHIP_ERROR chipError = [CHIPError errorToCHIPErrorCode:error];
+                                  ChipLogError(chipTool, "{{asUpperCamelCase parent.name}} {{asUpperCamelCase name}} Error: %s",
+                                      chip::ErrorStr(chipError));
+                                  SetCommandExitStatus(chipError);
+                              }];
+        return CHIP_NO_ERROR;
     }
     chip::Optional<uint16_t> mTimedInteractionTimeoutMs;
 
@@ -99,5 +104,5 @@ private:
     CHIP_ERROR mError = CHIP_NO_ERROR;
     CustomArgument mAttributeValue;
     static constexpr uint32_t mDataMaxLen = 4096;
-    uint8_t * _Nullable mData  = nullptr;
+    uint8_t * _Nullable mData = nullptr;
 };

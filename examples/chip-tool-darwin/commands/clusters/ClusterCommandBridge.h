@@ -24,10 +24,10 @@
 
 #include "ModelCommandBridge.h"
 
-class ClusterCommand : public ModelCommand
-{
+class ClusterCommand : public ModelCommand {
 public:
-    ClusterCommand() : ModelCommand("command-by-id")
+    ClusterCommand()
+        : ModelCommand("command-by-id")
     {
         AddArgument("cluster-id", 0, UINT32_MAX, &mClusterId);
         AddArgument("command-id", 0, UINT32_MAX, &mCommandId);
@@ -38,8 +38,9 @@ public:
         ModelCommand::AddArguments();
     }
 
-    ClusterCommand(chip::ClusterId clusterId) :
-        ModelCommand("command-by-id"), mClusterId(clusterId)
+    ClusterCommand(chip::ClusterId clusterId)
+        : ModelCommand("command-by-id")
+        , mClusterId(clusterId)
     {
         AddArgument("command-id", 0, UINT32_MAX, &mCommandId);
         AddArgument("payload", &mPayload);
@@ -49,8 +50,8 @@ public:
         ModelCommand::AddArguments();
     }
 
-    ClusterCommand(const char * _Nonnull commandName) :
-        ModelCommand(commandName)
+    ClusterCommand(const char * _Nonnull commandName)
+        : ModelCommand(commandName)
     {
         AddArgument("timedInteractionTimeoutMs", 0, UINT16_MAX, &mTimedInteractionTimeoutMs);
         AddArgument("repeat-count", 1, UINT16_MAX, &mRepeatCount);
@@ -78,24 +79,27 @@ public:
         return ClusterCommand::SendCommand(device, endpointId, mClusterId, mCommandId, commandFields);
     }
 
-    CHIP_ERROR SendCommand(CHIPDevice * _Nullable device, chip::EndpointId endpointId, chip::ClusterId clusterId, chip::CommandId commandId, id _Nonnull commandFields)
+    CHIP_ERROR SendCommand(CHIPDevice * _Nullable device, chip::EndpointId endpointId, chip::ClusterId clusterId,
+        chip::CommandId commandId, id _Nonnull commandFields)
     {
         uint16_t repeatCount = mRepeatCount.ValueOr(1);
-        NSDictionary * commandFieldDict = @{ @"type" : @"Structure", @"value" : @[] };
+        NSDictionary * commandFieldDict = @{@"type" : @"Structure", @"value" : @[]};
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         if (commandFields != nullptr) {
-            commandFieldDict = (NSDictionary *)commandFields;
+            commandFieldDict = (NSDictionary *) commandFields;
         }
 
-        while (repeatCount--)
-        {
+        while (repeatCount--) {
             [device invokeCommandWithEndpointId:[NSNumber numberWithUnsignedShort:endpointId]
                                       clusterId:[NSNumber numberWithUnsignedInteger:clusterId]
                                       commandId:[NSNumber numberWithUnsignedInteger:commandId]
                                   commandFields:commandFieldDict
-                             timedInvokeTimeout:mTimedInteractionTimeoutMs.HasValue() ? [NSNumber numberWithUnsignedShort:mTimedInteractionTimeoutMs.Value()] : nil
+                             timedInvokeTimeout:mTimedInteractionTimeoutMs.HasValue()
+                                 ? [NSNumber numberWithUnsignedShort:mTimedInteractionTimeoutMs.Value()]
+                                 : nil
                                     clientQueue:callbackQueue
-                                     completion:^(NSArray<NSDictionary<NSString *, id> *> * _Nullable values, NSError * _Nullable error){
+                                     completion:^(
+                                         NSArray<NSDictionary<NSString *, id> *> * _Nullable values, NSError * _Nullable error) {
                                          CHIP_ERROR err = CHIP_NO_ERROR;
                                          NSLog(@"Error: %@", error);
                                          err = [CHIPError errorToCHIPErrorCode:error];
@@ -104,9 +108,7 @@ public:
                                          }
                                      }];
 
-
-            if (mRepeatDelayInMs.HasValue())
-            {
+            if (mRepeatDelayInMs.HasValue()) {
                 chip::test_utils::SleepMillis(mRepeatDelayInMs.Value());
             }
         }
@@ -123,5 +125,5 @@ private:
     CHIP_ERROR mError = CHIP_NO_ERROR;
     CustomArgument mPayload;
     static constexpr uint32_t mDataMaxLen = 4096;
-    uint8_t * _Nullable mData  = nullptr;
+    uint8_t * _Nullable mData = nullptr;
 };

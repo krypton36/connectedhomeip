@@ -18,13 +18,12 @@
 
 #pragma once
 
-
 #include "ModelCommandBridge.h"
 
-class ReadAttribute : public ModelCommand
-{
+class ReadAttribute : public ModelCommand {
 public:
-    ReadAttribute() : ModelCommand("read-by-id")
+    ReadAttribute()
+        : ModelCommand("read-by-id")
     {
         AddArgument("cluster-id", 0, UINT32_MAX, &mClusterId);
         AddArgument("attribute-id", 0, UINT32_MAX, &mAttributeId);
@@ -32,16 +31,17 @@ public:
         ModelCommand::AddArguments();
     }
 
-    ReadAttribute(chip::ClusterId clusterId) :
-        ModelCommand("read-by-id"), mClusterId(clusterId)
+    ReadAttribute(chip::ClusterId clusterId)
+        : ModelCommand("read-by-id")
+        , mClusterId(clusterId)
     {
         AddArgument("attribute-id", 0, UINT32_MAX, &mAttributeId);
         AddArgument("fabric-filtered", 0, 1, &mFabricFiltered);
         ModelCommand::AddArguments();
     }
 
-    ReadAttribute(const char * _Nonnull attributeName) :
-        ModelCommand("read")
+    ReadAttribute(const char * _Nonnull attributeName)
+        : ModelCommand("read")
     {
         AddArgument("attr-name", attributeName);
         AddArgument("fabric-filtered", 0, 1, &mFabricFiltered);
@@ -55,18 +55,21 @@ public:
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPReadParams * params = [[CHIPReadParams alloc] init];
         params.fabricFiltered = mFabricFiltered.HasValue() ? [NSNumber numberWithBool:mFabricFiltered.Value()] : nil;
-        [device readAttributeWithEndpointId:[NSNumber numberWithUnsignedShort:endpointId]
-                                    clusterId:[NSNumber numberWithUnsignedInteger:mClusterId]
-                                    attributeId:[NSNumber numberWithUnsignedInteger:mAttributeId]
-                                         params:params
-                                    clientQueue:callbackQueue
-                                     completion:^(NSArray<NSDictionary<NSString *, id> *> * _Nullable values, NSError * _Nullable error){
-                                         NSLog(@"{{asUpperCamelCase parent.name}}.{{asUpperCamelCase name}} response %@", [values description]);
-                                         CHIP_ERROR err = [CHIPError errorToCHIPErrorCode:error];
-                                         ChipLogError(chipTool, "{{asUpperCamelCase parent.name}} {{asUpperCamelCase name}} Error: %s", chip::ErrorStr(err));
-                                         SetCommandExitStatus(err);
-                                         }];
-       return CHIP_NO_ERROR;
+        [device
+            readAttributeWithEndpointId:[NSNumber numberWithUnsignedShort:endpointId]
+                              clusterId:[NSNumber numberWithUnsignedInteger:mClusterId]
+                            attributeId:[NSNumber numberWithUnsignedInteger:mAttributeId]
+                                 params:params
+                            clientQueue:callbackQueue
+                             completion:^(NSArray<NSDictionary<NSString *, id> *> * _Nullable values, NSError * _Nullable error) {
+                                 NSLog(@"{{asUpperCamelCase parent.name}}.{{asUpperCamelCase name}} response %@",
+                                     [values description]);
+                                 CHIP_ERROR err = [CHIPError errorToCHIPErrorCode:error];
+                                 ChipLogError(chipTool, "{{asUpperCamelCase parent.name}} {{asUpperCamelCase name}} Error: %s",
+                                     chip::ErrorStr(err));
+                                 SetCommandExitStatus(err);
+                             }];
+        return CHIP_NO_ERROR;
     }
     chip::Optional<bool> mFabricFiltered;
 
@@ -75,10 +78,10 @@ private:
     chip::AttributeId mAttributeId;
 };
 
-class SubscribeAttribute : public ModelCommand
-{
+class SubscribeAttribute : public ModelCommand {
 public:
-    SubscribeAttribute() : ModelCommand("subscribe-by-id")
+    SubscribeAttribute()
+        : ModelCommand("subscribe-by-id")
     {
         AddArgument("cluster-id", 0, UINT32_MAX, &mClusterId);
         AddArgument("attribute-id", 0, UINT32_MAX, &mAttributeId);
@@ -90,8 +93,9 @@ public:
         ModelCommand::AddArguments();
     }
 
-    SubscribeAttribute(chip::ClusterId clusterId) :
-        ModelCommand("subscribe-by-id"), mClusterId(clusterId)
+    SubscribeAttribute(chip::ClusterId clusterId)
+        : ModelCommand("subscribe-by-id")
+        , mClusterId(clusterId)
     {
         AddArgument("attribute-id", 0, UINT32_MAX, &mAttributeId);
         AddArgument("min-interval", 0, UINT16_MAX, &mMinInterval);
@@ -102,8 +106,8 @@ public:
         ModelCommand::AddArguments();
     }
 
-    SubscribeAttribute(const char * _Nonnull attributeName) :
-        ModelCommand("subscribe")
+    SubscribeAttribute(const char * _Nonnull attributeName)
+        : ModelCommand("subscribe")
     {
         AddArgument("attr-name", attributeName);
         AddArgument("min-interval", 0, UINT16_MAX, &mMinInterval);
@@ -120,23 +124,26 @@ public:
     {
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         CHIPSubscribeParams * params = [[CHIPSubscribeParams alloc] init];
-        params.keepPreviousSubscriptions = mKeepSubscriptions.HasValue() ? [NSNumber numberWithBool:mKeepSubscriptions.Value()] : nil;
+        params.keepPreviousSubscriptions
+            = mKeepSubscriptions.HasValue() ? [NSNumber numberWithBool:mKeepSubscriptions.Value()] : nil;
         [device subscribeAttributeWithEndpointId:[NSNumber numberWithUnsignedShort:endpointId]
-                                    clusterId:[NSNumber numberWithUnsignedInteger:mClusterId]
-                                    attributeId:[NSNumber numberWithUnsignedInteger:mAttributeId]
-                                    minInterval:[NSNumber numberWithUnsignedInteger:mMinInterval]
-                                    maxInterval:[NSNumber numberWithUnsignedInteger:mMaxInterval]
-                                        params:params
-                                   clientQueue:callbackQueue
-                                 reportHandler:^(NSArray<NSDictionary<NSString *, id> *> * _Nullable values, NSError * _Nullable error) {
-                                     NSLog(@"{{asUpperCamelCase parent.name}}.{{asUpperCamelCase name}} response %@", [values description]);
-                                     if (error || !mWait) {
-                                         SetCommandExitStatus([CHIPError errorToCHIPErrorCode:error]);
-                                     }
-                                 }
-                       subscriptionEstablished:nullptr];
+                                       clusterId:[NSNumber numberWithUnsignedInteger:mClusterId]
+                                     attributeId:[NSNumber numberWithUnsignedInteger:mAttributeId]
+                                     minInterval:[NSNumber numberWithUnsignedInteger:mMinInterval]
+                                     maxInterval:[NSNumber numberWithUnsignedInteger:mMaxInterval]
+                                          params:params
+                                     clientQueue:callbackQueue
+                                   reportHandler:^(
+                                       NSArray<NSDictionary<NSString *, id> *> * _Nullable values, NSError * _Nullable error) {
+                                       NSLog(@"{{asUpperCamelCase parent.name}}.{{asUpperCamelCase name}} response %@",
+                                           [values description]);
+                                       if (error || !mWait) {
+                                           SetCommandExitStatus([CHIPError errorToCHIPErrorCode:error]);
+                                       }
+                                   }
+                         subscriptionEstablished:nullptr];
 
-       return CHIP_NO_ERROR;
+        return CHIP_NO_ERROR;
     }
     chip::Optional<bool> mKeepSubscriptions;
     chip::Optional<bool> mFabricFiltered;
@@ -149,11 +156,10 @@ private:
     chip::AttributeId mAttributeId;
 };
 
-
-class SubscribeEvent : public ModelCommand
-{
+class SubscribeEvent : public ModelCommand {
 public:
-    SubscribeEvent() : ModelCommand("subscribe-all-events")
+    SubscribeEvent()
+        : ModelCommand("subscribe-all-events")
     {
         AddArgument("cluster-id", 0, UINT32_MAX, &mClusterId);
         AddArgument("min-interval", 0, UINT16_MAX, &mMinInterval);
@@ -163,8 +169,9 @@ public:
         ModelCommand::AddArguments();
     }
 
-    SubscribeEvent(chip::ClusterId clusterId) :
-        ModelCommand("subscribe-event-by-id"), mClusterId(clusterId)
+    SubscribeEvent(chip::ClusterId clusterId)
+        : ModelCommand("subscribe-event-by-id")
+        , mClusterId(clusterId)
     {
         AddArgument("event-id", 0, UINT32_MAX, &mEventId);
         AddArgument("min-interval", 0, UINT16_MAX, &mMinInterval);
@@ -175,9 +182,10 @@ public:
         ModelCommand::AddArguments();
     }
 
-    SubscribeEvent(chip::ClusterId clusterId, const char * _Nullable eventName, chip::EventId eventId) :
-        ModelCommand("subscribe-event"),
-        mClusterId(clusterId), mEventId(eventId)
+    SubscribeEvent(chip::ClusterId clusterId, const char * _Nullable eventName, chip::EventId eventId)
+        : ModelCommand("subscribe-event")
+        , mClusterId(clusterId)
+        , mEventId(eventId)
     {
         AddArgument("attr-name", eventName);
         AddArgument("min-interval", 0, UINT16_MAX, &mMinInterval);
@@ -195,28 +203,30 @@ public:
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
 
         CHIPSubscribeParams * params = [[CHIPSubscribeParams alloc] init];
-        params.keepPreviousSubscriptions = mKeepSubscriptions.HasValue() ? [NSNumber numberWithBool:mKeepSubscriptions.Value()] : nil;
+        params.keepPreviousSubscriptions
+            = mKeepSubscriptions.HasValue() ? [NSNumber numberWithBool:mKeepSubscriptions.Value()] : nil;
         [device subscribeWithQueue:callbackQueue
-                       minInterval:mMinInterval
-                       maxInterval:mMaxInterval
-                            params:params
-                    cacheContainer: nil
-            attributeReportHandler:  ^(NSArray * value){
+            minInterval:mMinInterval
+            maxInterval:mMaxInterval
+            params:params
+            cacheContainer:nil
+            attributeReportHandler:^(NSArray * value) {
                 SetCommandExitStatus(CHIP_NO_ERROR);
             }
-                eventReportHandler: ^(NSArray * value){
-                    if (!mWait) {
-                        SetCommandExitStatus(CHIP_NO_ERROR);
-                    }
+            eventReportHandler:^(NSArray * value) {
+                if (!mWait) {
+                    SetCommandExitStatus(CHIP_NO_ERROR);
                 }
-                     errorHandler: ^(NSError * error){
-                          if(error) {
-                               SetCommandExitStatus([CHIPError errorToCHIPErrorCode:error]);
-                          }
-                      }
-           subscriptionEstablished:^(){}];
+            }
+            errorHandler:^(NSError * error) {
+                if (error) {
+                    SetCommandExitStatus([CHIPError errorToCHIPErrorCode:error]);
+                }
+            }
+            subscriptionEstablished:^() {
+            }];
 
-       return CHIP_NO_ERROR;
+        return CHIP_NO_ERROR;
     }
     chip::Optional<bool> mKeepSubscriptions;
     chip::Optional<chip::EventNumber> mEventNumber;
@@ -227,5 +237,4 @@ public:
 private:
     chip::ClusterId mClusterId;
     chip::EventId mEventId;
-
 };
