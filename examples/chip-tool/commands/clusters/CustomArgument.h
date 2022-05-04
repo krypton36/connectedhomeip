@@ -233,20 +233,29 @@ public:
         Json::Reader reader;
         Json::Value value;
         reader.parse(json, value);
-        if( value.isString() ) {
-        ChipLogDetail(chipTool,  "JSON VALUE string(%s)", value.asString().c_str() );
-        } else if( value.isBool() ) {
-            ChipLogDetail(chipTool,  "JSON VALUE bool(%d)", value.asBool() );
-        } else if( value.isInt() ) {
-            ChipLogDetail(chipTool,  "JSON VALUE int(%d)", value.asInt() );
-        } else if( value.isUInt() ) {
-            ChipLogDetail(chipTool,  "JSON VALUE uint(%u)", value.asUInt() );
-        } else if( value.isDouble() ) {
-            ChipLogDetail(chipTool,  "JSON VALUE double(%f)", value.asDouble() );
+        if (value.isString())
+        {
+            ChipLogDetail(chipTool, "JSON VALUE string(%s)", value.asString().c_str());
+        }
+        else if (value.isBool())
+        {
+            ChipLogDetail(chipTool, "JSON VALUE bool(%d)", value.asBool());
+        }
+        else if (value.isInt())
+        {
+            ChipLogDetail(chipTool, "JSON VALUE int(%d)", value.asInt());
+        }
+        else if (value.isUInt())
+        {
+            ChipLogDetail(chipTool, "JSON VALUE uint(%u)", value.asUInt());
+        }
+        else if (value.isDouble())
+        {
+            ChipLogDetail(chipTool, "JSON VALUE double(%f)", value.asDouble());
         }
         else
         {
-            ChipLogDetail(chipTool,  "unknown type=[%d]", value.type() );
+            ChipLogDetail(chipTool, "unknown type=[%d]", value.type());
         }
 
         mData = static_cast<uint8_t *>(chip::Platform::MemoryCalloc(sizeof(uint8_t), mDataMaxLen));

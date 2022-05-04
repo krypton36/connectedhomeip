@@ -90,12 +90,12 @@ public:
                              clientQueue:callbackQueue
                               completion:^(NSArray<NSDictionary<NSString *, id> *> * _Nullable values, NSError * _Nullable error) {
                                   CHIP_ERROR chipError = [CHIPError errorToCHIPErrorCode:error];
-                                  if (chipError != CHIP_NO_ERROR){
+                                  if (chipError != CHIP_NO_ERROR) {
                                       ChipLogError(chipTool, "Error: %s", chip::ErrorStr(chipError));
                                   }
-                                  if (values){
-                                      for (id item in values){
-                                        NSLog(@"Response Item: %@", [item description]);
+                                  if (values) {
+                                      for (id item in values) {
+                                          NSLog(@"Response Item: %@", [item description]);
                                       }
                                   }
                                   SetCommandExitStatus(chipError);
