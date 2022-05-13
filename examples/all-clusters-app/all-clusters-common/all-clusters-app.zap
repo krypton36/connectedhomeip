@@ -13563,7 +13563,7 @@
               "code": 4,
               "mfgCode": null,
               "source": "client",
-              "incoming": 0,
+              "incoming": 1,
               "outgoing": 1
             }
           ],
@@ -13608,6 +13608,14 @@
               "source": "server",
               "incoming": 1,
               "outgoing": 0
+            },
+            {
+              "name": "GetRelayStatusLog",
+              "code": 4,
+              "mfgCode": null,
+              "source": "client",
+              "incoming": 1,
+              "outgoing": 1
             }
           ],
           "attributes": [
