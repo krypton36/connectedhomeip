@@ -247,7 +247,7 @@ Top level key to define a YAML test: [test](#property-test)
 
 -   [Simulated README](../../../../docs/guides/simulated_device_linux.md)
 -   Simulated tests:
-    [tests.js](../../../../examples/placeholder/linux/apps/app1/tests.js)
+    [tests.js](../../../../examples/testing-app/linux/apps/all-clusters-test-app/tests.js)
 
 -   chip-tool(darwin) tests:
     [tests.js](../../../../examples/darwin-framework-tool/templates/tests/tests.js)

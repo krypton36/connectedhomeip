@@ -96,8 +96,10 @@ def getGlobalTemplatesTargets():
         example_name = example_name[:example_name.index('/')]
 
         # Place holder has apps within each build
-        if example_name == "placeholder":
+        if example_name == "testing-app":
             example_name = filepath.as_posix()
+            app_path =  example_name[:example_name.index(
+                'apps/') +  + len('apps/')]
             example_name = example_name[example_name.index(
                 'apps/') + len('apps/'):]
             example_name = example_name[:example_name.index('/')]
@@ -107,8 +109,8 @@ def getGlobalTemplatesTargets():
             # The name zap-generated is to make includes clear by using
             # a name like <zap-generated/foo.h>
             output_dir = os.path.join(
-                'zzz_generated', 'placeholder', example_name, 'zap-generated')
-            template = 'examples/placeholder/templates/templates.json'
+                'zzz_generated', 'testing-app', example_name, 'zap-generated')
+            template = '{}/{}/templates/templates.json'.format(app_path, example_name)
 
             targets.append(ZAPGenerateTarget(filepath, output_dir=output_dir))
             targets.append(
@@ -149,16 +151,18 @@ def getTestsTemplatesTargets(test_target):
     }
 
     # Place holder has apps within each build
-    for filepath in Path('./examples/placeholder').rglob('*.zap'):
+    for filepath in Path('./examples/testing-app').rglob('*.zap'):
         example_name = filepath.as_posix()
+        app_path =  example_name[:example_name.index(
+                'apps/') +  + len('apps/')]
         example_name = example_name[example_name.index(
             'apps/') + len('apps/'):]
         example_name = example_name[:example_name.index('/')]
 
         templates[example_name] = {
             'zap': filepath,
-            'template': 'examples/placeholder/templates/templates.json',
-            'output_dir': os.path.join('zzz_generated', 'placeholder', example_name, 'zap-generated')
+            'template': '{}/{}/templates/templates.json'.format(app_path, example_name),
+            'output_dir': os.path.join('zzz_generated', 'testing-app', example_name, 'zap-generated')
         }
 
     targets = []
