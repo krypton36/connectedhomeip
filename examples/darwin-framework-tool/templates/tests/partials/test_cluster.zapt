@@ -221,13 +221,15 @@ class {{filename}}: public TestCommandBridge
             {{~#if (hasProperty expectedConstraints "minLength")}}VerifyOrReturn(CheckConstraintMinLength("{{>item}}", [{{>actualValue}} length], {{expectedConstraints.minLength}}));{{/if}}
             {{~#if (hasProperty expectedConstraints "maxLength")}}VerifyOrReturn(CheckConstraintMaxLength("{{>item}}", [{{>actualValue}} length], {{expectedConstraints.maxLength}}));{{/if}}
             {{~#if (hasProperty expectedConstraints "minValue")}}
+              {{#*inline "expectedMinValue"}}{{#if (valueIsANumber expectedConstraints.minValue)}}{{asTypedLiteral expectedConstraints.minValue type}}{{else}}[{{asTypedLiteral expectedConstraints.minValue type}} {{asObjectiveCNumberType "" type true}}Value]{{/if}}{{/inline}}
               if ({{>actualValue}} != nil) {
-                VerifyOrReturn(CheckConstraintMinValue<{{chipType}}>("{{>item}}", [{{>actualValue}} {{asObjectiveCNumberType "" type true}}Value], {{asTypedLiteral expectedConstraints.minValue type}}));
+                VerifyOrReturn(CheckConstraintMinValue<{{chipType}}>("{{>item}}", [{{>actualValue}} {{asObjectiveCNumberType "" type true}}Value], {{>expectedMinValue}} ));
               }
             {{/if}}
             {{~#if (hasProperty expectedConstraints "maxValue")}}
+              {{#*inline "expectedMaxValue"}}{{#if (valueIsANumber expectedConstraints.maxValue)}}{{asTypedLiteral expectedConstraints.maxValue type}}{{else}}[{{asTypedLiteral expectedConstraints.maxValue type}} {{asObjectiveCNumberType "" type true}} {{/if}}{{/inline}}
               if ({{>actualValue}} != nil) {
-                VerifyOrReturn(CheckConstraintMaxValue<{{chipType}}>("{{>item}}", [{{>actualValue}} {{asObjectiveCNumberType "" type true}}Value], {{asTypedLiteral expectedConstraints.maxValue type}}));
+                VerifyOrReturn(CheckConstraintMaxValue<{{chipType}}>("{{>item}}", [{{>actualValue}} {{asObjectiveCNumberType "" type true}}Value], {{>expectedMaxValue}}));
               }
             {{/if}}
             {{~#if (hasProperty expectedConstraints "notValue")}}

@@ -289,6 +289,11 @@ function chip_endpoint_data_version_count()
 
 //  End of Endpoint-config specific helpers
 
+function valueIsANumber(value)
+{
+  return !isNaN(value);
+}
+
 async function asNativeType(type)
 {
   function fn(pkgId)
@@ -308,8 +313,7 @@ async function asNativeType(type)
 
 async function asTypedExpression(value, type)
 {
-  const valueIsANumber = !isNaN(value);
-  if (!value || valueIsANumber) {
+  if (!value || valueIsANumber(value)) {
     return asTypedLiteral.call(this, value, type);
   }
 
@@ -338,8 +342,7 @@ async function asTypedExpression(value, type)
 
 async function asTypedLiteral(value, type)
 {
-  const valueIsANumber = !isNaN(value);
-  if (!valueIsANumber) {
+  if (!valueIsANumber(value)) {
     return value;
   }
 
@@ -862,6 +865,7 @@ exports.chip_endpoint_cluster_list            = chip_endpoint_cluster_list
 exports.chip_endpoint_data_version_count      = chip_endpoint_data_version_count;
 exports.chip_endpoint_generated_commands_list = chip_endpoint_generated_commands_list
 exports.asTypedExpression                     = asTypedExpression;
+exports.valueIsANumber                        = valueIsANumber;
 exports.asTypedLiteral                        = asTypedLiteral;
 exports.asLowerCamelCase                      = asLowerCamelCase;
 exports.asUpperCamelCase                      = asUpperCamelCase;
