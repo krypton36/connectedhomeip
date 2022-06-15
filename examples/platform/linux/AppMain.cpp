@@ -20,6 +20,7 @@
 #include <platform/PlatformManager.h>
 
 #include <app/clusters/network-commissioning/network-commissioning.h>
+#include <app-common/zap-generated/attributes/Accessors.h>
 #include <app/server/OnboardingCodesUtil.h>
 #include <app/server/Server.h>
 #include <crypto/CHIPCryptoPAL.h>
@@ -79,6 +80,7 @@ using namespace chip::DeviceLayer;
 using namespace chip::Inet;
 using namespace chip::Transport;
 using namespace chip::app::Clusters;
+using namespace chip::app::Clusters::NetworkCommissioning;
 
 #if defined(ENABLE_CHIP_SHELL)
 using chip::Shell::Engine;
@@ -307,6 +309,18 @@ void ChipLinuxAppMainLoop()
 
     // Init ZCL Data Model and CHIP App Server
     Server::GetInstance().Init(initParams);
+
+    // Set Features based on thread and/or Wifi being enabled on Linux Build
+    BitFlags<NetworkCommissioningFeature> networkCommissioningFeatures;
+    networkCommissioningFeatures.Set(NetworkCommissioningFeature::kEthernetNetworkInterface);
+    if (LinuxDeviceOptions::GetInstance().mWiFi) {
+        networkCommissioningFeatures.Set(NetworkCommissioningFeature::kWiFiNetworkInterface);
+    }
+    if (LinuxDeviceOptions::GetInstance().mThread) {
+        networkCommissioningFeatures.Set(NetworkCommissioningFeature::kThreadNetworkInterface);
+    }
+    // All clusters config uses endpoint 2 for NetworkCommissioning Cluster
+    Attributes::FeatureMap::Set(2, networkCommissioningFeatures.Raw());
 
     gExampleDeviceInfoProvider.SetStorageDelegate(&chip::Server::GetInstance().GetPersistentStorage());
     DeviceLayer::SetDeviceInfoProvider(&gExampleDeviceInfoProvider);
