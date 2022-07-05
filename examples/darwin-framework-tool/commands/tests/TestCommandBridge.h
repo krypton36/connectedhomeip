@@ -28,11 +28,9 @@
 #include <lib/support/UnitTestUtils.h>
 #include <map>
 #include <string>
-#include <zap-generated/cluster/MTRTestClustersObjc.h>
 
 #import <Matter/Matter.h>
 
-#import "MTRDevice_Externs.h"
 #import "MTRError_Utils.h"
 
 class TestCommandBridge;
@@ -123,7 +121,6 @@ public:
         // will just hand it right back to us without establishing a new CASE
         // session.
         if (GetDevice(identity) != nil) {
-            [GetDevice(identity) invalidateCASESession];
             mConnectedDevices[identity] = nil;
         }
 
