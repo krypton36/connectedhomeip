@@ -33,7 +33,7 @@ static NSString * const kOperationalCredentialsIPK = @"ChipToolOpCredsIPK";
     return _mKeyPair.Initialize() == CHIP_NO_ERROR;
 }
 
-- (NSData *)ECDSA_sign_message_raw:(NSData *)message
+- (NSData *)signMessageECDSA_RAW:(NSData *)message
 {
     chip::Crypto::P256ECDSASignature signature;
     NSData * out_signature;
@@ -48,12 +48,17 @@ static NSString * const kOperationalCredentialsIPK = @"ChipToolOpCredsIPK";
 {
     chip::Crypto::P256PublicKey publicKey = _mKeyPair.Pubkey();
     NSData * publicKeyNSData = [NSData dataWithBytes:publicKey.Bytes() length:publicKey.Length()];
-    NSDictionary * attributes = @{
-        (__bridge NSString *) kSecAttrKeyClass : (__bridge NSString *) kSecAttrKeyClassPublic,
-        (NSString *) kSecAttrKeyType : (NSString *) kSecAttrKeyTypeECSECPrimeRandom,
-        (NSString *) kSecAttrKeySizeInBits : @Public_KeySize,
-        (NSString *) kSecAttrLabel : kCHIPToolKeychainLabel,
-        (NSString *) kSecAttrApplicationTag : @CHIPPlugin_CAKeyTag,
+    NSDictionary * attributes = @ {
+(__bridge NSString *) kSecAttrKeyClass :
+        (__bridge NSString *) kSecAttrKeyClassPublic,
+(NSString *) kSecAttrKeyType :
+        (NSString *) kSecAttrKeyTypeECSECPrimeRandom,
+(NSString *) kSecAttrKeySizeInBits :
+        @Public_KeySize,
+(NSString *) kSecAttrLabel :
+        kCHIPToolKeychainLabel,
+(NSString *) kSecAttrApplicationTag :
+        @CHIPPlugin_CAKeyTag,
     };
     return SecKeyCreateWithData((__bridge CFDataRef) publicKeyNSData, (__bridge CFDictionaryRef) attributes, nullptr);
 }
