@@ -163,7 +163,7 @@ public:
         dispatch_queue_t callbackQueue = dispatch_queue_create("com.chip.command", DISPATCH_QUEUE_SERIAL);
         MTR{{asUpperCamelCase parent.name}} * cluster = [[MTR{{asUpperCamelCase parent.name}} alloc] initWithDevice:device endpoint:endpointId queue:callbackQueue];
         MTRWriteParams * params = [[MTRWriteParams alloc] init];
-        params.timedWriteTimeoutMs = mTimedInteractionTimeoutMs.HasValue() ? [NSNumber numberWithUnsignedShort:mTimedInteractionTimeoutMs.Value()] : nil;
+        params.timedWriteTimeout = mTimedInteractionTimeoutMs.HasValue() ? [NSNumber numberWithUnsignedShort:mTimedInteractionTimeoutMs.Value()] : nil;
         params.dataVersion = mDataVersion.HasValue() ? [NSNumber numberWithUnsignedInt:mDataVersion.Value()] : nil;
         {{#if_chip_complex}}
         {{asObjectiveCType type parent.name}} value;
@@ -219,8 +219,8 @@ public:
         MTRSubscribeParams * params = [[MTRSubscribeParams alloc] init];
         params.keepPreviousSubscriptions = mKeepSubscriptions.HasValue() ? [NSNumber numberWithBool:mKeepSubscriptions.Value()] : nil;
         params.fabricFiltered = mFabricFiltered.HasValue() ? [NSNumber numberWithBool:mFabricFiltered.Value()] : nil;
-        [cluster subscribe{{>attribute}}WithMinInterval:[NSNumber numberWithUnsignedInt:mMinInterval] 
-                                            maxInterval:[NSNumber numberWithUnsignedInt:mMaxInterval] 
+        [cluster subscribe{{>attribute}}WithMinInterval:[NSNumber numberWithUnsignedInt:mMinInterval]
+                                            maxInterval:[NSNumber numberWithUnsignedInt:mMaxInterval]
                                                  params:params
                                 subscriptionEstablished:^(){ mSubscriptionEstablished=YES; }
                                 reportHandler:^({{asObjectiveCClass type parent.name}} * _Nullable value, NSError * _Nullable error) {
@@ -245,7 +245,7 @@ public:
 void registerCluster{{asUpperCamelCase name}}(Commands & commands)
 {
     using namespace chip::app::Clusters::{{asUpperCamelCase name}};
-    
+
     const char * clusterName = "{{asUpperCamelCase name}}";
 
     commands_list clusterCommands = {
