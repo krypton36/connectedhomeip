@@ -97,11 +97,11 @@ CHIP_ERROR MTRErrorToCHIPErrorCode(NSError * error)
             code = static_cast<decltype(code)>([error.userInfo[@"errorCode"] unsignedLongValue]);
             break;
         }
-    // Weird error we did not create.  Fall through.
-        default:
-            code = CHIP_ERROR_INTERNAL.AsInteger();
-            break;
-        }
+        // Weird error we did not create.  Fall through.
+    default:
+        code = CHIP_ERROR_INTERNAL.AsInteger();
+        break;
+    }
     }
 
     return chip::ChipError(code);
@@ -140,7 +140,7 @@ id NSObjectFromCHIPTLV(chip::TLV::TLVReader * data)
             return nil;
         }
         return [NSDictionary
-                dictionaryWithObjectsAndKeys:MTRBooleanValueType, MTRTypeKey, [NSNumber numberWithBool:val], MTRValueKey, nil];
+            dictionaryWithObjectsAndKeys:MTRBooleanValueType, MTRTypeKey, [NSNumber numberWithBool:val], MTRValueKey, nil];
     }
     case chip::TLV::kTLVType_FloatingPointNumber: {
         // Try float first
@@ -156,7 +156,7 @@ id NSObjectFromCHIPTLV(chip::TLV::TLVReader * data)
             return nil;
         }
         return [NSDictionary
-                dictionaryWithObjectsAndKeys:MTRDoubleValueType, MTRTypeKey, [NSNumber numberWithDouble:val], MTRValueKey, nil];
+            dictionaryWithObjectsAndKeys:MTRDoubleValueType, MTRTypeKey, [NSNumber numberWithDouble:val], MTRValueKey, nil];
     }
     case chip::TLV::kTLVType_UTF8String: {
         uint32_t len = data->GetLength();
