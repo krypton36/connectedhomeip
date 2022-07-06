@@ -98,11 +98,6 @@ executable("darwin-framework-tool") {
     "main.mm",
   ]
 
-  if (config_use_interactive_mode) {
-    sources += [ "commands/interactive/InteractiveCommands.mm" ]
-    deps += [ "${editline_root}:editline" ]
-  }
-
   deps = [
     ":build-darwin-framwork",
     "${chip_root}/examples/chip-tool:chip-tool-utils",
@@ -112,6 +107,11 @@ executable("darwin-framework-tool") {
     "${chip_root}/third_party/inipp",
     "${chip_root}/third_party/jsoncpp",
   ]
+
+  if (config_use_interactive_mode) {
+    sources += [ "commands/interactive/InteractiveCommands.mm" ]
+    deps += [ "${editline_root}:editline" ]
+  }
 
   ldflags = [
     "-rpath",
