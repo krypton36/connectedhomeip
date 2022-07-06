@@ -83,7 +83,7 @@ changed_paths:
 restylers:
     - name: whitespace
       enabled: true
-      image: restyled/restyler-whitespace:v0.2.0.2
+      image: restyled/restyler-whitespace:0.2.0.2
       command:
           - whitespace
       arguments: []
