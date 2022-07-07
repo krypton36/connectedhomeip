@@ -48,17 +48,12 @@ static NSString * const kOperationalCredentialsIPK = @"ChipToolOpCredsIPK";
 {
     chip::Crypto::P256PublicKey publicKey = _mKeyPair.Pubkey();
     NSData * publicKeyNSData = [NSData dataWithBytes:publicKey.Bytes() length:publicKey.Length()];
-    NSDictionary * attributes = @ {
-(__bridge NSString *) kSecAttrKeyClass :
-        (__bridge NSString *) kSecAttrKeyClassPublic,
-(NSString *) kSecAttrKeyType :
-        (NSString *) kSecAttrKeyTypeECSECPrimeRandom,
-(NSString *) kSecAttrKeySizeInBits :
-        @Public_KeySize,
-(NSString *) kSecAttrLabel :
-        kCHIPToolKeychainLabel,
-(NSString *) kSecAttrApplicationTag :
-        @CHIPPlugin_CAKeyTag,
+    NSDictionary * attributes = @{
+        (__bridge NSString *) kSecAttrKeyClass : (__bridge NSString *) kSecAttrKeyClassPublic,
+        (NSString *) kSecAttrKeyType : (NSString *) kSecAttrKeyTypeECSECPrimeRandom,
+        (NSString *) kSecAttrKeySizeInBits : @Public_KeySize,
+        (NSString *) kSecAttrLabel : kCHIPToolKeychainLabel,
+        (NSString *) kSecAttrApplicationTag : @CHIPPlugin_CAKeyTag,
     };
     return SecKeyCreateWithData((__bridge CFDataRef) publicKeyNSData, (__bridge CFDictionaryRef) attributes, nullptr);
 }

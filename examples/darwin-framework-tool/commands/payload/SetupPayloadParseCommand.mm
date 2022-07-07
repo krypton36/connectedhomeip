@@ -17,8 +17,8 @@
  */
 
 #include "SetupPayloadParseCommand.h"
-#import <Matter/Matter.h>
 #include "MTRError_Utils.h"
+#import <Matter/Matter.h>
 
 using namespace ::chip;
 
