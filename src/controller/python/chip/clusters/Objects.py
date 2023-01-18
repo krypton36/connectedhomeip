@@ -20,17 +20,21 @@
 '''
 
 # This file contains generated struct, enum, command definition.
-# Users are not expected to import this file, instead, users can use import chip.clusters, which will import all symbols from this file and can get a readable, pretty naming like clusters.OnOff.commands.OnCommand
+# Users are not expected to import this file, instead, users can use import chip.clusters,
+# which will import all symbols from this file and can get a readable, pretty naming like
+# clusters.OnOff.commands.OnCommand
 
-from dataclasses import dataclass, field
 import typing
+from dataclasses import dataclass, field
 from enum import IntEnum
+
 from chip import ChipUtility
+from chip.tlv import float32, uint
 
-from chip.tlv import uint, float32
-
-from .ClusterObjects import ClusterObject, ClusterObjectDescriptor, ClusterObjectFieldDescriptor, ClusterCommand, ClusterAttributeDescriptor, Cluster, ClusterEvent
+from .ClusterObjects import (Cluster, ClusterAttributeDescriptor, ClusterCommand, ClusterEvent, ClusterObject,
+                             ClusterObjectDescriptor, ClusterObjectFieldDescriptor)
 from .Types import Nullable, NullValue
+
 
 @dataclass
 class Identify(Cluster):
@@ -83,7 +87,7 @@ class Identify(Cluster):
         @dataclass
         class Identify(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0003
-            command_id: typing.ClassVar[int] = 0x0000
+            command_id: typing.ClassVar[int] = 0x00000000
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -99,7 +103,7 @@ class Identify(Cluster):
         @dataclass
         class TriggerEffect(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0003
-            command_id: typing.ClassVar[int] = 0x0040
+            command_id: typing.ClassVar[int] = 0x00000040
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -259,7 +263,7 @@ class Groups(Cluster):
         @dataclass
         class AddGroup(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0004
-            command_id: typing.ClassVar[int] = 0x0000
+            command_id: typing.ClassVar[int] = 0x00000000
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = 'AddGroupResponse'
 
@@ -267,17 +271,17 @@ class Groups(Cluster):
             def descriptor(cls) -> ClusterObjectDescriptor:
                 return ClusterObjectDescriptor(
                     Fields = [
-                            ClusterObjectFieldDescriptor(Label="groupId", Tag=0, Type=uint),
+                            ClusterObjectFieldDescriptor(Label="groupID", Tag=0, Type=uint),
                             ClusterObjectFieldDescriptor(Label="groupName", Tag=1, Type=str),
                     ])
 
-            groupId: 'uint' = 0
+            groupID: 'uint' = 0
             groupName: 'str' = ""
 
         @dataclass
         class AddGroupResponse(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0004
-            command_id: typing.ClassVar[int] = 0x0000
+            command_id: typing.ClassVar[int] = 0x00000000
             is_client: typing.ClassVar[bool] = False
             response_type: typing.ClassVar[str] = None
 
@@ -286,16 +290,16 @@ class Groups(Cluster):
                 return ClusterObjectDescriptor(
                     Fields = [
                             ClusterObjectFieldDescriptor(Label="status", Tag=0, Type=uint),
-                            ClusterObjectFieldDescriptor(Label="groupId", Tag=1, Type=uint),
+                            ClusterObjectFieldDescriptor(Label="groupID", Tag=1, Type=uint),
                     ])
 
             status: 'uint' = 0
-            groupId: 'uint' = 0
+            groupID: 'uint' = 0
 
         @dataclass
         class ViewGroup(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0004
-            command_id: typing.ClassVar[int] = 0x0001
+            command_id: typing.ClassVar[int] = 0x00000001
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = 'ViewGroupResponse'
 
@@ -303,15 +307,15 @@ class Groups(Cluster):
             def descriptor(cls) -> ClusterObjectDescriptor:
                 return ClusterObjectDescriptor(
                     Fields = [
-                            ClusterObjectFieldDescriptor(Label="groupId", Tag=0, Type=uint),
+                            ClusterObjectFieldDescriptor(Label="groupID", Tag=0, Type=uint),
                     ])
 
-            groupId: 'uint' = 0
+            groupID: 'uint' = 0
 
         @dataclass
         class ViewGroupResponse(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0004
-            command_id: typing.ClassVar[int] = 0x0001
+            command_id: typing.ClassVar[int] = 0x00000001
             is_client: typing.ClassVar[bool] = False
             response_type: typing.ClassVar[str] = None
 
@@ -320,18 +324,18 @@ class Groups(Cluster):
                 return ClusterObjectDescriptor(
                     Fields = [
                             ClusterObjectFieldDescriptor(Label="status", Tag=0, Type=uint),
-                            ClusterObjectFieldDescriptor(Label="groupId", Tag=1, Type=uint),
+                            ClusterObjectFieldDescriptor(Label="groupID", Tag=1, Type=uint),
                             ClusterObjectFieldDescriptor(Label="groupName", Tag=2, Type=str),
                     ])
 
             status: 'uint' = 0
-            groupId: 'uint' = 0
+            groupID: 'uint' = 0
             groupName: 'str' = ""
 
         @dataclass
         class GetGroupMembership(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0004
-            command_id: typing.ClassVar[int] = 0x0002
+            command_id: typing.ClassVar[int] = 0x00000002
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = 'GetGroupMembershipResponse'
 
@@ -347,7 +351,7 @@ class Groups(Cluster):
         @dataclass
         class GetGroupMembershipResponse(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0004
-            command_id: typing.ClassVar[int] = 0x0002
+            command_id: typing.ClassVar[int] = 0x00000002
             is_client: typing.ClassVar[bool] = False
             response_type: typing.ClassVar[str] = None
 
@@ -365,7 +369,7 @@ class Groups(Cluster):
         @dataclass
         class RemoveGroup(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0004
-            command_id: typing.ClassVar[int] = 0x0003
+            command_id: typing.ClassVar[int] = 0x00000003
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = 'RemoveGroupResponse'
 
@@ -373,15 +377,15 @@ class Groups(Cluster):
             def descriptor(cls) -> ClusterObjectDescriptor:
                 return ClusterObjectDescriptor(
                     Fields = [
-                            ClusterObjectFieldDescriptor(Label="groupId", Tag=0, Type=uint),
+                            ClusterObjectFieldDescriptor(Label="groupID", Tag=0, Type=uint),
                     ])
 
-            groupId: 'uint' = 0
+            groupID: 'uint' = 0
 
         @dataclass
         class RemoveGroupResponse(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0004
-            command_id: typing.ClassVar[int] = 0x0003
+            command_id: typing.ClassVar[int] = 0x00000003
             is_client: typing.ClassVar[bool] = False
             response_type: typing.ClassVar[str] = None
 
@@ -390,16 +394,16 @@ class Groups(Cluster):
                 return ClusterObjectDescriptor(
                     Fields = [
                             ClusterObjectFieldDescriptor(Label="status", Tag=0, Type=uint),
-                            ClusterObjectFieldDescriptor(Label="groupId", Tag=1, Type=uint),
+                            ClusterObjectFieldDescriptor(Label="groupID", Tag=1, Type=uint),
                     ])
 
             status: 'uint' = 0
-            groupId: 'uint' = 0
+            groupID: 'uint' = 0
 
         @dataclass
         class RemoveAllGroups(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0004
-            command_id: typing.ClassVar[int] = 0x0004
+            command_id: typing.ClassVar[int] = 0x00000004
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -413,7 +417,7 @@ class Groups(Cluster):
         @dataclass
         class AddGroupIfIdentifying(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0004
-            command_id: typing.ClassVar[int] = 0x0005
+            command_id: typing.ClassVar[int] = 0x00000005
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -421,11 +425,11 @@ class Groups(Cluster):
             def descriptor(cls) -> ClusterObjectDescriptor:
                 return ClusterObjectDescriptor(
                     Fields = [
-                            ClusterObjectFieldDescriptor(Label="groupId", Tag=0, Type=uint),
+                            ClusterObjectFieldDescriptor(Label="groupID", Tag=0, Type=uint),
                             ClusterObjectFieldDescriptor(Label="groupName", Tag=1, Type=str),
                     ])
 
-            groupId: 'uint' = 0
+            groupID: 'uint' = 0
             groupName: 'str' = ""
 
 
@@ -595,7 +599,7 @@ class Scenes(Cluster):
         @dataclass
         class AddScene(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0005
-            command_id: typing.ClassVar[int] = 0x0000
+            command_id: typing.ClassVar[int] = 0x00000000
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = 'AddSceneResponse'
 
@@ -619,7 +623,7 @@ class Scenes(Cluster):
         @dataclass
         class AddSceneResponse(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0005
-            command_id: typing.ClassVar[int] = 0x0000
+            command_id: typing.ClassVar[int] = 0x00000000
             is_client: typing.ClassVar[bool] = False
             response_type: typing.ClassVar[str] = None
 
@@ -639,7 +643,7 @@ class Scenes(Cluster):
         @dataclass
         class ViewScene(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0005
-            command_id: typing.ClassVar[int] = 0x0001
+            command_id: typing.ClassVar[int] = 0x00000001
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = 'ViewSceneResponse'
 
@@ -657,7 +661,7 @@ class Scenes(Cluster):
         @dataclass
         class ViewSceneResponse(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0005
-            command_id: typing.ClassVar[int] = 0x0001
+            command_id: typing.ClassVar[int] = 0x00000001
             is_client: typing.ClassVar[bool] = False
             response_type: typing.ClassVar[str] = None
 
@@ -683,7 +687,7 @@ class Scenes(Cluster):
         @dataclass
         class RemoveScene(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0005
-            command_id: typing.ClassVar[int] = 0x0002
+            command_id: typing.ClassVar[int] = 0x00000002
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = 'RemoveSceneResponse'
 
@@ -701,7 +705,7 @@ class Scenes(Cluster):
         @dataclass
         class RemoveSceneResponse(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0005
-            command_id: typing.ClassVar[int] = 0x0002
+            command_id: typing.ClassVar[int] = 0x00000002
             is_client: typing.ClassVar[bool] = False
             response_type: typing.ClassVar[str] = None
 
@@ -721,7 +725,7 @@ class Scenes(Cluster):
         @dataclass
         class RemoveAllScenes(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0005
-            command_id: typing.ClassVar[int] = 0x0003
+            command_id: typing.ClassVar[int] = 0x00000003
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = 'RemoveAllScenesResponse'
 
@@ -737,7 +741,7 @@ class Scenes(Cluster):
         @dataclass
         class RemoveAllScenesResponse(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0005
-            command_id: typing.ClassVar[int] = 0x0003
+            command_id: typing.ClassVar[int] = 0x00000003
             is_client: typing.ClassVar[bool] = False
             response_type: typing.ClassVar[str] = None
 
@@ -755,7 +759,7 @@ class Scenes(Cluster):
         @dataclass
         class StoreScene(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0005
-            command_id: typing.ClassVar[int] = 0x0004
+            command_id: typing.ClassVar[int] = 0x00000004
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = 'StoreSceneResponse'
 
@@ -773,7 +777,7 @@ class Scenes(Cluster):
         @dataclass
         class StoreSceneResponse(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0005
-            command_id: typing.ClassVar[int] = 0x0004
+            command_id: typing.ClassVar[int] = 0x00000004
             is_client: typing.ClassVar[bool] = False
             response_type: typing.ClassVar[str] = None
 
@@ -793,7 +797,7 @@ class Scenes(Cluster):
         @dataclass
         class RecallScene(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0005
-            command_id: typing.ClassVar[int] = 0x0005
+            command_id: typing.ClassVar[int] = 0x00000005
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -813,7 +817,7 @@ class Scenes(Cluster):
         @dataclass
         class GetSceneMembership(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0005
-            command_id: typing.ClassVar[int] = 0x0006
+            command_id: typing.ClassVar[int] = 0x00000006
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = 'GetSceneMembershipResponse'
 
@@ -829,7 +833,7 @@ class Scenes(Cluster):
         @dataclass
         class GetSceneMembershipResponse(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0005
-            command_id: typing.ClassVar[int] = 0x0006
+            command_id: typing.ClassVar[int] = 0x00000006
             is_client: typing.ClassVar[bool] = False
             response_type: typing.ClassVar[str] = None
 
@@ -851,7 +855,7 @@ class Scenes(Cluster):
         @dataclass
         class EnhancedAddScene(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0005
-            command_id: typing.ClassVar[int] = 0x0040
+            command_id: typing.ClassVar[int] = 0x00000040
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = 'EnhancedAddSceneResponse'
 
@@ -875,7 +879,7 @@ class Scenes(Cluster):
         @dataclass
         class EnhancedAddSceneResponse(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0005
-            command_id: typing.ClassVar[int] = 0x0040
+            command_id: typing.ClassVar[int] = 0x00000040
             is_client: typing.ClassVar[bool] = False
             response_type: typing.ClassVar[str] = None
 
@@ -895,7 +899,7 @@ class Scenes(Cluster):
         @dataclass
         class EnhancedViewScene(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0005
-            command_id: typing.ClassVar[int] = 0x0041
+            command_id: typing.ClassVar[int] = 0x00000041
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = 'EnhancedViewSceneResponse'
 
@@ -913,7 +917,7 @@ class Scenes(Cluster):
         @dataclass
         class EnhancedViewSceneResponse(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0005
-            command_id: typing.ClassVar[int] = 0x0041
+            command_id: typing.ClassVar[int] = 0x00000041
             is_client: typing.ClassVar[bool] = False
             response_type: typing.ClassVar[str] = None
 
@@ -939,7 +943,7 @@ class Scenes(Cluster):
         @dataclass
         class CopyScene(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0005
-            command_id: typing.ClassVar[int] = 0x0042
+            command_id: typing.ClassVar[int] = 0x00000042
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = 'CopySceneResponse'
 
@@ -963,7 +967,7 @@ class Scenes(Cluster):
         @dataclass
         class CopySceneResponse(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0005
-            command_id: typing.ClassVar[int] = 0x0042
+            command_id: typing.ClassVar[int] = 0x00000042
             is_client: typing.ClassVar[bool] = False
             response_type: typing.ClassVar[str] = None
 
@@ -1215,7 +1219,7 @@ class OnOff(Cluster):
         @dataclass
         class Off(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0006
-            command_id: typing.ClassVar[int] = 0x0000
+            command_id: typing.ClassVar[int] = 0x00000000
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -1229,7 +1233,7 @@ class OnOff(Cluster):
         @dataclass
         class On(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0006
-            command_id: typing.ClassVar[int] = 0x0001
+            command_id: typing.ClassVar[int] = 0x00000001
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -1243,7 +1247,7 @@ class OnOff(Cluster):
         @dataclass
         class Toggle(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0006
-            command_id: typing.ClassVar[int] = 0x0002
+            command_id: typing.ClassVar[int] = 0x00000002
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -1257,7 +1261,7 @@ class OnOff(Cluster):
         @dataclass
         class OffWithEffect(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0006
-            command_id: typing.ClassVar[int] = 0x0040
+            command_id: typing.ClassVar[int] = 0x00000040
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -1265,17 +1269,17 @@ class OnOff(Cluster):
             def descriptor(cls) -> ClusterObjectDescriptor:
                 return ClusterObjectDescriptor(
                     Fields = [
-                            ClusterObjectFieldDescriptor(Label="effectId", Tag=0, Type=OnOff.Enums.OnOffEffectIdentifier),
+                            ClusterObjectFieldDescriptor(Label="effectIdentifier", Tag=0, Type=OnOff.Enums.OnOffEffectIdentifier),
                             ClusterObjectFieldDescriptor(Label="effectVariant", Tag=1, Type=OnOff.Enums.OnOffDelayedAllOffEffectVariant),
                     ])
 
-            effectId: 'OnOff.Enums.OnOffEffectIdentifier' = 0
+            effectIdentifier: 'OnOff.Enums.OnOffEffectIdentifier' = 0
             effectVariant: 'OnOff.Enums.OnOffDelayedAllOffEffectVariant' = 0
 
         @dataclass
         class OnWithRecallGlobalScene(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0006
-            command_id: typing.ClassVar[int] = 0x0041
+            command_id: typing.ClassVar[int] = 0x00000041
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -1289,7 +1293,7 @@ class OnOff(Cluster):
         @dataclass
         class OnWithTimedOff(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0006
-            command_id: typing.ClassVar[int] = 0x0042
+            command_id: typing.ClassVar[int] = 0x00000042
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -1677,7 +1681,7 @@ class LevelControl(Cluster):
         @dataclass
         class MoveToLevel(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0008
-            command_id: typing.ClassVar[int] = 0x0000
+            command_id: typing.ClassVar[int] = 0x00000000
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -1699,7 +1703,7 @@ class LevelControl(Cluster):
         @dataclass
         class Move(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0008
-            command_id: typing.ClassVar[int] = 0x0001
+            command_id: typing.ClassVar[int] = 0x00000001
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -1721,7 +1725,7 @@ class LevelControl(Cluster):
         @dataclass
         class Step(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0008
-            command_id: typing.ClassVar[int] = 0x0002
+            command_id: typing.ClassVar[int] = 0x00000002
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -1745,7 +1749,7 @@ class LevelControl(Cluster):
         @dataclass
         class Stop(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0008
-            command_id: typing.ClassVar[int] = 0x0003
+            command_id: typing.ClassVar[int] = 0x00000003
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -1763,7 +1767,7 @@ class LevelControl(Cluster):
         @dataclass
         class MoveToLevelWithOnOff(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0008
-            command_id: typing.ClassVar[int] = 0x0004
+            command_id: typing.ClassVar[int] = 0x00000004
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -1785,7 +1789,7 @@ class LevelControl(Cluster):
         @dataclass
         class MoveWithOnOff(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0008
-            command_id: typing.ClassVar[int] = 0x0005
+            command_id: typing.ClassVar[int] = 0x00000005
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -1807,7 +1811,7 @@ class LevelControl(Cluster):
         @dataclass
         class StepWithOnOff(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0008
-            command_id: typing.ClassVar[int] = 0x0006
+            command_id: typing.ClassVar[int] = 0x00000006
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -1831,7 +1835,7 @@ class LevelControl(Cluster):
         @dataclass
         class StopWithOnOff(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0008
-            command_id: typing.ClassVar[int] = 0x0007
+            command_id: typing.ClassVar[int] = 0x00000007
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -1849,7 +1853,7 @@ class LevelControl(Cluster):
         @dataclass
         class MoveToClosestFrequency(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0008
-            command_id: typing.ClassVar[int] = 0x0008
+            command_id: typing.ClassVar[int] = 0x00000008
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -2583,11 +2587,11 @@ class Descriptor(Cluster):
             def descriptor(cls) -> ClusterObjectDescriptor:
                 return ClusterObjectDescriptor(
                     Fields = [
-                            ClusterObjectFieldDescriptor(Label="type", Tag=0, Type=uint),
+                            ClusterObjectFieldDescriptor(Label="deviceType", Tag=0, Type=uint),
                             ClusterObjectFieldDescriptor(Label="revision", Tag=1, Type=uint),
                     ])
 
-            type: 'uint' = 0
+            deviceType: 'uint' = 0
             revision: 'uint' = 0
 
 
@@ -2894,8 +2898,8 @@ class AccessControl(Cluster):
     def descriptor(cls) -> ClusterObjectDescriptor:
         return ClusterObjectDescriptor(
             Fields = [
-                ClusterObjectFieldDescriptor(Label="acl", Tag=0x00000000, Type=typing.List[AccessControl.Structs.AccessControlEntry]),
-                ClusterObjectFieldDescriptor(Label="extension", Tag=0x00000001, Type=typing.Optional[typing.List[AccessControl.Structs.ExtensionEntry]]),
+                ClusterObjectFieldDescriptor(Label="acl", Tag=0x00000000, Type=typing.List[AccessControl.Structs.AccessControlEntryStruct]),
+                ClusterObjectFieldDescriptor(Label="extension", Tag=0x00000001, Type=typing.Optional[typing.List[AccessControl.Structs.AccessControlExtensionStruct]]),
                 ClusterObjectFieldDescriptor(Label="subjectsPerAccessControlEntry", Tag=0x00000002, Type=uint),
                 ClusterObjectFieldDescriptor(Label="targetsPerAccessControlEntry", Tag=0x00000003, Type=uint),
                 ClusterObjectFieldDescriptor(Label="accessControlEntriesPerFabric", Tag=0x00000004, Type=uint),
@@ -2906,8 +2910,8 @@ class AccessControl(Cluster):
                 ClusterObjectFieldDescriptor(Label="clusterRevision", Tag=0x0000FFFD, Type=uint),
             ])
 
-    acl: 'typing.List[AccessControl.Structs.AccessControlEntry]' = None
-    extension: 'typing.Optional[typing.List[AccessControl.Structs.ExtensionEntry]]' = None
+    acl: 'typing.List[AccessControl.Structs.AccessControlEntryStruct]' = None
+    extension: 'typing.Optional[typing.List[AccessControl.Structs.AccessControlExtensionStruct]]' = None
     subjectsPerAccessControlEntry: 'uint' = None
     targetsPerAccessControlEntry: 'uint' = None
     accessControlEntriesPerFabric: 'uint' = None
@@ -2918,22 +2922,22 @@ class AccessControl(Cluster):
     clusterRevision: 'uint' = None
 
     class Enums:
-        class AuthMode(IntEnum):
+        class AccessControlEntryAuthModeEnum(IntEnum):
             kPase = 0x01
             kCase = 0x02
             kGroup = 0x03
 
-        class ChangeTypeEnum(IntEnum):
-            kChanged = 0x00
-            kAdded = 0x01
-            kRemoved = 0x02
-
-        class Privilege(IntEnum):
+        class AccessControlEntryPrivilegeEnum(IntEnum):
             kView = 0x01
             kProxyView = 0x02
             kOperate = 0x03
             kManage = 0x04
             kAdminister = 0x05
+
+        class ChangeTypeEnum(IntEnum):
+            kChanged = 0x00
+            kAdded = 0x01
+            kRemoved = 0x02
 
 
     class Structs:
@@ -2953,26 +2957,26 @@ class AccessControl(Cluster):
             deviceType: 'typing.Union[Nullable, uint]' = NullValue
 
         @dataclass
-        class AccessControlEntry(ClusterObject):
+        class AccessControlEntryStruct(ClusterObject):
             @ChipUtility.classproperty
             def descriptor(cls) -> ClusterObjectDescriptor:
                 return ClusterObjectDescriptor(
                     Fields = [
-                            ClusterObjectFieldDescriptor(Label="privilege", Tag=1, Type=AccessControl.Enums.Privilege),
-                            ClusterObjectFieldDescriptor(Label="authMode", Tag=2, Type=AccessControl.Enums.AuthMode),
+                            ClusterObjectFieldDescriptor(Label="privilege", Tag=1, Type=AccessControl.Enums.AccessControlEntryPrivilegeEnum),
+                            ClusterObjectFieldDescriptor(Label="authMode", Tag=2, Type=AccessControl.Enums.AccessControlEntryAuthModeEnum),
                             ClusterObjectFieldDescriptor(Label="subjects", Tag=3, Type=typing.Union[Nullable, typing.List[uint]]),
                             ClusterObjectFieldDescriptor(Label="targets", Tag=4, Type=typing.Union[Nullable, typing.List[AccessControl.Structs.Target]]),
                             ClusterObjectFieldDescriptor(Label="fabricIndex", Tag=254, Type=uint),
                     ])
 
-            privilege: 'AccessControl.Enums.Privilege' = 0
-            authMode: 'AccessControl.Enums.AuthMode' = 0
+            privilege: 'AccessControl.Enums.AccessControlEntryPrivilegeEnum' = 0
+            authMode: 'AccessControl.Enums.AccessControlEntryAuthModeEnum' = 0
             subjects: 'typing.Union[Nullable, typing.List[uint]]' = NullValue
             targets: 'typing.Union[Nullable, typing.List[AccessControl.Structs.Target]]' = NullValue
             fabricIndex: 'uint' = 0
 
         @dataclass
-        class ExtensionEntry(ClusterObject):
+        class AccessControlExtensionStruct(ClusterObject):
             @ChipUtility.classproperty
             def descriptor(cls) -> ClusterObjectDescriptor:
                 return ClusterObjectDescriptor(
@@ -3000,9 +3004,9 @@ class AccessControl(Cluster):
 
             @ChipUtility.classproperty
             def attribute_type(cls) -> ClusterObjectFieldDescriptor:
-                return ClusterObjectFieldDescriptor(Type=typing.List[AccessControl.Structs.AccessControlEntry])
+                return ClusterObjectFieldDescriptor(Type=typing.List[AccessControl.Structs.AccessControlEntryStruct])
 
-            value: 'typing.List[AccessControl.Structs.AccessControlEntry]' = field(default_factory=lambda: [])
+            value: 'typing.List[AccessControl.Structs.AccessControlEntryStruct]' = field(default_factory=lambda: [])
 
         @dataclass
         class Extension(ClusterAttributeDescriptor):
@@ -3016,9 +3020,9 @@ class AccessControl(Cluster):
 
             @ChipUtility.classproperty
             def attribute_type(cls) -> ClusterObjectFieldDescriptor:
-                return ClusterObjectFieldDescriptor(Type=typing.Optional[typing.List[AccessControl.Structs.ExtensionEntry]])
+                return ClusterObjectFieldDescriptor(Type=typing.Optional[typing.List[AccessControl.Structs.AccessControlExtensionStruct]])
 
-            value: 'typing.Optional[typing.List[AccessControl.Structs.ExtensionEntry]]' = None
+            value: 'typing.Optional[typing.List[AccessControl.Structs.AccessControlExtensionStruct]]' = None
 
         @dataclass
         class SubjectsPerAccessControlEntry(ClusterAttributeDescriptor):
@@ -3167,14 +3171,14 @@ class AccessControl(Cluster):
                             ClusterObjectFieldDescriptor(Label="adminNodeID", Tag=1, Type=typing.Union[Nullable, uint]),
                             ClusterObjectFieldDescriptor(Label="adminPasscodeID", Tag=2, Type=typing.Union[Nullable, uint]),
                             ClusterObjectFieldDescriptor(Label="changeType", Tag=3, Type=AccessControl.Enums.ChangeTypeEnum),
-                            ClusterObjectFieldDescriptor(Label="latestValue", Tag=4, Type=typing.Union[Nullable, AccessControl.Structs.AccessControlEntry]),
+                            ClusterObjectFieldDescriptor(Label="latestValue", Tag=4, Type=typing.Union[Nullable, AccessControl.Structs.AccessControlEntryStruct]),
                             ClusterObjectFieldDescriptor(Label="fabricIndex", Tag=254, Type=uint),
                     ])
 
             adminNodeID: 'typing.Union[Nullable, uint]' = NullValue
             adminPasscodeID: 'typing.Union[Nullable, uint]' = NullValue
             changeType: 'AccessControl.Enums.ChangeTypeEnum' = 0
-            latestValue: 'typing.Union[Nullable, AccessControl.Structs.AccessControlEntry]' = NullValue
+            latestValue: 'typing.Union[Nullable, AccessControl.Structs.AccessControlEntryStruct]' = NullValue
             fabricIndex: 'uint' = 0
 
         @dataclass
@@ -3194,14 +3198,14 @@ class AccessControl(Cluster):
                             ClusterObjectFieldDescriptor(Label="adminNodeID", Tag=1, Type=typing.Union[Nullable, uint]),
                             ClusterObjectFieldDescriptor(Label="adminPasscodeID", Tag=2, Type=typing.Union[Nullable, uint]),
                             ClusterObjectFieldDescriptor(Label="changeType", Tag=3, Type=AccessControl.Enums.ChangeTypeEnum),
-                            ClusterObjectFieldDescriptor(Label="latestValue", Tag=4, Type=typing.Union[Nullable, AccessControl.Structs.ExtensionEntry]),
+                            ClusterObjectFieldDescriptor(Label="latestValue", Tag=4, Type=typing.Union[Nullable, AccessControl.Structs.AccessControlExtensionStruct]),
                             ClusterObjectFieldDescriptor(Label="fabricIndex", Tag=254, Type=uint),
                     ])
 
             adminNodeID: 'typing.Union[Nullable, uint]' = NullValue
             adminPasscodeID: 'typing.Union[Nullable, uint]' = NullValue
             changeType: 'AccessControl.Enums.ChangeTypeEnum' = 0
-            latestValue: 'typing.Union[Nullable, AccessControl.Structs.ExtensionEntry]' = NullValue
+            latestValue: 'typing.Union[Nullable, AccessControl.Structs.AccessControlExtensionStruct]' = NullValue
             fabricIndex: 'uint' = 0
 
 
@@ -3303,7 +3307,7 @@ class Actions(Cluster):
         @dataclass
         class InstantAction(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0025
-            command_id: typing.ClassVar[int] = 0x0000
+            command_id: typing.ClassVar[int] = 0x00000000
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -3321,7 +3325,7 @@ class Actions(Cluster):
         @dataclass
         class InstantActionWithTransition(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0025
-            command_id: typing.ClassVar[int] = 0x0001
+            command_id: typing.ClassVar[int] = 0x00000001
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -3341,7 +3345,7 @@ class Actions(Cluster):
         @dataclass
         class StartAction(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0025
-            command_id: typing.ClassVar[int] = 0x0002
+            command_id: typing.ClassVar[int] = 0x00000002
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -3359,7 +3363,7 @@ class Actions(Cluster):
         @dataclass
         class StartActionWithDuration(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0025
-            command_id: typing.ClassVar[int] = 0x0003
+            command_id: typing.ClassVar[int] = 0x00000003
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -3379,7 +3383,7 @@ class Actions(Cluster):
         @dataclass
         class StopAction(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0025
-            command_id: typing.ClassVar[int] = 0x0004
+            command_id: typing.ClassVar[int] = 0x00000004
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -3397,7 +3401,7 @@ class Actions(Cluster):
         @dataclass
         class PauseAction(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0025
-            command_id: typing.ClassVar[int] = 0x0005
+            command_id: typing.ClassVar[int] = 0x00000005
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -3415,7 +3419,7 @@ class Actions(Cluster):
         @dataclass
         class PauseActionWithDuration(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0025
-            command_id: typing.ClassVar[int] = 0x0006
+            command_id: typing.ClassVar[int] = 0x00000006
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -3435,7 +3439,7 @@ class Actions(Cluster):
         @dataclass
         class ResumeAction(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0025
-            command_id: typing.ClassVar[int] = 0x0007
+            command_id: typing.ClassVar[int] = 0x00000007
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -3453,7 +3457,7 @@ class Actions(Cluster):
         @dataclass
         class EnableAction(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0025
-            command_id: typing.ClassVar[int] = 0x0008
+            command_id: typing.ClassVar[int] = 0x00000008
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -3471,7 +3475,7 @@ class Actions(Cluster):
         @dataclass
         class EnableActionWithDuration(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0025
-            command_id: typing.ClassVar[int] = 0x0009
+            command_id: typing.ClassVar[int] = 0x00000009
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -3491,7 +3495,7 @@ class Actions(Cluster):
         @dataclass
         class DisableAction(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0025
-            command_id: typing.ClassVar[int] = 0x000A
+            command_id: typing.ClassVar[int] = 0x0000000A
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -3509,7 +3513,7 @@ class Actions(Cluster):
         @dataclass
         class DisableActionWithDuration(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0025
-            command_id: typing.ClassVar[int] = 0x000B
+            command_id: typing.ClassVar[int] = 0x0000000B
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -3789,7 +3793,7 @@ class BasicInformation(Cluster):
         @dataclass
         class MfgSpecificPing(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0028
-            command_id: typing.ClassVar[int] = 0x0000
+            command_id: typing.ClassVar[int] = 0x10020000
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -4324,7 +4328,7 @@ class OtaSoftwareUpdateProvider(Cluster):
         @dataclass
         class QueryImage(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0029
-            command_id: typing.ClassVar[int] = 0x0000
+            command_id: typing.ClassVar[int] = 0x00000000
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = 'QueryImageResponse'
 
@@ -4332,8 +4336,8 @@ class OtaSoftwareUpdateProvider(Cluster):
             def descriptor(cls) -> ClusterObjectDescriptor:
                 return ClusterObjectDescriptor(
                     Fields = [
-                            ClusterObjectFieldDescriptor(Label="vendorId", Tag=0, Type=uint),
-                            ClusterObjectFieldDescriptor(Label="productId", Tag=1, Type=uint),
+                            ClusterObjectFieldDescriptor(Label="vendorID", Tag=0, Type=uint),
+                            ClusterObjectFieldDescriptor(Label="productID", Tag=1, Type=uint),
                             ClusterObjectFieldDescriptor(Label="softwareVersion", Tag=2, Type=uint),
                             ClusterObjectFieldDescriptor(Label="protocolsSupported", Tag=3, Type=typing.List[OtaSoftwareUpdateProvider.Enums.OTADownloadProtocol]),
                             ClusterObjectFieldDescriptor(Label="hardwareVersion", Tag=4, Type=typing.Optional[uint]),
@@ -4342,8 +4346,8 @@ class OtaSoftwareUpdateProvider(Cluster):
                             ClusterObjectFieldDescriptor(Label="metadataForProvider", Tag=7, Type=typing.Optional[bytes]),
                     ])
 
-            vendorId: 'uint' = 0
-            productId: 'uint' = 0
+            vendorID: 'uint' = 0
+            productID: 'uint' = 0
             softwareVersion: 'uint' = 0
             protocolsSupported: 'typing.List[OtaSoftwareUpdateProvider.Enums.OTADownloadProtocol]' = field(default_factory=lambda: [])
             hardwareVersion: 'typing.Optional[uint]' = None
@@ -4354,7 +4358,7 @@ class OtaSoftwareUpdateProvider(Cluster):
         @dataclass
         class QueryImageResponse(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0029
-            command_id: typing.ClassVar[int] = 0x0001
+            command_id: typing.ClassVar[int] = 0x00000001
             is_client: typing.ClassVar[bool] = False
             response_type: typing.ClassVar[str] = None
 
@@ -4384,7 +4388,7 @@ class OtaSoftwareUpdateProvider(Cluster):
         @dataclass
         class ApplyUpdateRequest(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0029
-            command_id: typing.ClassVar[int] = 0x0002
+            command_id: typing.ClassVar[int] = 0x00000002
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = 'ApplyUpdateResponse'
 
@@ -4402,7 +4406,7 @@ class OtaSoftwareUpdateProvider(Cluster):
         @dataclass
         class ApplyUpdateResponse(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0029
-            command_id: typing.ClassVar[int] = 0x0003
+            command_id: typing.ClassVar[int] = 0x00000003
             is_client: typing.ClassVar[bool] = False
             response_type: typing.ClassVar[str] = None
 
@@ -4420,7 +4424,7 @@ class OtaSoftwareUpdateProvider(Cluster):
         @dataclass
         class NotifyUpdateApplied(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0029
-            command_id: typing.ClassVar[int] = 0x0004
+            command_id: typing.ClassVar[int] = 0x00000004
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -4527,7 +4531,7 @@ class OtaSoftwareUpdateRequestor(Cluster):
     def descriptor(cls) -> ClusterObjectDescriptor:
         return ClusterObjectDescriptor(
             Fields = [
-                ClusterObjectFieldDescriptor(Label="defaultOtaProviders", Tag=0x00000000, Type=typing.List[OtaSoftwareUpdateRequestor.Structs.ProviderLocation]),
+                ClusterObjectFieldDescriptor(Label="defaultOTAProviders", Tag=0x00000000, Type=typing.List[OtaSoftwareUpdateRequestor.Structs.ProviderLocation]),
                 ClusterObjectFieldDescriptor(Label="updatePossible", Tag=0x00000001, Type=bool),
                 ClusterObjectFieldDescriptor(Label="updateState", Tag=0x00000002, Type=OtaSoftwareUpdateRequestor.Enums.OTAUpdateStateEnum),
                 ClusterObjectFieldDescriptor(Label="updateStateProgress", Tag=0x00000003, Type=typing.Union[Nullable, uint]),
@@ -4538,7 +4542,7 @@ class OtaSoftwareUpdateRequestor(Cluster):
                 ClusterObjectFieldDescriptor(Label="clusterRevision", Tag=0x0000FFFD, Type=uint),
             ])
 
-    defaultOtaProviders: 'typing.List[OtaSoftwareUpdateRequestor.Structs.ProviderLocation]' = None
+    defaultOTAProviders: 'typing.List[OtaSoftwareUpdateRequestor.Structs.ProviderLocation]' = None
     updatePossible: 'bool' = None
     updateState: 'OtaSoftwareUpdateRequestor.Enums.OTAUpdateStateEnum' = None
     updateStateProgress: 'typing.Union[Nullable, uint]' = None
@@ -4593,9 +4597,9 @@ class OtaSoftwareUpdateRequestor(Cluster):
 
     class Commands:
         @dataclass
-        class AnnounceOtaProvider(ClusterCommand):
+        class AnnounceOTAProvider(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x002A
-            command_id: typing.ClassVar[int] = 0x0000
+            command_id: typing.ClassVar[int] = 0x00000000
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -4603,15 +4607,15 @@ class OtaSoftwareUpdateRequestor(Cluster):
             def descriptor(cls) -> ClusterObjectDescriptor:
                 return ClusterObjectDescriptor(
                     Fields = [
-                            ClusterObjectFieldDescriptor(Label="providerNodeId", Tag=0, Type=uint),
-                            ClusterObjectFieldDescriptor(Label="vendorId", Tag=1, Type=uint),
+                            ClusterObjectFieldDescriptor(Label="providerNodeID", Tag=0, Type=uint),
+                            ClusterObjectFieldDescriptor(Label="vendorID", Tag=1, Type=uint),
                             ClusterObjectFieldDescriptor(Label="announcementReason", Tag=2, Type=OtaSoftwareUpdateRequestor.Enums.OTAAnnouncementReason),
                             ClusterObjectFieldDescriptor(Label="metadataForNode", Tag=3, Type=typing.Optional[bytes]),
                             ClusterObjectFieldDescriptor(Label="endpoint", Tag=4, Type=uint),
                     ])
 
-            providerNodeId: 'uint' = 0
-            vendorId: 'uint' = 0
+            providerNodeID: 'uint' = 0
+            vendorID: 'uint' = 0
             announcementReason: 'OtaSoftwareUpdateRequestor.Enums.OTAAnnouncementReason' = 0
             metadataForNode: 'typing.Optional[bytes]' = None
             endpoint: 'uint' = 0
@@ -4619,7 +4623,7 @@ class OtaSoftwareUpdateRequestor(Cluster):
 
     class Attributes:
         @dataclass
-        class DefaultOtaProviders(ClusterAttributeDescriptor):
+        class DefaultOTAProviders(ClusterAttributeDescriptor):
             @ChipUtility.classproperty
             def cluster_id(cls) -> int:
                 return 0x002A
@@ -6171,6 +6175,70 @@ class PowerSource(Cluster):
             value: 'uint' = 0
 
 
+    class Events:
+        @dataclass
+        class WiredFaultChange(ClusterEvent):
+            @ChipUtility.classproperty
+            def cluster_id(cls) -> int:
+                return 0x002F
+
+            @ChipUtility.classproperty
+            def event_id(cls) -> int:
+                return 0x00000000
+
+            @ChipUtility.classproperty
+            def descriptor(cls) -> ClusterObjectDescriptor:
+                return ClusterObjectDescriptor(
+                    Fields = [
+                            ClusterObjectFieldDescriptor(Label="current", Tag=0, Type=typing.List[PowerSource.Enums.WiredFault]),
+                            ClusterObjectFieldDescriptor(Label="previous", Tag=1, Type=typing.List[PowerSource.Enums.WiredFault]),
+                    ])
+
+            current: 'typing.List[PowerSource.Enums.WiredFault]' = field(default_factory=lambda: [])
+            previous: 'typing.List[PowerSource.Enums.WiredFault]' = field(default_factory=lambda: [])
+
+        @dataclass
+        class BatFaultChange(ClusterEvent):
+            @ChipUtility.classproperty
+            def cluster_id(cls) -> int:
+                return 0x002F
+
+            @ChipUtility.classproperty
+            def event_id(cls) -> int:
+                return 0x00000001
+
+            @ChipUtility.classproperty
+            def descriptor(cls) -> ClusterObjectDescriptor:
+                return ClusterObjectDescriptor(
+                    Fields = [
+                            ClusterObjectFieldDescriptor(Label="current", Tag=0, Type=typing.List[PowerSource.Enums.BatFault]),
+                            ClusterObjectFieldDescriptor(Label="previous", Tag=1, Type=typing.List[PowerSource.Enums.BatFault]),
+                    ])
+
+            current: 'typing.List[PowerSource.Enums.BatFault]' = field(default_factory=lambda: [])
+            previous: 'typing.List[PowerSource.Enums.BatFault]' = field(default_factory=lambda: [])
+
+        @dataclass
+        class BatChargeFaultChange(ClusterEvent):
+            @ChipUtility.classproperty
+            def cluster_id(cls) -> int:
+                return 0x002F
+
+            @ChipUtility.classproperty
+            def event_id(cls) -> int:
+                return 0x00000002
+
+            @ChipUtility.classproperty
+            def descriptor(cls) -> ClusterObjectDescriptor:
+                return ClusterObjectDescriptor(
+                    Fields = [
+                            ClusterObjectFieldDescriptor(Label="current", Tag=0, Type=typing.List[PowerSource.Enums.BatChargeFault]),
+                            ClusterObjectFieldDescriptor(Label="previous", Tag=1, Type=typing.List[PowerSource.Enums.BatChargeFault]),
+                    ])
+
+            current: 'typing.List[PowerSource.Enums.BatChargeFault]' = field(default_factory=lambda: [])
+            previous: 'typing.List[PowerSource.Enums.BatChargeFault]' = field(default_factory=lambda: [])
+
 
 @dataclass
 class GeneralCommissioning(Cluster):
@@ -6237,7 +6305,7 @@ class GeneralCommissioning(Cluster):
         @dataclass
         class ArmFailSafe(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0030
-            command_id: typing.ClassVar[int] = 0x0000
+            command_id: typing.ClassVar[int] = 0x00000000
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = 'ArmFailSafeResponse'
 
@@ -6255,7 +6323,7 @@ class GeneralCommissioning(Cluster):
         @dataclass
         class ArmFailSafeResponse(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0030
-            command_id: typing.ClassVar[int] = 0x0001
+            command_id: typing.ClassVar[int] = 0x00000001
             is_client: typing.ClassVar[bool] = False
             response_type: typing.ClassVar[str] = None
 
@@ -6273,7 +6341,7 @@ class GeneralCommissioning(Cluster):
         @dataclass
         class SetRegulatoryConfig(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0030
-            command_id: typing.ClassVar[int] = 0x0002
+            command_id: typing.ClassVar[int] = 0x00000002
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = 'SetRegulatoryConfigResponse'
 
@@ -6293,7 +6361,7 @@ class GeneralCommissioning(Cluster):
         @dataclass
         class SetRegulatoryConfigResponse(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0030
-            command_id: typing.ClassVar[int] = 0x0003
+            command_id: typing.ClassVar[int] = 0x00000003
             is_client: typing.ClassVar[bool] = False
             response_type: typing.ClassVar[str] = None
 
@@ -6311,7 +6379,7 @@ class GeneralCommissioning(Cluster):
         @dataclass
         class CommissioningComplete(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0030
-            command_id: typing.ClassVar[int] = 0x0004
+            command_id: typing.ClassVar[int] = 0x00000004
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = 'CommissioningCompleteResponse'
 
@@ -6325,7 +6393,7 @@ class GeneralCommissioning(Cluster):
         @dataclass
         class CommissioningCompleteResponse(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0030
-            command_id: typing.ClassVar[int] = 0x0005
+            command_id: typing.ClassVar[int] = 0x00000005
             is_client: typing.ClassVar[bool] = False
             response_type: typing.ClassVar[str] = None
 
@@ -6631,7 +6699,7 @@ class NetworkCommissioning(Cluster):
         @dataclass
         class ScanNetworks(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0031
-            command_id: typing.ClassVar[int] = 0x0000
+            command_id: typing.ClassVar[int] = 0x00000000
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = 'ScanNetworksResponse'
 
@@ -6649,7 +6717,7 @@ class NetworkCommissioning(Cluster):
         @dataclass
         class ScanNetworksResponse(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0031
-            command_id: typing.ClassVar[int] = 0x0001
+            command_id: typing.ClassVar[int] = 0x00000001
             is_client: typing.ClassVar[bool] = False
             response_type: typing.ClassVar[str] = None
 
@@ -6671,7 +6739,7 @@ class NetworkCommissioning(Cluster):
         @dataclass
         class AddOrUpdateWiFiNetwork(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0031
-            command_id: typing.ClassVar[int] = 0x0002
+            command_id: typing.ClassVar[int] = 0x00000002
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = 'NetworkConfigResponse'
 
@@ -6691,7 +6759,7 @@ class NetworkCommissioning(Cluster):
         @dataclass
         class AddOrUpdateThreadNetwork(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0031
-            command_id: typing.ClassVar[int] = 0x0003
+            command_id: typing.ClassVar[int] = 0x00000003
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = 'NetworkConfigResponse'
 
@@ -6709,7 +6777,7 @@ class NetworkCommissioning(Cluster):
         @dataclass
         class RemoveNetwork(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0031
-            command_id: typing.ClassVar[int] = 0x0004
+            command_id: typing.ClassVar[int] = 0x00000004
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = 'NetworkConfigResponse'
 
@@ -6727,7 +6795,7 @@ class NetworkCommissioning(Cluster):
         @dataclass
         class NetworkConfigResponse(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0031
-            command_id: typing.ClassVar[int] = 0x0005
+            command_id: typing.ClassVar[int] = 0x00000005
             is_client: typing.ClassVar[bool] = False
             response_type: typing.ClassVar[str] = None
 
@@ -6747,7 +6815,7 @@ class NetworkCommissioning(Cluster):
         @dataclass
         class ConnectNetwork(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0031
-            command_id: typing.ClassVar[int] = 0x0006
+            command_id: typing.ClassVar[int] = 0x00000006
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = 'ConnectNetworkResponse'
 
@@ -6765,7 +6833,7 @@ class NetworkCommissioning(Cluster):
         @dataclass
         class ConnectNetworkResponse(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0031
-            command_id: typing.ClassVar[int] = 0x0007
+            command_id: typing.ClassVar[int] = 0x00000007
             is_client: typing.ClassVar[bool] = False
             response_type: typing.ClassVar[str] = None
 
@@ -6785,7 +6853,7 @@ class NetworkCommissioning(Cluster):
         @dataclass
         class ReorderNetwork(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0031
-            command_id: typing.ClassVar[int] = 0x0008
+            command_id: typing.ClassVar[int] = 0x00000008
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = 'NetworkConfigResponse'
 
@@ -7058,7 +7126,7 @@ class DiagnosticLogs(Cluster):
         @dataclass
         class RetrieveLogsRequest(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0032
-            command_id: typing.ClassVar[int] = 0x0000
+            command_id: typing.ClassVar[int] = 0x00000000
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = 'RetrieveLogsResponse'
 
@@ -7078,7 +7146,7 @@ class DiagnosticLogs(Cluster):
         @dataclass
         class RetrieveLogsResponse(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0032
-            command_id: typing.ClassVar[int] = 0x0001
+            command_id: typing.ClassVar[int] = 0x00000001
             is_client: typing.ClassVar[bool] = False
             response_type: typing.ClassVar[str] = None
 
@@ -7087,14 +7155,14 @@ class DiagnosticLogs(Cluster):
                 return ClusterObjectDescriptor(
                     Fields = [
                             ClusterObjectFieldDescriptor(Label="status", Tag=0, Type=DiagnosticLogs.Enums.LogsStatus),
-                            ClusterObjectFieldDescriptor(Label="content", Tag=1, Type=bytes),
-                            ClusterObjectFieldDescriptor(Label="timeStamp", Tag=2, Type=uint),
+                            ClusterObjectFieldDescriptor(Label="logContent", Tag=1, Type=bytes),
+                            ClusterObjectFieldDescriptor(Label="UTCTimeStamp", Tag=2, Type=uint),
                             ClusterObjectFieldDescriptor(Label="timeSinceBoot", Tag=3, Type=uint),
                     ])
 
             status: 'DiagnosticLogs.Enums.LogsStatus' = 0
-            content: 'bytes' = b""
-            timeStamp: 'uint' = 0
+            logContent: 'bytes' = b""
+            UTCTimeStamp: 'uint' = 0
             timeSinceBoot: 'uint' = 0
 
 
@@ -7189,14 +7257,14 @@ class GeneralDiagnostics(Cluster):
     def descriptor(cls) -> ClusterObjectDescriptor:
         return ClusterObjectDescriptor(
             Fields = [
-                ClusterObjectFieldDescriptor(Label="networkInterfaces", Tag=0x00000000, Type=typing.List[GeneralDiagnostics.Structs.NetworkInterfaceType]),
+                ClusterObjectFieldDescriptor(Label="networkInterfaces", Tag=0x00000000, Type=typing.List[GeneralDiagnostics.Structs.NetworkInterface]),
                 ClusterObjectFieldDescriptor(Label="rebootCount", Tag=0x00000001, Type=uint),
                 ClusterObjectFieldDescriptor(Label="upTime", Tag=0x00000002, Type=typing.Optional[uint]),
                 ClusterObjectFieldDescriptor(Label="totalOperationalHours", Tag=0x00000003, Type=typing.Optional[uint]),
-                ClusterObjectFieldDescriptor(Label="bootReasons", Tag=0x00000004, Type=typing.Optional[uint]),
-                ClusterObjectFieldDescriptor(Label="activeHardwareFaults", Tag=0x00000005, Type=typing.Optional[typing.List[uint]]),
-                ClusterObjectFieldDescriptor(Label="activeRadioFaults", Tag=0x00000006, Type=typing.Optional[typing.List[uint]]),
-                ClusterObjectFieldDescriptor(Label="activeNetworkFaults", Tag=0x00000007, Type=typing.Optional[typing.List[uint]]),
+                ClusterObjectFieldDescriptor(Label="bootReason", Tag=0x00000004, Type=typing.Optional[GeneralDiagnostics.Enums.BootReasonEnum]),
+                ClusterObjectFieldDescriptor(Label="activeHardwareFaults", Tag=0x00000005, Type=typing.Optional[typing.List[GeneralDiagnostics.Enums.HardwareFault]]),
+                ClusterObjectFieldDescriptor(Label="activeRadioFaults", Tag=0x00000006, Type=typing.Optional[typing.List[GeneralDiagnostics.Enums.RadioFault]]),
+                ClusterObjectFieldDescriptor(Label="activeNetworkFaults", Tag=0x00000007, Type=typing.Optional[typing.List[GeneralDiagnostics.Enums.NetworkFaultType]]),
                 ClusterObjectFieldDescriptor(Label="testEventTriggersEnabled", Tag=0x00000008, Type=bool),
                 ClusterObjectFieldDescriptor(Label="generatedCommandList", Tag=0x0000FFF8, Type=typing.List[uint]),
                 ClusterObjectFieldDescriptor(Label="acceptedCommandList", Tag=0x0000FFF9, Type=typing.List[uint]),
@@ -7205,14 +7273,14 @@ class GeneralDiagnostics(Cluster):
                 ClusterObjectFieldDescriptor(Label="clusterRevision", Tag=0x0000FFFD, Type=uint),
             ])
 
-    networkInterfaces: 'typing.List[GeneralDiagnostics.Structs.NetworkInterfaceType]' = None
+    networkInterfaces: 'typing.List[GeneralDiagnostics.Structs.NetworkInterface]' = None
     rebootCount: 'uint' = None
     upTime: 'typing.Optional[uint]' = None
     totalOperationalHours: 'typing.Optional[uint]' = None
-    bootReasons: 'typing.Optional[uint]' = None
-    activeHardwareFaults: 'typing.Optional[typing.List[uint]]' = None
-    activeRadioFaults: 'typing.Optional[typing.List[uint]]' = None
-    activeNetworkFaults: 'typing.Optional[typing.List[uint]]' = None
+    bootReason: 'typing.Optional[GeneralDiagnostics.Enums.BootReasonEnum]' = None
+    activeHardwareFaults: 'typing.Optional[typing.List[GeneralDiagnostics.Enums.HardwareFault]]' = None
+    activeRadioFaults: 'typing.Optional[typing.List[GeneralDiagnostics.Enums.RadioFault]]' = None
+    activeNetworkFaults: 'typing.Optional[typing.List[GeneralDiagnostics.Enums.NetworkFaultType]]' = None
     testEventTriggersEnabled: 'bool' = None
     generatedCommandList: 'typing.List[uint]' = None
     acceptedCommandList: 'typing.List[uint]' = None
@@ -7221,7 +7289,7 @@ class GeneralDiagnostics(Cluster):
     clusterRevision: 'uint' = None
 
     class Enums:
-        class BootReasonType(IntEnum):
+        class BootReasonEnum(IntEnum):
             kUnspecified = 0x00
             kPowerOnReboot = 0x01
             kBrownOutReset = 0x02
@@ -7230,7 +7298,7 @@ class GeneralDiagnostics(Cluster):
             kSoftwareUpdateCompleted = 0x05
             kSoftwareReset = 0x06
 
-        class HardwareFaultType(IntEnum):
+        class HardwareFault(IntEnum):
             kUnspecified = 0x00
             kRadio = 0x01
             kSensor = 0x02
@@ -7256,7 +7324,7 @@ class GeneralDiagnostics(Cluster):
             kNetworkJammed = 0x02
             kConnectionFailed = 0x03
 
-        class RadioFaultType(IntEnum):
+        class RadioFault(IntEnum):
             kUnspecified = 0x00
             kWiFiFault = 0x01
             kCellularFault = 0x02
@@ -7268,7 +7336,7 @@ class GeneralDiagnostics(Cluster):
 
     class Structs:
         @dataclass
-        class NetworkInterfaceType(ClusterObject):
+        class NetworkInterface(ClusterObject):
             @ChipUtility.classproperty
             def descriptor(cls) -> ClusterObjectDescriptor:
                 return ClusterObjectDescriptor(
@@ -7298,7 +7366,7 @@ class GeneralDiagnostics(Cluster):
         @dataclass
         class TestEventTrigger(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0033
-            command_id: typing.ClassVar[int] = 0x0000
+            command_id: typing.ClassVar[int] = 0x00000000
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -7327,9 +7395,9 @@ class GeneralDiagnostics(Cluster):
 
             @ChipUtility.classproperty
             def attribute_type(cls) -> ClusterObjectFieldDescriptor:
-                return ClusterObjectFieldDescriptor(Type=typing.List[GeneralDiagnostics.Structs.NetworkInterfaceType])
+                return ClusterObjectFieldDescriptor(Type=typing.List[GeneralDiagnostics.Structs.NetworkInterface])
 
-            value: 'typing.List[GeneralDiagnostics.Structs.NetworkInterfaceType]' = field(default_factory=lambda: [])
+            value: 'typing.List[GeneralDiagnostics.Structs.NetworkInterface]' = field(default_factory=lambda: [])
 
         @dataclass
         class RebootCount(ClusterAttributeDescriptor):
@@ -7380,7 +7448,7 @@ class GeneralDiagnostics(Cluster):
             value: 'typing.Optional[uint]' = None
 
         @dataclass
-        class BootReasons(ClusterAttributeDescriptor):
+        class BootReason(ClusterAttributeDescriptor):
             @ChipUtility.classproperty
             def cluster_id(cls) -> int:
                 return 0x0033
@@ -7391,9 +7459,9 @@ class GeneralDiagnostics(Cluster):
 
             @ChipUtility.classproperty
             def attribute_type(cls) -> ClusterObjectFieldDescriptor:
-                return ClusterObjectFieldDescriptor(Type=typing.Optional[uint])
+                return ClusterObjectFieldDescriptor(Type=typing.Optional[GeneralDiagnostics.Enums.BootReasonEnum])
 
-            value: 'typing.Optional[uint]' = None
+            value: 'typing.Optional[GeneralDiagnostics.Enums.BootReasonEnum]' = None
 
         @dataclass
         class ActiveHardwareFaults(ClusterAttributeDescriptor):
@@ -7407,9 +7475,9 @@ class GeneralDiagnostics(Cluster):
 
             @ChipUtility.classproperty
             def attribute_type(cls) -> ClusterObjectFieldDescriptor:
-                return ClusterObjectFieldDescriptor(Type=typing.Optional[typing.List[uint]])
+                return ClusterObjectFieldDescriptor(Type=typing.Optional[typing.List[GeneralDiagnostics.Enums.HardwareFault]])
 
-            value: 'typing.Optional[typing.List[uint]]' = None
+            value: 'typing.Optional[typing.List[GeneralDiagnostics.Enums.HardwareFault]]' = None
 
         @dataclass
         class ActiveRadioFaults(ClusterAttributeDescriptor):
@@ -7423,9 +7491,9 @@ class GeneralDiagnostics(Cluster):
 
             @ChipUtility.classproperty
             def attribute_type(cls) -> ClusterObjectFieldDescriptor:
-                return ClusterObjectFieldDescriptor(Type=typing.Optional[typing.List[uint]])
+                return ClusterObjectFieldDescriptor(Type=typing.Optional[typing.List[GeneralDiagnostics.Enums.RadioFault]])
 
-            value: 'typing.Optional[typing.List[uint]]' = None
+            value: 'typing.Optional[typing.List[GeneralDiagnostics.Enums.RadioFault]]' = None
 
         @dataclass
         class ActiveNetworkFaults(ClusterAttributeDescriptor):
@@ -7439,9 +7507,9 @@ class GeneralDiagnostics(Cluster):
 
             @ChipUtility.classproperty
             def attribute_type(cls) -> ClusterObjectFieldDescriptor:
-                return ClusterObjectFieldDescriptor(Type=typing.Optional[typing.List[uint]])
+                return ClusterObjectFieldDescriptor(Type=typing.Optional[typing.List[GeneralDiagnostics.Enums.NetworkFaultType]])
 
-            value: 'typing.Optional[typing.List[uint]]' = None
+            value: 'typing.Optional[typing.List[GeneralDiagnostics.Enums.NetworkFaultType]]' = None
 
         @dataclass
         class TestEventTriggersEnabled(ClusterAttributeDescriptor):
@@ -7555,12 +7623,12 @@ class GeneralDiagnostics(Cluster):
             def descriptor(cls) -> ClusterObjectDescriptor:
                 return ClusterObjectDescriptor(
                     Fields = [
-                            ClusterObjectFieldDescriptor(Label="current", Tag=0, Type=typing.List[GeneralDiagnostics.Enums.HardwareFaultType]),
-                            ClusterObjectFieldDescriptor(Label="previous", Tag=1, Type=typing.List[GeneralDiagnostics.Enums.HardwareFaultType]),
+                            ClusterObjectFieldDescriptor(Label="current", Tag=0, Type=typing.List[GeneralDiagnostics.Enums.HardwareFault]),
+                            ClusterObjectFieldDescriptor(Label="previous", Tag=1, Type=typing.List[GeneralDiagnostics.Enums.HardwareFault]),
                     ])
 
-            current: 'typing.List[GeneralDiagnostics.Enums.HardwareFaultType]' = field(default_factory=lambda: [])
-            previous: 'typing.List[GeneralDiagnostics.Enums.HardwareFaultType]' = field(default_factory=lambda: [])
+            current: 'typing.List[GeneralDiagnostics.Enums.HardwareFault]' = field(default_factory=lambda: [])
+            previous: 'typing.List[GeneralDiagnostics.Enums.HardwareFault]' = field(default_factory=lambda: [])
 
         @dataclass
         class RadioFaultChange(ClusterEvent):
@@ -7576,12 +7644,12 @@ class GeneralDiagnostics(Cluster):
             def descriptor(cls) -> ClusterObjectDescriptor:
                 return ClusterObjectDescriptor(
                     Fields = [
-                            ClusterObjectFieldDescriptor(Label="current", Tag=0, Type=typing.List[GeneralDiagnostics.Enums.RadioFaultType]),
-                            ClusterObjectFieldDescriptor(Label="previous", Tag=1, Type=typing.List[GeneralDiagnostics.Enums.RadioFaultType]),
+                            ClusterObjectFieldDescriptor(Label="current", Tag=0, Type=typing.List[GeneralDiagnostics.Enums.RadioFault]),
+                            ClusterObjectFieldDescriptor(Label="previous", Tag=1, Type=typing.List[GeneralDiagnostics.Enums.RadioFault]),
                     ])
 
-            current: 'typing.List[GeneralDiagnostics.Enums.RadioFaultType]' = field(default_factory=lambda: [])
-            previous: 'typing.List[GeneralDiagnostics.Enums.RadioFaultType]' = field(default_factory=lambda: [])
+            current: 'typing.List[GeneralDiagnostics.Enums.RadioFault]' = field(default_factory=lambda: [])
+            previous: 'typing.List[GeneralDiagnostics.Enums.RadioFault]' = field(default_factory=lambda: [])
 
         @dataclass
         class NetworkFaultChange(ClusterEvent):
@@ -7618,10 +7686,10 @@ class GeneralDiagnostics(Cluster):
             def descriptor(cls) -> ClusterObjectDescriptor:
                 return ClusterObjectDescriptor(
                     Fields = [
-                            ClusterObjectFieldDescriptor(Label="bootReason", Tag=0, Type=GeneralDiagnostics.Enums.BootReasonType),
+                            ClusterObjectFieldDescriptor(Label="bootReason", Tag=0, Type=GeneralDiagnostics.Enums.BootReasonEnum),
                     ])
 
-            bootReason: 'GeneralDiagnostics.Enums.BootReasonType' = 0
+            bootReason: 'GeneralDiagnostics.Enums.BootReasonEnum' = 0
 
 
 @dataclass
@@ -7632,7 +7700,7 @@ class SoftwareDiagnostics(Cluster):
     def descriptor(cls) -> ClusterObjectDescriptor:
         return ClusterObjectDescriptor(
             Fields = [
-                ClusterObjectFieldDescriptor(Label="threadMetrics", Tag=0x00000000, Type=typing.Optional[typing.List[SoftwareDiagnostics.Structs.ThreadMetrics]]),
+                ClusterObjectFieldDescriptor(Label="threadMetrics", Tag=0x00000000, Type=typing.Optional[typing.List[SoftwareDiagnostics.Structs.ThreadMetricsStruct]]),
                 ClusterObjectFieldDescriptor(Label="currentHeapFree", Tag=0x00000001, Type=typing.Optional[uint]),
                 ClusterObjectFieldDescriptor(Label="currentHeapUsed", Tag=0x00000002, Type=typing.Optional[uint]),
                 ClusterObjectFieldDescriptor(Label="currentHeapHighWatermark", Tag=0x00000003, Type=typing.Optional[uint]),
@@ -7643,7 +7711,7 @@ class SoftwareDiagnostics(Cluster):
                 ClusterObjectFieldDescriptor(Label="clusterRevision", Tag=0x0000FFFD, Type=uint),
             ])
 
-    threadMetrics: 'typing.Optional[typing.List[SoftwareDiagnostics.Structs.ThreadMetrics]]' = None
+    threadMetrics: 'typing.Optional[typing.List[SoftwareDiagnostics.Structs.ThreadMetricsStruct]]' = None
     currentHeapFree: 'typing.Optional[uint]' = None
     currentHeapUsed: 'typing.Optional[uint]' = None
     currentHeapHighWatermark: 'typing.Optional[uint]' = None
@@ -7656,7 +7724,7 @@ class SoftwareDiagnostics(Cluster):
 
     class Structs:
         @dataclass
-        class ThreadMetrics(ClusterObject):
+        class ThreadMetricsStruct(ClusterObject):
             @ChipUtility.classproperty
             def descriptor(cls) -> ClusterObjectDescriptor:
                 return ClusterObjectDescriptor(
@@ -7680,7 +7748,7 @@ class SoftwareDiagnostics(Cluster):
         @dataclass
         class ResetWatermarks(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0034
-            command_id: typing.ClassVar[int] = 0x0000
+            command_id: typing.ClassVar[int] = 0x00000000
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -7705,9 +7773,9 @@ class SoftwareDiagnostics(Cluster):
 
             @ChipUtility.classproperty
             def attribute_type(cls) -> ClusterObjectFieldDescriptor:
-                return ClusterObjectFieldDescriptor(Type=typing.Optional[typing.List[SoftwareDiagnostics.Structs.ThreadMetrics]])
+                return ClusterObjectFieldDescriptor(Type=typing.Optional[typing.List[SoftwareDiagnostics.Structs.ThreadMetricsStruct]])
 
-            value: 'typing.Optional[typing.List[SoftwareDiagnostics.Structs.ThreadMetrics]]' = None
+            value: 'typing.Optional[typing.List[SoftwareDiagnostics.Structs.ThreadMetricsStruct]]' = None
 
         @dataclass
         class CurrentHeapFree(ClusterAttributeDescriptor):
@@ -7878,8 +7946,8 @@ class ThreadNetworkDiagnostics(Cluster):
                 ClusterObjectFieldDescriptor(Label="extendedPanId", Tag=0x00000004, Type=typing.Union[Nullable, uint]),
                 ClusterObjectFieldDescriptor(Label="meshLocalPrefix", Tag=0x00000005, Type=typing.Union[Nullable, bytes]),
                 ClusterObjectFieldDescriptor(Label="overrunCount", Tag=0x00000006, Type=typing.Optional[uint]),
-                ClusterObjectFieldDescriptor(Label="neighborTableList", Tag=0x00000007, Type=typing.List[ThreadNetworkDiagnostics.Structs.NeighborTable]),
-                ClusterObjectFieldDescriptor(Label="routeTableList", Tag=0x00000008, Type=typing.List[ThreadNetworkDiagnostics.Structs.RouteTable]),
+                ClusterObjectFieldDescriptor(Label="neighborTable", Tag=0x00000007, Type=typing.List[ThreadNetworkDiagnostics.Structs.NeighborTable]),
+                ClusterObjectFieldDescriptor(Label="routeTable", Tag=0x00000008, Type=typing.List[ThreadNetworkDiagnostics.Structs.RouteTable]),
                 ClusterObjectFieldDescriptor(Label="partitionId", Tag=0x00000009, Type=typing.Union[Nullable, uint]),
                 ClusterObjectFieldDescriptor(Label="weighting", Tag=0x0000000A, Type=typing.Union[Nullable, uint]),
                 ClusterObjectFieldDescriptor(Label="dataVersion", Tag=0x0000000B, Type=typing.Union[Nullable, uint]),
@@ -7948,8 +8016,8 @@ class ThreadNetworkDiagnostics(Cluster):
     extendedPanId: 'typing.Union[Nullable, uint]' = None
     meshLocalPrefix: 'typing.Union[Nullable, bytes]' = None
     overrunCount: 'typing.Optional[uint]' = None
-    neighborTableList: 'typing.List[ThreadNetworkDiagnostics.Structs.NeighborTable]' = None
-    routeTableList: 'typing.List[ThreadNetworkDiagnostics.Structs.RouteTable]' = None
+    neighborTable: 'typing.List[ThreadNetworkDiagnostics.Structs.NeighborTable]' = None
+    routeTable: 'typing.List[ThreadNetworkDiagnostics.Structs.RouteTable]' = None
     partitionId: 'typing.Union[Nullable, uint]' = None
     weighting: 'typing.Union[Nullable, uint]' = None
     dataVersion: 'typing.Union[Nullable, uint]' = None
@@ -8011,6 +8079,10 @@ class ThreadNetworkDiagnostics(Cluster):
     clusterRevision: 'uint' = None
 
     class Enums:
+        class ConnectionStatusEnum(IntEnum):
+            kConnected = 0x00
+            kNotConnected = 0x01
+
         class NetworkFault(IntEnum):
             kUnspecified = 0x00
             kLinkDown = 0x01
@@ -8025,10 +8097,6 @@ class ThreadNetworkDiagnostics(Cluster):
             kReed = 0x04
             kRouter = 0x05
             kLeader = 0x06
-
-        class ThreadConnectionStatus(IntEnum):
-            kConnected = 0x00
-            kNotConnected = 0x01
 
 
     class Structs:
@@ -8150,7 +8218,7 @@ class ThreadNetworkDiagnostics(Cluster):
         @dataclass
         class ResetCounts(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0035
-            command_id: typing.ClassVar[int] = 0x0000
+            command_id: typing.ClassVar[int] = 0x00000000
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -8276,7 +8344,7 @@ class ThreadNetworkDiagnostics(Cluster):
             value: 'typing.Optional[uint]' = None
 
         @dataclass
-        class NeighborTableList(ClusterAttributeDescriptor):
+        class NeighborTable(ClusterAttributeDescriptor):
             @ChipUtility.classproperty
             def cluster_id(cls) -> int:
                 return 0x0035
@@ -8292,7 +8360,7 @@ class ThreadNetworkDiagnostics(Cluster):
             value: 'typing.List[ThreadNetworkDiagnostics.Structs.NeighborTable]' = field(default_factory=lambda: [])
 
         @dataclass
-        class RouteTableList(ClusterAttributeDescriptor):
+        class RouteTable(ClusterAttributeDescriptor):
             @ChipUtility.classproperty
             def cluster_id(cls) -> int:
                 return 0x0035
@@ -9267,10 +9335,10 @@ class ThreadNetworkDiagnostics(Cluster):
             def descriptor(cls) -> ClusterObjectDescriptor:
                 return ClusterObjectDescriptor(
                     Fields = [
-                            ClusterObjectFieldDescriptor(Label="connectionStatus", Tag=0, Type=ThreadNetworkDiagnostics.Enums.ThreadConnectionStatus),
+                            ClusterObjectFieldDescriptor(Label="connectionStatus", Tag=0, Type=ThreadNetworkDiagnostics.Enums.ConnectionStatusEnum),
                     ])
 
-            connectionStatus: 'ThreadNetworkDiagnostics.Enums.ThreadConnectionStatus' = 0
+            connectionStatus: 'ThreadNetworkDiagnostics.Enums.ConnectionStatusEnum' = 0
 
         @dataclass
         class NetworkFaultChange(ClusterEvent):
@@ -9361,12 +9429,12 @@ class WiFiNetworkDiagnostics(Cluster):
             kNotConnected = 0x01
 
         class WiFiVersionType(IntEnum):
-            k80211a = 0x00
-            k80211b = 0x01
-            k80211g = 0x02
-            k80211n = 0x03
-            k80211ac = 0x04
-            k80211ax = 0x05
+            kA = 0x00
+            kB = 0x01
+            kG = 0x02
+            kN = 0x03
+            kAc = 0x04
+            kAx = 0x05
 
 
 
@@ -9374,7 +9442,7 @@ class WiFiNetworkDiagnostics(Cluster):
         @dataclass
         class ResetCounts(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0036
-            command_id: typing.ClassVar[int] = 0x0000
+            command_id: typing.ClassVar[int] = 0x00000000
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -9745,7 +9813,7 @@ class EthernetNetworkDiagnostics(Cluster):
     def descriptor(cls) -> ClusterObjectDescriptor:
         return ClusterObjectDescriptor(
             Fields = [
-                ClusterObjectFieldDescriptor(Label="PHYRate", Tag=0x00000000, Type=typing.Union[None, Nullable, EthernetNetworkDiagnostics.Enums.PHYRateType]),
+                ClusterObjectFieldDescriptor(Label="PHYRate", Tag=0x00000000, Type=typing.Union[None, Nullable, EthernetNetworkDiagnostics.Enums.PHYRate]),
                 ClusterObjectFieldDescriptor(Label="fullDuplex", Tag=0x00000001, Type=typing.Union[None, Nullable, bool]),
                 ClusterObjectFieldDescriptor(Label="packetRxCount", Tag=0x00000002, Type=typing.Optional[uint]),
                 ClusterObjectFieldDescriptor(Label="packetTxCount", Tag=0x00000003, Type=typing.Optional[uint]),
@@ -9761,7 +9829,7 @@ class EthernetNetworkDiagnostics(Cluster):
                 ClusterObjectFieldDescriptor(Label="clusterRevision", Tag=0x0000FFFD, Type=uint),
             ])
 
-    PHYRate: 'typing.Union[None, Nullable, EthernetNetworkDiagnostics.Enums.PHYRateType]' = None
+    PHYRate: 'typing.Union[None, Nullable, EthernetNetworkDiagnostics.Enums.PHYRate]' = None
     fullDuplex: 'typing.Union[None, Nullable, bool]' = None
     packetRxCount: 'typing.Optional[uint]' = None
     packetTxCount: 'typing.Optional[uint]' = None
@@ -9777,17 +9845,17 @@ class EthernetNetworkDiagnostics(Cluster):
     clusterRevision: 'uint' = None
 
     class Enums:
-        class PHYRateType(IntEnum):
-            k10m = 0x00
-            k100m = 0x01
-            k1000m = 0x02
-            k25g = 0x03
-            k5g = 0x04
-            k10g = 0x05
-            k40g = 0x06
-            k100g = 0x07
-            k200g = 0x08
-            k400g = 0x09
+        class PHYRate(IntEnum):
+            kRate10M = 0x00
+            kRate100M = 0x01
+            kRate1G = 0x02
+            kRate25g = 0x03
+            kRate5G = 0x04
+            kRate10G = 0x05
+            kRate40G = 0x06
+            kRate100G = 0x07
+            kRate200G = 0x08
+            kRate400G = 0x09
 
 
 
@@ -9795,7 +9863,7 @@ class EthernetNetworkDiagnostics(Cluster):
         @dataclass
         class ResetCounts(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0037
-            command_id: typing.ClassVar[int] = 0x0000
+            command_id: typing.ClassVar[int] = 0x00000000
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -9820,9 +9888,9 @@ class EthernetNetworkDiagnostics(Cluster):
 
             @ChipUtility.classproperty
             def attribute_type(cls) -> ClusterObjectFieldDescriptor:
-                return ClusterObjectFieldDescriptor(Type=typing.Union[None, Nullable, EthernetNetworkDiagnostics.Enums.PHYRateType])
+                return ClusterObjectFieldDescriptor(Type=typing.Union[None, Nullable, EthernetNetworkDiagnostics.Enums.PHYRate])
 
-            value: 'typing.Union[None, Nullable, EthernetNetworkDiagnostics.Enums.PHYRateType]' = None
+            value: 'typing.Union[None, Nullable, EthernetNetworkDiagnostics.Enums.PHYRate]' = None
 
         @dataclass
         class FullDuplex(ClusterAttributeDescriptor):
@@ -10140,7 +10208,7 @@ class TimeSynchronization(Cluster):
         @dataclass
         class SetUtcTime(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0038
-            command_id: typing.ClassVar[int] = 0x0000
+            command_id: typing.ClassVar[int] = 0x00000000
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -10402,7 +10470,7 @@ class TimeSynchronization(Cluster):
 
 
 @dataclass
-class BridgedDeviceBasic(Cluster):
+class BridgedDeviceBasicInformation(Cluster):
     id: typing.ClassVar[int] = 0x0039
 
     @ChipUtility.classproperty
@@ -11194,7 +11262,7 @@ class AdministratorCommissioning(Cluster):
         @dataclass
         class OpenCommissioningWindow(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x003C
-            command_id: typing.ClassVar[int] = 0x0000
+            command_id: typing.ClassVar[int] = 0x00000000
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -11203,7 +11271,7 @@ class AdministratorCommissioning(Cluster):
                 return ClusterObjectDescriptor(
                     Fields = [
                             ClusterObjectFieldDescriptor(Label="commissioningTimeout", Tag=0, Type=uint),
-                            ClusterObjectFieldDescriptor(Label="PAKEVerifier", Tag=1, Type=bytes),
+                            ClusterObjectFieldDescriptor(Label="PAKEPasscodeVerifier", Tag=1, Type=bytes),
                             ClusterObjectFieldDescriptor(Label="discriminator", Tag=2, Type=uint),
                             ClusterObjectFieldDescriptor(Label="iterations", Tag=3, Type=uint),
                             ClusterObjectFieldDescriptor(Label="salt", Tag=4, Type=bytes),
@@ -11214,7 +11282,7 @@ class AdministratorCommissioning(Cluster):
                 return True
 
             commissioningTimeout: 'uint' = 0
-            PAKEVerifier: 'bytes' = b""
+            PAKEPasscodeVerifier: 'bytes' = b""
             discriminator: 'uint' = 0
             iterations: 'uint' = 0
             salt: 'bytes' = b""
@@ -11222,7 +11290,7 @@ class AdministratorCommissioning(Cluster):
         @dataclass
         class OpenBasicCommissioningWindow(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x003C
-            command_id: typing.ClassVar[int] = 0x0001
+            command_id: typing.ClassVar[int] = 0x00000001
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -11242,7 +11310,7 @@ class AdministratorCommissioning(Cluster):
         @dataclass
         class RevokeCommissioning(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x003C
-            command_id: typing.ClassVar[int] = 0x0002
+            command_id: typing.ClassVar[int] = 0x00000002
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -11398,7 +11466,7 @@ class OperationalCredentials(Cluster):
         return ClusterObjectDescriptor(
             Fields = [
                 ClusterObjectFieldDescriptor(Label="NOCs", Tag=0x00000000, Type=typing.List[OperationalCredentials.Structs.NOCStruct]),
-                ClusterObjectFieldDescriptor(Label="fabrics", Tag=0x00000001, Type=typing.List[OperationalCredentials.Structs.FabricDescriptor]),
+                ClusterObjectFieldDescriptor(Label="fabrics", Tag=0x00000001, Type=typing.List[OperationalCredentials.Structs.FabricDescriptorStruct]),
                 ClusterObjectFieldDescriptor(Label="supportedFabrics", Tag=0x00000002, Type=uint),
                 ClusterObjectFieldDescriptor(Label="commissionedFabrics", Tag=0x00000003, Type=uint),
                 ClusterObjectFieldDescriptor(Label="trustedRootCertificates", Tag=0x00000004, Type=typing.List[bytes]),
@@ -11411,7 +11479,7 @@ class OperationalCredentials(Cluster):
             ])
 
     NOCs: 'typing.List[OperationalCredentials.Structs.NOCStruct]' = None
-    fabrics: 'typing.List[OperationalCredentials.Structs.FabricDescriptor]' = None
+    fabrics: 'typing.List[OperationalCredentials.Structs.FabricDescriptorStruct]' = None
     supportedFabrics: 'uint' = None
     commissionedFabrics: 'uint' = None
     trustedRootCertificates: 'typing.List[bytes]' = None
@@ -11423,8 +11491,12 @@ class OperationalCredentials(Cluster):
     clusterRevision: 'uint' = None
 
     class Enums:
-        class OperationalCertStatus(IntEnum):
-            kSuccess = 0x00
+        class CertificateChainTypeEnum(IntEnum):
+            kDACCertificate = 0x01
+            kPAICertificate = 0x02
+
+        class NodeOperationalCertStatusEnum(IntEnum):
+            kOk = 0x00
             kInvalidPublicKey = 0x01
             kInvalidNodeOpId = 0x02
             kInvalidNOC = 0x03
@@ -11438,23 +11510,23 @@ class OperationalCredentials(Cluster):
 
     class Structs:
         @dataclass
-        class FabricDescriptor(ClusterObject):
+        class FabricDescriptorStruct(ClusterObject):
             @ChipUtility.classproperty
             def descriptor(cls) -> ClusterObjectDescriptor:
                 return ClusterObjectDescriptor(
                     Fields = [
                             ClusterObjectFieldDescriptor(Label="rootPublicKey", Tag=1, Type=bytes),
-                            ClusterObjectFieldDescriptor(Label="vendorId", Tag=2, Type=uint),
-                            ClusterObjectFieldDescriptor(Label="fabricId", Tag=3, Type=uint),
-                            ClusterObjectFieldDescriptor(Label="nodeId", Tag=4, Type=uint),
+                            ClusterObjectFieldDescriptor(Label="vendorID", Tag=2, Type=uint),
+                            ClusterObjectFieldDescriptor(Label="fabricID", Tag=3, Type=uint),
+                            ClusterObjectFieldDescriptor(Label="nodeID", Tag=4, Type=uint),
                             ClusterObjectFieldDescriptor(Label="label", Tag=5, Type=str),
                             ClusterObjectFieldDescriptor(Label="fabricIndex", Tag=254, Type=uint),
                     ])
 
             rootPublicKey: 'bytes' = b""
-            vendorId: 'uint' = 0
-            fabricId: 'uint' = 0
-            nodeId: 'uint' = 0
+            vendorID: 'uint' = 0
+            fabricID: 'uint' = 0
+            nodeID: 'uint' = 0
             label: 'str' = ""
             fabricIndex: 'uint' = 0
 
@@ -11479,7 +11551,7 @@ class OperationalCredentials(Cluster):
         @dataclass
         class AttestationRequest(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x003E
-            command_id: typing.ClassVar[int] = 0x0000
+            command_id: typing.ClassVar[int] = 0x00000000
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = 'AttestationResponse'
 
@@ -11495,7 +11567,7 @@ class OperationalCredentials(Cluster):
         @dataclass
         class AttestationResponse(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x003E
-            command_id: typing.ClassVar[int] = 0x0001
+            command_id: typing.ClassVar[int] = 0x00000001
             is_client: typing.ClassVar[bool] = False
             response_type: typing.ClassVar[str] = None
 
@@ -11504,16 +11576,16 @@ class OperationalCredentials(Cluster):
                 return ClusterObjectDescriptor(
                     Fields = [
                             ClusterObjectFieldDescriptor(Label="attestationElements", Tag=0, Type=bytes),
-                            ClusterObjectFieldDescriptor(Label="signature", Tag=1, Type=bytes),
+                            ClusterObjectFieldDescriptor(Label="attestationSignature", Tag=1, Type=bytes),
                     ])
 
             attestationElements: 'bytes' = b""
-            signature: 'bytes' = b""
+            attestationSignature: 'bytes' = b""
 
         @dataclass
         class CertificateChainRequest(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x003E
-            command_id: typing.ClassVar[int] = 0x0002
+            command_id: typing.ClassVar[int] = 0x00000002
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = 'CertificateChainResponse'
 
@@ -11521,15 +11593,15 @@ class OperationalCredentials(Cluster):
             def descriptor(cls) -> ClusterObjectDescriptor:
                 return ClusterObjectDescriptor(
                     Fields = [
-                            ClusterObjectFieldDescriptor(Label="certificateType", Tag=0, Type=uint),
+                            ClusterObjectFieldDescriptor(Label="certificateType", Tag=0, Type=OperationalCredentials.Enums.CertificateChainTypeEnum),
                     ])
 
-            certificateType: 'uint' = 0
+            certificateType: 'OperationalCredentials.Enums.CertificateChainTypeEnum' = 0
 
         @dataclass
         class CertificateChainResponse(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x003E
-            command_id: typing.ClassVar[int] = 0x0003
+            command_id: typing.ClassVar[int] = 0x00000003
             is_client: typing.ClassVar[bool] = False
             response_type: typing.ClassVar[str] = None
 
@@ -11545,7 +11617,7 @@ class OperationalCredentials(Cluster):
         @dataclass
         class CSRRequest(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x003E
-            command_id: typing.ClassVar[int] = 0x0004
+            command_id: typing.ClassVar[int] = 0x00000004
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = 'CSRResponse'
 
@@ -11563,7 +11635,7 @@ class OperationalCredentials(Cluster):
         @dataclass
         class CSRResponse(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x003E
-            command_id: typing.ClassVar[int] = 0x0005
+            command_id: typing.ClassVar[int] = 0x00000005
             is_client: typing.ClassVar[bool] = False
             response_type: typing.ClassVar[str] = None
 
@@ -11581,7 +11653,7 @@ class OperationalCredentials(Cluster):
         @dataclass
         class AddNOC(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x003E
-            command_id: typing.ClassVar[int] = 0x0006
+            command_id: typing.ClassVar[int] = 0x00000006
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = 'NOCResponse'
 
@@ -11605,7 +11677,7 @@ class OperationalCredentials(Cluster):
         @dataclass
         class UpdateNOC(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x003E
-            command_id: typing.ClassVar[int] = 0x0007
+            command_id: typing.ClassVar[int] = 0x00000007
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = 'NOCResponse'
 
@@ -11623,7 +11695,7 @@ class OperationalCredentials(Cluster):
         @dataclass
         class NOCResponse(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x003E
-            command_id: typing.ClassVar[int] = 0x0008
+            command_id: typing.ClassVar[int] = 0x00000008
             is_client: typing.ClassVar[bool] = False
             response_type: typing.ClassVar[str] = None
 
@@ -11631,19 +11703,19 @@ class OperationalCredentials(Cluster):
             def descriptor(cls) -> ClusterObjectDescriptor:
                 return ClusterObjectDescriptor(
                     Fields = [
-                            ClusterObjectFieldDescriptor(Label="statusCode", Tag=0, Type=OperationalCredentials.Enums.OperationalCertStatus),
+                            ClusterObjectFieldDescriptor(Label="statusCode", Tag=0, Type=OperationalCredentials.Enums.NodeOperationalCertStatusEnum),
                             ClusterObjectFieldDescriptor(Label="fabricIndex", Tag=1, Type=typing.Optional[uint]),
                             ClusterObjectFieldDescriptor(Label="debugText", Tag=2, Type=typing.Optional[str]),
                     ])
 
-            statusCode: 'OperationalCredentials.Enums.OperationalCertStatus' = 0
+            statusCode: 'OperationalCredentials.Enums.NodeOperationalCertStatusEnum' = 0
             fabricIndex: 'typing.Optional[uint]' = None
             debugText: 'typing.Optional[str]' = None
 
         @dataclass
         class UpdateFabricLabel(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x003E
-            command_id: typing.ClassVar[int] = 0x0009
+            command_id: typing.ClassVar[int] = 0x00000009
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = 'NOCResponse'
 
@@ -11659,7 +11731,7 @@ class OperationalCredentials(Cluster):
         @dataclass
         class RemoveFabric(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x003E
-            command_id: typing.ClassVar[int] = 0x000A
+            command_id: typing.ClassVar[int] = 0x0000000A
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = 'NOCResponse'
 
@@ -11675,7 +11747,7 @@ class OperationalCredentials(Cluster):
         @dataclass
         class AddTrustedRootCertificate(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x003E
-            command_id: typing.ClassVar[int] = 0x000B
+            command_id: typing.ClassVar[int] = 0x0000000B
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -11683,10 +11755,10 @@ class OperationalCredentials(Cluster):
             def descriptor(cls) -> ClusterObjectDescriptor:
                 return ClusterObjectDescriptor(
                     Fields = [
-                            ClusterObjectFieldDescriptor(Label="rootCertificate", Tag=0, Type=bytes),
+                            ClusterObjectFieldDescriptor(Label="rootCACertificate", Tag=0, Type=bytes),
                     ])
 
-            rootCertificate: 'bytes' = b""
+            rootCACertificate: 'bytes' = b""
 
 
     class Attributes:
@@ -11718,9 +11790,9 @@ class OperationalCredentials(Cluster):
 
             @ChipUtility.classproperty
             def attribute_type(cls) -> ClusterObjectFieldDescriptor:
-                return ClusterObjectFieldDescriptor(Type=typing.List[OperationalCredentials.Structs.FabricDescriptor])
+                return ClusterObjectFieldDescriptor(Type=typing.List[OperationalCredentials.Structs.FabricDescriptorStruct])
 
-            value: 'typing.List[OperationalCredentials.Structs.FabricDescriptor]' = field(default_factory=lambda: [])
+            value: 'typing.List[OperationalCredentials.Structs.FabricDescriptorStruct]' = field(default_factory=lambda: [])
 
         @dataclass
         class SupportedFabrics(ClusterAttributeDescriptor):
@@ -11967,7 +12039,7 @@ class GroupKeyManagement(Cluster):
         @dataclass
         class KeySetWrite(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x003F
-            command_id: typing.ClassVar[int] = 0x0000
+            command_id: typing.ClassVar[int] = 0x00000000
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -11983,7 +12055,7 @@ class GroupKeyManagement(Cluster):
         @dataclass
         class KeySetRead(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x003F
-            command_id: typing.ClassVar[int] = 0x0001
+            command_id: typing.ClassVar[int] = 0x00000001
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = 'KeySetReadResponse'
 
@@ -11999,7 +12071,7 @@ class GroupKeyManagement(Cluster):
         @dataclass
         class KeySetReadResponse(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x003F
-            command_id: typing.ClassVar[int] = 0x0002
+            command_id: typing.ClassVar[int] = 0x00000002
             is_client: typing.ClassVar[bool] = False
             response_type: typing.ClassVar[str] = None
 
@@ -12015,7 +12087,7 @@ class GroupKeyManagement(Cluster):
         @dataclass
         class KeySetRemove(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x003F
-            command_id: typing.ClassVar[int] = 0x0003
+            command_id: typing.ClassVar[int] = 0x00000003
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -12031,7 +12103,7 @@ class GroupKeyManagement(Cluster):
         @dataclass
         class KeySetReadAllIndices(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x003F
-            command_id: typing.ClassVar[int] = 0x0004
+            command_id: typing.ClassVar[int] = 0x00000004
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = 'KeySetReadAllIndicesResponse'
 
@@ -12047,7 +12119,7 @@ class GroupKeyManagement(Cluster):
         @dataclass
         class KeySetReadAllIndicesResponse(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x003F
-            command_id: typing.ClassVar[int] = 0x0005
+            command_id: typing.ClassVar[int] = 0x00000005
             is_client: typing.ClassVar[bool] = False
             response_type: typing.ClassVar[str] = None
 
@@ -12990,7 +13062,7 @@ class ModeSelect(Cluster):
 
     class Structs:
         @dataclass
-        class SemanticTag(ClusterObject):
+        class SemanticTagStruct(ClusterObject):
             @ChipUtility.classproperty
             def descriptor(cls) -> ClusterObjectDescriptor:
                 return ClusterObjectDescriptor(
@@ -13010,12 +13082,12 @@ class ModeSelect(Cluster):
                     Fields = [
                             ClusterObjectFieldDescriptor(Label="label", Tag=0, Type=str),
                             ClusterObjectFieldDescriptor(Label="mode", Tag=1, Type=uint),
-                            ClusterObjectFieldDescriptor(Label="semanticTags", Tag=2, Type=typing.List[ModeSelect.Structs.SemanticTag]),
+                            ClusterObjectFieldDescriptor(Label="semanticTags", Tag=2, Type=typing.List[ModeSelect.Structs.SemanticTagStruct]),
                     ])
 
             label: 'str' = ""
             mode: 'uint' = 0
-            semanticTags: 'typing.List[ModeSelect.Structs.SemanticTag]' = field(default_factory=lambda: [])
+            semanticTags: 'typing.List[ModeSelect.Structs.SemanticTagStruct]' = field(default_factory=lambda: [])
 
 
 
@@ -13023,7 +13095,7 @@ class ModeSelect(Cluster):
         @dataclass
         class ChangeToMode(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0050
-            command_id: typing.ClassVar[int] = 0x0000
+            command_id: typing.ClassVar[int] = 0x00000000
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -13500,7 +13572,7 @@ class DoorLock(Cluster):
         @dataclass
         class LockDoor(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0101
-            command_id: typing.ClassVar[int] = 0x0000
+            command_id: typing.ClassVar[int] = 0x00000000
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -13520,7 +13592,7 @@ class DoorLock(Cluster):
         @dataclass
         class UnlockDoor(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0101
-            command_id: typing.ClassVar[int] = 0x0001
+            command_id: typing.ClassVar[int] = 0x00000001
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -13540,7 +13612,7 @@ class DoorLock(Cluster):
         @dataclass
         class UnlockWithTimeout(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0101
-            command_id: typing.ClassVar[int] = 0x0003
+            command_id: typing.ClassVar[int] = 0x00000003
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -13562,7 +13634,7 @@ class DoorLock(Cluster):
         @dataclass
         class SetWeekDaySchedule(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0101
-            command_id: typing.ClassVar[int] = 0x000B
+            command_id: typing.ClassVar[int] = 0x0000000B
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -13590,7 +13662,7 @@ class DoorLock(Cluster):
         @dataclass
         class GetWeekDaySchedule(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0101
-            command_id: typing.ClassVar[int] = 0x000C
+            command_id: typing.ClassVar[int] = 0x0000000C
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = 'GetWeekDayScheduleResponse'
 
@@ -13608,7 +13680,7 @@ class DoorLock(Cluster):
         @dataclass
         class GetWeekDayScheduleResponse(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0101
-            command_id: typing.ClassVar[int] = 0x000C
+            command_id: typing.ClassVar[int] = 0x0000000C
             is_client: typing.ClassVar[bool] = False
             response_type: typing.ClassVar[str] = None
 
@@ -13638,7 +13710,7 @@ class DoorLock(Cluster):
         @dataclass
         class ClearWeekDaySchedule(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0101
-            command_id: typing.ClassVar[int] = 0x000D
+            command_id: typing.ClassVar[int] = 0x0000000D
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -13656,7 +13728,7 @@ class DoorLock(Cluster):
         @dataclass
         class SetYearDaySchedule(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0101
-            command_id: typing.ClassVar[int] = 0x000E
+            command_id: typing.ClassVar[int] = 0x0000000E
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -13678,7 +13750,7 @@ class DoorLock(Cluster):
         @dataclass
         class GetYearDaySchedule(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0101
-            command_id: typing.ClassVar[int] = 0x000F
+            command_id: typing.ClassVar[int] = 0x0000000F
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = 'GetYearDayScheduleResponse'
 
@@ -13696,7 +13768,7 @@ class DoorLock(Cluster):
         @dataclass
         class GetYearDayScheduleResponse(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0101
-            command_id: typing.ClassVar[int] = 0x000F
+            command_id: typing.ClassVar[int] = 0x0000000F
             is_client: typing.ClassVar[bool] = False
             response_type: typing.ClassVar[str] = None
 
@@ -13720,7 +13792,7 @@ class DoorLock(Cluster):
         @dataclass
         class ClearYearDaySchedule(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0101
-            command_id: typing.ClassVar[int] = 0x0010
+            command_id: typing.ClassVar[int] = 0x00000010
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -13738,7 +13810,7 @@ class DoorLock(Cluster):
         @dataclass
         class SetHolidaySchedule(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0101
-            command_id: typing.ClassVar[int] = 0x0011
+            command_id: typing.ClassVar[int] = 0x00000011
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -13760,7 +13832,7 @@ class DoorLock(Cluster):
         @dataclass
         class GetHolidaySchedule(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0101
-            command_id: typing.ClassVar[int] = 0x0012
+            command_id: typing.ClassVar[int] = 0x00000012
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = 'GetHolidayScheduleResponse'
 
@@ -13776,7 +13848,7 @@ class DoorLock(Cluster):
         @dataclass
         class GetHolidayScheduleResponse(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0101
-            command_id: typing.ClassVar[int] = 0x0012
+            command_id: typing.ClassVar[int] = 0x00000012
             is_client: typing.ClassVar[bool] = False
             response_type: typing.ClassVar[str] = None
 
@@ -13800,7 +13872,7 @@ class DoorLock(Cluster):
         @dataclass
         class ClearHolidaySchedule(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0101
-            command_id: typing.ClassVar[int] = 0x0013
+            command_id: typing.ClassVar[int] = 0x00000013
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -13816,7 +13888,7 @@ class DoorLock(Cluster):
         @dataclass
         class SetUser(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0101
-            command_id: typing.ClassVar[int] = 0x001A
+            command_id: typing.ClassVar[int] = 0x0000001A
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -13848,7 +13920,7 @@ class DoorLock(Cluster):
         @dataclass
         class GetUser(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0101
-            command_id: typing.ClassVar[int] = 0x001B
+            command_id: typing.ClassVar[int] = 0x0000001B
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = 'GetUserResponse'
 
@@ -13864,7 +13936,7 @@ class DoorLock(Cluster):
         @dataclass
         class GetUserResponse(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0101
-            command_id: typing.ClassVar[int] = 0x001C
+            command_id: typing.ClassVar[int] = 0x0000001C
             is_client: typing.ClassVar[bool] = False
             response_type: typing.ClassVar[str] = None
 
@@ -13898,7 +13970,7 @@ class DoorLock(Cluster):
         @dataclass
         class ClearUser(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0101
-            command_id: typing.ClassVar[int] = 0x001D
+            command_id: typing.ClassVar[int] = 0x0000001D
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -13918,7 +13990,7 @@ class DoorLock(Cluster):
         @dataclass
         class SetCredential(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0101
-            command_id: typing.ClassVar[int] = 0x0022
+            command_id: typing.ClassVar[int] = 0x00000022
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = 'SetCredentialResponse'
 
@@ -13948,7 +14020,7 @@ class DoorLock(Cluster):
         @dataclass
         class SetCredentialResponse(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0101
-            command_id: typing.ClassVar[int] = 0x0023
+            command_id: typing.ClassVar[int] = 0x00000023
             is_client: typing.ClassVar[bool] = False
             response_type: typing.ClassVar[str] = None
 
@@ -13968,7 +14040,7 @@ class DoorLock(Cluster):
         @dataclass
         class GetCredentialStatus(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0101
-            command_id: typing.ClassVar[int] = 0x0024
+            command_id: typing.ClassVar[int] = 0x00000024
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = 'GetCredentialStatusResponse'
 
@@ -13984,7 +14056,7 @@ class DoorLock(Cluster):
         @dataclass
         class GetCredentialStatusResponse(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0101
-            command_id: typing.ClassVar[int] = 0x0025
+            command_id: typing.ClassVar[int] = 0x00000025
             is_client: typing.ClassVar[bool] = False
             response_type: typing.ClassVar[str] = None
 
@@ -14008,7 +14080,7 @@ class DoorLock(Cluster):
         @dataclass
         class ClearCredential(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0101
-            command_id: typing.ClassVar[int] = 0x0026
+            command_id: typing.ClassVar[int] = 0x00000026
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -14927,7 +14999,7 @@ class WindowCovering(Cluster):
         @dataclass
         class UpOrOpen(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0102
-            command_id: typing.ClassVar[int] = 0x0000
+            command_id: typing.ClassVar[int] = 0x00000000
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -14941,7 +15013,7 @@ class WindowCovering(Cluster):
         @dataclass
         class DownOrClose(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0102
-            command_id: typing.ClassVar[int] = 0x0001
+            command_id: typing.ClassVar[int] = 0x00000001
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -14955,7 +15027,7 @@ class WindowCovering(Cluster):
         @dataclass
         class StopMotion(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0102
-            command_id: typing.ClassVar[int] = 0x0002
+            command_id: typing.ClassVar[int] = 0x00000002
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -14969,7 +15041,7 @@ class WindowCovering(Cluster):
         @dataclass
         class GoToLiftValue(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0102
-            command_id: typing.ClassVar[int] = 0x0004
+            command_id: typing.ClassVar[int] = 0x00000004
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -14985,7 +15057,7 @@ class WindowCovering(Cluster):
         @dataclass
         class GoToLiftPercentage(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0102
-            command_id: typing.ClassVar[int] = 0x0005
+            command_id: typing.ClassVar[int] = 0x00000005
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -15001,7 +15073,7 @@ class WindowCovering(Cluster):
         @dataclass
         class GoToTiltValue(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0102
-            command_id: typing.ClassVar[int] = 0x0007
+            command_id: typing.ClassVar[int] = 0x00000007
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -15017,7 +15089,7 @@ class WindowCovering(Cluster):
         @dataclass
         class GoToTiltPercentage(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0102
-            command_id: typing.ClassVar[int] = 0x0008
+            command_id: typing.ClassVar[int] = 0x00000008
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -15513,7 +15585,7 @@ class BarrierControl(Cluster):
         @dataclass
         class BarrierControlGoToPercent(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0103
-            command_id: typing.ClassVar[int] = 0x0000
+            command_id: typing.ClassVar[int] = 0x00000000
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -15529,7 +15601,7 @@ class BarrierControl(Cluster):
         @dataclass
         class BarrierControlStop(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0103
-            command_id: typing.ClassVar[int] = 0x0001
+            command_id: typing.ClassVar[int] = 0x00000001
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -16780,7 +16852,7 @@ class Thermostat(Cluster):
         @dataclass
         class SetpointRaiseLower(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0201
-            command_id: typing.ClassVar[int] = 0x0000
+            command_id: typing.ClassVar[int] = 0x00000000
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -16798,7 +16870,7 @@ class Thermostat(Cluster):
         @dataclass
         class GetWeeklyScheduleResponse(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0201
-            command_id: typing.ClassVar[int] = 0x0000
+            command_id: typing.ClassVar[int] = 0x00000000
             is_client: typing.ClassVar[bool] = False
             response_type: typing.ClassVar[str] = None
 
@@ -16820,7 +16892,7 @@ class Thermostat(Cluster):
         @dataclass
         class SetWeeklySchedule(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0201
-            command_id: typing.ClassVar[int] = 0x0001
+            command_id: typing.ClassVar[int] = 0x00000001
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -16842,7 +16914,7 @@ class Thermostat(Cluster):
         @dataclass
         class GetWeeklySchedule(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0201
-            command_id: typing.ClassVar[int] = 0x0002
+            command_id: typing.ClassVar[int] = 0x00000002
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = 'GetWeeklyScheduleResponse'
 
@@ -16860,7 +16932,7 @@ class Thermostat(Cluster):
         @dataclass
         class ClearWeeklySchedule(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0201
-            command_id: typing.ClassVar[int] = 0x0003
+            command_id: typing.ClassVar[int] = 0x00000003
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -18393,7 +18465,7 @@ class ColorControl(Cluster):
         @dataclass
         class MoveToHue(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0300
-            command_id: typing.ClassVar[int] = 0x0000
+            command_id: typing.ClassVar[int] = 0x00000000
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -18417,7 +18489,7 @@ class ColorControl(Cluster):
         @dataclass
         class MoveHue(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0300
-            command_id: typing.ClassVar[int] = 0x0001
+            command_id: typing.ClassVar[int] = 0x00000001
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -18439,7 +18511,7 @@ class ColorControl(Cluster):
         @dataclass
         class StepHue(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0300
-            command_id: typing.ClassVar[int] = 0x0002
+            command_id: typing.ClassVar[int] = 0x00000002
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -18463,7 +18535,7 @@ class ColorControl(Cluster):
         @dataclass
         class MoveToSaturation(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0300
-            command_id: typing.ClassVar[int] = 0x0003
+            command_id: typing.ClassVar[int] = 0x00000003
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -18485,7 +18557,7 @@ class ColorControl(Cluster):
         @dataclass
         class MoveSaturation(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0300
-            command_id: typing.ClassVar[int] = 0x0004
+            command_id: typing.ClassVar[int] = 0x00000004
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -18507,7 +18579,7 @@ class ColorControl(Cluster):
         @dataclass
         class StepSaturation(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0300
-            command_id: typing.ClassVar[int] = 0x0005
+            command_id: typing.ClassVar[int] = 0x00000005
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -18531,7 +18603,7 @@ class ColorControl(Cluster):
         @dataclass
         class MoveToHueAndSaturation(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0300
-            command_id: typing.ClassVar[int] = 0x0006
+            command_id: typing.ClassVar[int] = 0x00000006
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -18555,7 +18627,7 @@ class ColorControl(Cluster):
         @dataclass
         class MoveToColor(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0300
-            command_id: typing.ClassVar[int] = 0x0007
+            command_id: typing.ClassVar[int] = 0x00000007
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -18579,7 +18651,7 @@ class ColorControl(Cluster):
         @dataclass
         class MoveColor(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0300
-            command_id: typing.ClassVar[int] = 0x0008
+            command_id: typing.ClassVar[int] = 0x00000008
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -18601,7 +18673,7 @@ class ColorControl(Cluster):
         @dataclass
         class StepColor(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0300
-            command_id: typing.ClassVar[int] = 0x0009
+            command_id: typing.ClassVar[int] = 0x00000009
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -18625,7 +18697,7 @@ class ColorControl(Cluster):
         @dataclass
         class MoveToColorTemperature(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0300
-            command_id: typing.ClassVar[int] = 0x000A
+            command_id: typing.ClassVar[int] = 0x0000000A
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -18647,7 +18719,7 @@ class ColorControl(Cluster):
         @dataclass
         class EnhancedMoveToHue(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0300
-            command_id: typing.ClassVar[int] = 0x0040
+            command_id: typing.ClassVar[int] = 0x00000040
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -18671,7 +18743,7 @@ class ColorControl(Cluster):
         @dataclass
         class EnhancedMoveHue(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0300
-            command_id: typing.ClassVar[int] = 0x0041
+            command_id: typing.ClassVar[int] = 0x00000041
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -18693,7 +18765,7 @@ class ColorControl(Cluster):
         @dataclass
         class EnhancedStepHue(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0300
-            command_id: typing.ClassVar[int] = 0x0042
+            command_id: typing.ClassVar[int] = 0x00000042
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -18717,7 +18789,7 @@ class ColorControl(Cluster):
         @dataclass
         class EnhancedMoveToHueAndSaturation(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0300
-            command_id: typing.ClassVar[int] = 0x0043
+            command_id: typing.ClassVar[int] = 0x00000043
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -18741,7 +18813,7 @@ class ColorControl(Cluster):
         @dataclass
         class ColorLoopSet(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0300
-            command_id: typing.ClassVar[int] = 0x0044
+            command_id: typing.ClassVar[int] = 0x00000044
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -18769,7 +18841,7 @@ class ColorControl(Cluster):
         @dataclass
         class StopMoveStep(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0300
-            command_id: typing.ClassVar[int] = 0x0047
+            command_id: typing.ClassVar[int] = 0x00000047
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -18787,7 +18859,7 @@ class ColorControl(Cluster):
         @dataclass
         class MoveColorTemperature(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0300
-            command_id: typing.ClassVar[int] = 0x004B
+            command_id: typing.ClassVar[int] = 0x0000004B
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -18813,7 +18885,7 @@ class ColorControl(Cluster):
         @dataclass
         class StepColorTemperature(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0300
-            command_id: typing.ClassVar[int] = 0x004C
+            command_id: typing.ClassVar[int] = 0x0000004C
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -21132,9 +21204,9 @@ class OccupancySensing(Cluster):
                 ClusterObjectFieldDescriptor(Label="occupancy", Tag=0x00000000, Type=uint),
                 ClusterObjectFieldDescriptor(Label="occupancySensorType", Tag=0x00000001, Type=uint),
                 ClusterObjectFieldDescriptor(Label="occupancySensorTypeBitmap", Tag=0x00000002, Type=uint),
-                ClusterObjectFieldDescriptor(Label="pirOccupiedToUnoccupiedDelay", Tag=0x00000010, Type=typing.Optional[uint]),
-                ClusterObjectFieldDescriptor(Label="pirUnoccupiedToOccupiedDelay", Tag=0x00000011, Type=typing.Optional[uint]),
-                ClusterObjectFieldDescriptor(Label="pirUnoccupiedToOccupiedThreshold", Tag=0x00000012, Type=typing.Optional[uint]),
+                ClusterObjectFieldDescriptor(Label="PIROccupiedToUnoccupiedDelay", Tag=0x00000010, Type=typing.Optional[uint]),
+                ClusterObjectFieldDescriptor(Label="PIRUnoccupiedToOccupiedDelay", Tag=0x00000011, Type=typing.Optional[uint]),
+                ClusterObjectFieldDescriptor(Label="PIRUnoccupiedToOccupiedThreshold", Tag=0x00000012, Type=typing.Optional[uint]),
                 ClusterObjectFieldDescriptor(Label="ultrasonicOccupiedToUnoccupiedDelay", Tag=0x00000020, Type=typing.Optional[uint]),
                 ClusterObjectFieldDescriptor(Label="ultrasonicUnoccupiedToOccupiedDelay", Tag=0x00000021, Type=typing.Optional[uint]),
                 ClusterObjectFieldDescriptor(Label="ultrasonicUnoccupiedToOccupiedThreshold", Tag=0x00000022, Type=typing.Optional[uint]),
@@ -21151,9 +21223,9 @@ class OccupancySensing(Cluster):
     occupancy: 'uint' = None
     occupancySensorType: 'uint' = None
     occupancySensorTypeBitmap: 'uint' = None
-    pirOccupiedToUnoccupiedDelay: 'typing.Optional[uint]' = None
-    pirUnoccupiedToOccupiedDelay: 'typing.Optional[uint]' = None
-    pirUnoccupiedToOccupiedThreshold: 'typing.Optional[uint]' = None
+    PIROccupiedToUnoccupiedDelay: 'typing.Optional[uint]' = None
+    PIRUnoccupiedToOccupiedDelay: 'typing.Optional[uint]' = None
+    PIRUnoccupiedToOccupiedThreshold: 'typing.Optional[uint]' = None
     ultrasonicOccupiedToUnoccupiedDelay: 'typing.Optional[uint]' = None
     ultrasonicUnoccupiedToOccupiedDelay: 'typing.Optional[uint]' = None
     ultrasonicUnoccupiedToOccupiedThreshold: 'typing.Optional[uint]' = None
@@ -21219,7 +21291,7 @@ class OccupancySensing(Cluster):
             value: 'uint' = 0
 
         @dataclass
-        class PirOccupiedToUnoccupiedDelay(ClusterAttributeDescriptor):
+        class PIROccupiedToUnoccupiedDelay(ClusterAttributeDescriptor):
             @ChipUtility.classproperty
             def cluster_id(cls) -> int:
                 return 0x0406
@@ -21235,7 +21307,7 @@ class OccupancySensing(Cluster):
             value: 'typing.Optional[uint]' = None
 
         @dataclass
-        class PirUnoccupiedToOccupiedDelay(ClusterAttributeDescriptor):
+        class PIRUnoccupiedToOccupiedDelay(ClusterAttributeDescriptor):
             @ChipUtility.classproperty
             def cluster_id(cls) -> int:
                 return 0x0406
@@ -21251,7 +21323,7 @@ class OccupancySensing(Cluster):
             value: 'typing.Optional[uint]' = None
 
         @dataclass
-        class PirUnoccupiedToOccupiedThreshold(ClusterAttributeDescriptor):
+        class PIRUnoccupiedToOccupiedThreshold(ClusterAttributeDescriptor):
             @ChipUtility.classproperty
             def cluster_id(cls) -> int:
                 return 0x0406
@@ -21649,7 +21721,7 @@ class Channel(Cluster):
         @dataclass
         class ChangeChannel(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0504
-            command_id: typing.ClassVar[int] = 0x0000
+            command_id: typing.ClassVar[int] = 0x00000000
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = 'ChangeChannelResponse'
 
@@ -21665,7 +21737,7 @@ class Channel(Cluster):
         @dataclass
         class ChangeChannelResponse(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0504
-            command_id: typing.ClassVar[int] = 0x0001
+            command_id: typing.ClassVar[int] = 0x00000001
             is_client: typing.ClassVar[bool] = False
             response_type: typing.ClassVar[str] = None
 
@@ -21683,7 +21755,7 @@ class Channel(Cluster):
         @dataclass
         class ChangeChannelByNumber(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0504
-            command_id: typing.ClassVar[int] = 0x0002
+            command_id: typing.ClassVar[int] = 0x00000002
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -21701,7 +21773,7 @@ class Channel(Cluster):
         @dataclass
         class SkipChannel(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0504
-            command_id: typing.ClassVar[int] = 0x0003
+            command_id: typing.ClassVar[int] = 0x00000003
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -21898,7 +21970,7 @@ class TargetNavigator(Cluster):
         @dataclass
         class NavigateTarget(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0505
-            command_id: typing.ClassVar[int] = 0x0000
+            command_id: typing.ClassVar[int] = 0x00000000
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = 'NavigateTargetResponse'
 
@@ -21916,7 +21988,7 @@ class TargetNavigator(Cluster):
         @dataclass
         class NavigateTargetResponse(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0505
-            command_id: typing.ClassVar[int] = 0x0001
+            command_id: typing.ClassVar[int] = 0x00000001
             is_client: typing.ClassVar[bool] = False
             response_type: typing.ClassVar[str] = None
 
@@ -22118,7 +22190,7 @@ class MediaPlayback(Cluster):
         @dataclass
         class Play(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0506
-            command_id: typing.ClassVar[int] = 0x0000
+            command_id: typing.ClassVar[int] = 0x00000000
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = 'PlaybackResponse'
 
@@ -22132,7 +22204,7 @@ class MediaPlayback(Cluster):
         @dataclass
         class Pause(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0506
-            command_id: typing.ClassVar[int] = 0x0001
+            command_id: typing.ClassVar[int] = 0x00000001
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = 'PlaybackResponse'
 
@@ -22146,7 +22218,7 @@ class MediaPlayback(Cluster):
         @dataclass
         class StopPlayback(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0506
-            command_id: typing.ClassVar[int] = 0x0002
+            command_id: typing.ClassVar[int] = 0x00000002
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = 'PlaybackResponse'
 
@@ -22160,7 +22232,7 @@ class MediaPlayback(Cluster):
         @dataclass
         class StartOver(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0506
-            command_id: typing.ClassVar[int] = 0x0003
+            command_id: typing.ClassVar[int] = 0x00000003
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = 'PlaybackResponse'
 
@@ -22174,7 +22246,7 @@ class MediaPlayback(Cluster):
         @dataclass
         class Previous(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0506
-            command_id: typing.ClassVar[int] = 0x0004
+            command_id: typing.ClassVar[int] = 0x00000004
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = 'PlaybackResponse'
 
@@ -22188,7 +22260,7 @@ class MediaPlayback(Cluster):
         @dataclass
         class Next(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0506
-            command_id: typing.ClassVar[int] = 0x0005
+            command_id: typing.ClassVar[int] = 0x00000005
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = 'PlaybackResponse'
 
@@ -22202,7 +22274,7 @@ class MediaPlayback(Cluster):
         @dataclass
         class Rewind(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0506
-            command_id: typing.ClassVar[int] = 0x0006
+            command_id: typing.ClassVar[int] = 0x00000006
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = 'PlaybackResponse'
 
@@ -22216,7 +22288,7 @@ class MediaPlayback(Cluster):
         @dataclass
         class FastForward(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0506
-            command_id: typing.ClassVar[int] = 0x0007
+            command_id: typing.ClassVar[int] = 0x00000007
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = 'PlaybackResponse'
 
@@ -22230,7 +22302,7 @@ class MediaPlayback(Cluster):
         @dataclass
         class SkipForward(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0506
-            command_id: typing.ClassVar[int] = 0x0008
+            command_id: typing.ClassVar[int] = 0x00000008
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = 'PlaybackResponse'
 
@@ -22246,7 +22318,7 @@ class MediaPlayback(Cluster):
         @dataclass
         class SkipBackward(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0506
-            command_id: typing.ClassVar[int] = 0x0009
+            command_id: typing.ClassVar[int] = 0x00000009
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = 'PlaybackResponse'
 
@@ -22262,7 +22334,7 @@ class MediaPlayback(Cluster):
         @dataclass
         class PlaybackResponse(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0506
-            command_id: typing.ClassVar[int] = 0x000A
+            command_id: typing.ClassVar[int] = 0x0000000A
             is_client: typing.ClassVar[bool] = False
             response_type: typing.ClassVar[str] = None
 
@@ -22280,7 +22352,7 @@ class MediaPlayback(Cluster):
         @dataclass
         class Seek(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0506
-            command_id: typing.ClassVar[int] = 0x000B
+            command_id: typing.ClassVar[int] = 0x0000000B
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = 'PlaybackResponse'
 
@@ -22554,7 +22626,7 @@ class MediaInput(Cluster):
         @dataclass
         class SelectInput(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0507
-            command_id: typing.ClassVar[int] = 0x0000
+            command_id: typing.ClassVar[int] = 0x00000000
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -22570,7 +22642,7 @@ class MediaInput(Cluster):
         @dataclass
         class ShowInputStatus(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0507
-            command_id: typing.ClassVar[int] = 0x0001
+            command_id: typing.ClassVar[int] = 0x00000001
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -22584,7 +22656,7 @@ class MediaInput(Cluster):
         @dataclass
         class HideInputStatus(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0507
-            command_id: typing.ClassVar[int] = 0x0002
+            command_id: typing.ClassVar[int] = 0x00000002
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -22598,7 +22670,7 @@ class MediaInput(Cluster):
         @dataclass
         class RenameInput(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0507
-            command_id: typing.ClassVar[int] = 0x0003
+            command_id: typing.ClassVar[int] = 0x00000003
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -22756,7 +22828,7 @@ class LowPower(Cluster):
         @dataclass
         class Sleep(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0508
-            command_id: typing.ClassVar[int] = 0x0000
+            command_id: typing.ClassVar[int] = 0x00000000
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -22972,7 +23044,7 @@ class KeypadInput(Cluster):
         @dataclass
         class SendKey(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0509
-            command_id: typing.ClassVar[int] = 0x0000
+            command_id: typing.ClassVar[int] = 0x00000000
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = 'SendKeyResponse'
 
@@ -22988,7 +23060,7 @@ class KeypadInput(Cluster):
         @dataclass
         class SendKeyResponse(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0509
-            command_id: typing.ClassVar[int] = 0x0001
+            command_id: typing.ClassVar[int] = 0x00000001
             is_client: typing.ClassVar[bool] = False
             response_type: typing.ClassVar[str] = None
 
@@ -23233,7 +23305,7 @@ class ContentLauncher(Cluster):
         @dataclass
         class LaunchContent(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x050A
-            command_id: typing.ClassVar[int] = 0x0000
+            command_id: typing.ClassVar[int] = 0x00000000
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = 'LaunchResponse'
 
@@ -23253,7 +23325,7 @@ class ContentLauncher(Cluster):
         @dataclass
         class LaunchURL(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x050A
-            command_id: typing.ClassVar[int] = 0x0001
+            command_id: typing.ClassVar[int] = 0x00000001
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = 'LaunchResponse'
 
@@ -23273,7 +23345,7 @@ class ContentLauncher(Cluster):
         @dataclass
         class LaunchResponse(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x050A
-            command_id: typing.ClassVar[int] = 0x0002
+            command_id: typing.ClassVar[int] = 0x00000002
             is_client: typing.ClassVar[bool] = False
             response_type: typing.ClassVar[str] = None
 
@@ -23461,7 +23533,7 @@ class AudioOutput(Cluster):
         @dataclass
         class SelectOutput(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x050B
-            command_id: typing.ClassVar[int] = 0x0000
+            command_id: typing.ClassVar[int] = 0x00000000
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -23477,7 +23549,7 @@ class AudioOutput(Cluster):
         @dataclass
         class RenameOutput(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x050B
-            command_id: typing.ClassVar[int] = 0x0001
+            command_id: typing.ClassVar[int] = 0x00000001
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -23673,7 +23745,7 @@ class ApplicationLauncher(Cluster):
         @dataclass
         class LaunchApp(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x050C
-            command_id: typing.ClassVar[int] = 0x0000
+            command_id: typing.ClassVar[int] = 0x00000000
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = 'LauncherResponse'
 
@@ -23691,7 +23763,7 @@ class ApplicationLauncher(Cluster):
         @dataclass
         class StopApp(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x050C
-            command_id: typing.ClassVar[int] = 0x0001
+            command_id: typing.ClassVar[int] = 0x00000001
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = 'LauncherResponse'
 
@@ -23707,7 +23779,7 @@ class ApplicationLauncher(Cluster):
         @dataclass
         class HideApp(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x050C
-            command_id: typing.ClassVar[int] = 0x0002
+            command_id: typing.ClassVar[int] = 0x00000002
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = 'LauncherResponse'
 
@@ -23723,7 +23795,7 @@ class ApplicationLauncher(Cluster):
         @dataclass
         class LauncherResponse(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x050C
-            command_id: typing.ClassVar[int] = 0x0003
+            command_id: typing.ClassVar[int] = 0x00000003
             is_client: typing.ClassVar[bool] = False
             response_type: typing.ClassVar[str] = None
 
@@ -24154,7 +24226,7 @@ class AccountLogin(Cluster):
         @dataclass
         class GetSetupPIN(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x050E
-            command_id: typing.ClassVar[int] = 0x0000
+            command_id: typing.ClassVar[int] = 0x00000000
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = 'GetSetupPINResponse'
 
@@ -24174,7 +24246,7 @@ class AccountLogin(Cluster):
         @dataclass
         class GetSetupPINResponse(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x050E
-            command_id: typing.ClassVar[int] = 0x0001
+            command_id: typing.ClassVar[int] = 0x00000001
             is_client: typing.ClassVar[bool] = False
             response_type: typing.ClassVar[str] = None
 
@@ -24190,7 +24262,7 @@ class AccountLogin(Cluster):
         @dataclass
         class Login(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x050E
-            command_id: typing.ClassVar[int] = 0x0002
+            command_id: typing.ClassVar[int] = 0x00000002
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -24212,7 +24284,7 @@ class AccountLogin(Cluster):
         @dataclass
         class Logout(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x050E
-            command_id: typing.ClassVar[int] = 0x0003
+            command_id: typing.ClassVar[int] = 0x00000003
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -24594,7 +24666,7 @@ class ElectricalMeasurement(Cluster):
         @dataclass
         class GetProfileInfoResponseCommand(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0B04
-            command_id: typing.ClassVar[int] = 0x0000
+            command_id: typing.ClassVar[int] = 0x00000000
             is_client: typing.ClassVar[bool] = False
             response_type: typing.ClassVar[str] = None
 
@@ -24616,7 +24688,7 @@ class ElectricalMeasurement(Cluster):
         @dataclass
         class GetProfileInfoCommand(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0B04
-            command_id: typing.ClassVar[int] = 0x0000
+            command_id: typing.ClassVar[int] = 0x00000000
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -24630,7 +24702,7 @@ class ElectricalMeasurement(Cluster):
         @dataclass
         class GetMeasurementProfileResponseCommand(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0B04
-            command_id: typing.ClassVar[int] = 0x0001
+            command_id: typing.ClassVar[int] = 0x00000001
             is_client: typing.ClassVar[bool] = False
             response_type: typing.ClassVar[str] = None
 
@@ -24656,7 +24728,7 @@ class ElectricalMeasurement(Cluster):
         @dataclass
         class GetMeasurementProfileCommand(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x0B04
-            command_id: typing.ClassVar[int] = 0x0001
+            command_id: typing.ClassVar[int] = 0x00000001
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -26857,7 +26929,25 @@ class ClientMonitoring(Cluster):
         @dataclass
         class RegisterClientMonitoring(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x1046
-            command_id: typing.ClassVar[int] = 0x0000
+            command_id: typing.ClassVar[int] = 0x00000000
+            is_client: typing.ClassVar[bool] = True
+            response_type: typing.ClassVar[str] = None
+
+            @ChipUtility.classproperty
+            def descriptor(cls) -> ClusterObjectDescriptor:
+                return ClusterObjectDescriptor(
+                    Fields = [
+                            ClusterObjectFieldDescriptor(Label="clientNodeId", Tag=0, Type=uint),
+                            ClusterObjectFieldDescriptor(Label="ICid", Tag=1, Type=uint),
+                    ])
+
+            clientNodeId: 'uint' = 0
+            ICid: 'uint' = 0
+
+        @dataclass
+        class UnregisterClientMonitoring(ClusterCommand):
+            cluster_id: typing.ClassVar[int] = 0x1046
+            command_id: typing.ClassVar[int] = 0x00000001
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -26875,7 +26965,7 @@ class ClientMonitoring(Cluster):
         @dataclass
         class StayAwakeRequest(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0x1046
-            command_id: typing.ClassVar[int] = 0x0001
+            command_id: typing.ClassVar[int] = 0x00000002
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -27379,7 +27469,7 @@ class UnitTesting(Cluster):
         @dataclass
         class Test(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0xFFF1FC05
-            command_id: typing.ClassVar[int] = 0x0000
+            command_id: typing.ClassVar[int] = 0x00000000
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -27393,7 +27483,7 @@ class UnitTesting(Cluster):
         @dataclass
         class TestSpecificResponse(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0xFFF1FC05
-            command_id: typing.ClassVar[int] = 0x0000
+            command_id: typing.ClassVar[int] = 0x00000000
             is_client: typing.ClassVar[bool] = False
             response_type: typing.ClassVar[str] = None
 
@@ -27409,7 +27499,7 @@ class UnitTesting(Cluster):
         @dataclass
         class TestNotHandled(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0xFFF1FC05
-            command_id: typing.ClassVar[int] = 0x0001
+            command_id: typing.ClassVar[int] = 0x00000001
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -27423,7 +27513,7 @@ class UnitTesting(Cluster):
         @dataclass
         class TestAddArgumentsResponse(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0xFFF1FC05
-            command_id: typing.ClassVar[int] = 0x0001
+            command_id: typing.ClassVar[int] = 0x00000001
             is_client: typing.ClassVar[bool] = False
             response_type: typing.ClassVar[str] = None
 
@@ -27439,7 +27529,7 @@ class UnitTesting(Cluster):
         @dataclass
         class TestSpecific(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0xFFF1FC05
-            command_id: typing.ClassVar[int] = 0x0002
+            command_id: typing.ClassVar[int] = 0x00000002
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = 'TestSpecificResponse'
 
@@ -27453,7 +27543,7 @@ class UnitTesting(Cluster):
         @dataclass
         class TestSimpleArgumentResponse(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0xFFF1FC05
-            command_id: typing.ClassVar[int] = 0x0002
+            command_id: typing.ClassVar[int] = 0x00000002
             is_client: typing.ClassVar[bool] = False
             response_type: typing.ClassVar[str] = None
 
@@ -27469,7 +27559,7 @@ class UnitTesting(Cluster):
         @dataclass
         class TestUnknownCommand(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0xFFF1FC05
-            command_id: typing.ClassVar[int] = 0x0003
+            command_id: typing.ClassVar[int] = 0x00000003
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -27483,7 +27573,7 @@ class UnitTesting(Cluster):
         @dataclass
         class TestStructArrayArgumentResponse(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0xFFF1FC05
-            command_id: typing.ClassVar[int] = 0x0003
+            command_id: typing.ClassVar[int] = 0x00000003
             is_client: typing.ClassVar[bool] = False
             response_type: typing.ClassVar[str] = None
 
@@ -27509,7 +27599,7 @@ class UnitTesting(Cluster):
         @dataclass
         class TestAddArguments(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0xFFF1FC05
-            command_id: typing.ClassVar[int] = 0x0004
+            command_id: typing.ClassVar[int] = 0x00000004
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = 'TestAddArgumentsResponse'
 
@@ -27527,7 +27617,7 @@ class UnitTesting(Cluster):
         @dataclass
         class TestListInt8UReverseResponse(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0xFFF1FC05
-            command_id: typing.ClassVar[int] = 0x0004
+            command_id: typing.ClassVar[int] = 0x00000004
             is_client: typing.ClassVar[bool] = False
             response_type: typing.ClassVar[str] = None
 
@@ -27543,7 +27633,7 @@ class UnitTesting(Cluster):
         @dataclass
         class TestSimpleArgumentRequest(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0xFFF1FC05
-            command_id: typing.ClassVar[int] = 0x0005
+            command_id: typing.ClassVar[int] = 0x00000005
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = 'TestSimpleArgumentResponse'
 
@@ -27559,7 +27649,7 @@ class UnitTesting(Cluster):
         @dataclass
         class TestEnumsResponse(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0xFFF1FC05
-            command_id: typing.ClassVar[int] = 0x0005
+            command_id: typing.ClassVar[int] = 0x00000005
             is_client: typing.ClassVar[bool] = False
             response_type: typing.ClassVar[str] = None
 
@@ -27577,7 +27667,7 @@ class UnitTesting(Cluster):
         @dataclass
         class TestStructArrayArgumentRequest(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0xFFF1FC05
-            command_id: typing.ClassVar[int] = 0x0006
+            command_id: typing.ClassVar[int] = 0x00000006
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = 'TestStructArrayArgumentResponse'
 
@@ -27603,7 +27693,7 @@ class UnitTesting(Cluster):
         @dataclass
         class TestNullableOptionalResponse(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0xFFF1FC05
-            command_id: typing.ClassVar[int] = 0x0006
+            command_id: typing.ClassVar[int] = 0x00000006
             is_client: typing.ClassVar[bool] = False
             response_type: typing.ClassVar[str] = None
 
@@ -27625,7 +27715,7 @@ class UnitTesting(Cluster):
         @dataclass
         class TestStructArgumentRequest(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0xFFF1FC05
-            command_id: typing.ClassVar[int] = 0x0007
+            command_id: typing.ClassVar[int] = 0x00000007
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = 'BooleanResponse'
 
@@ -27641,7 +27731,7 @@ class UnitTesting(Cluster):
         @dataclass
         class TestComplexNullableOptionalResponse(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0xFFF1FC05
-            command_id: typing.ClassVar[int] = 0x0007
+            command_id: typing.ClassVar[int] = 0x00000007
             is_client: typing.ClassVar[bool] = False
             response_type: typing.ClassVar[str] = None
 
@@ -27711,7 +27801,7 @@ class UnitTesting(Cluster):
         @dataclass
         class TestNestedStructArgumentRequest(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0xFFF1FC05
-            command_id: typing.ClassVar[int] = 0x0008
+            command_id: typing.ClassVar[int] = 0x00000008
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = 'BooleanResponse'
 
@@ -27727,7 +27817,7 @@ class UnitTesting(Cluster):
         @dataclass
         class BooleanResponse(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0xFFF1FC05
-            command_id: typing.ClassVar[int] = 0x0008
+            command_id: typing.ClassVar[int] = 0x00000008
             is_client: typing.ClassVar[bool] = False
             response_type: typing.ClassVar[str] = None
 
@@ -27743,7 +27833,7 @@ class UnitTesting(Cluster):
         @dataclass
         class TestListStructArgumentRequest(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0xFFF1FC05
-            command_id: typing.ClassVar[int] = 0x0009
+            command_id: typing.ClassVar[int] = 0x00000009
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = 'BooleanResponse'
 
@@ -27759,7 +27849,7 @@ class UnitTesting(Cluster):
         @dataclass
         class SimpleStructResponse(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0xFFF1FC05
-            command_id: typing.ClassVar[int] = 0x0009
+            command_id: typing.ClassVar[int] = 0x00000009
             is_client: typing.ClassVar[bool] = False
             response_type: typing.ClassVar[str] = None
 
@@ -27775,7 +27865,7 @@ class UnitTesting(Cluster):
         @dataclass
         class TestListInt8UArgumentRequest(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0xFFF1FC05
-            command_id: typing.ClassVar[int] = 0x000A
+            command_id: typing.ClassVar[int] = 0x0000000A
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = 'BooleanResponse'
 
@@ -27791,7 +27881,7 @@ class UnitTesting(Cluster):
         @dataclass
         class TestEmitTestEventResponse(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0xFFF1FC05
-            command_id: typing.ClassVar[int] = 0x000A
+            command_id: typing.ClassVar[int] = 0x0000000A
             is_client: typing.ClassVar[bool] = False
             response_type: typing.ClassVar[str] = None
 
@@ -27807,7 +27897,7 @@ class UnitTesting(Cluster):
         @dataclass
         class TestNestedStructListArgumentRequest(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0xFFF1FC05
-            command_id: typing.ClassVar[int] = 0x000B
+            command_id: typing.ClassVar[int] = 0x0000000B
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = 'BooleanResponse'
 
@@ -27823,7 +27913,7 @@ class UnitTesting(Cluster):
         @dataclass
         class TestEmitTestFabricScopedEventResponse(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0xFFF1FC05
-            command_id: typing.ClassVar[int] = 0x000B
+            command_id: typing.ClassVar[int] = 0x0000000B
             is_client: typing.ClassVar[bool] = False
             response_type: typing.ClassVar[str] = None
 
@@ -27839,7 +27929,7 @@ class UnitTesting(Cluster):
         @dataclass
         class TestListNestedStructListArgumentRequest(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0xFFF1FC05
-            command_id: typing.ClassVar[int] = 0x000C
+            command_id: typing.ClassVar[int] = 0x0000000C
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = 'BooleanResponse'
 
@@ -27855,7 +27945,7 @@ class UnitTesting(Cluster):
         @dataclass
         class TestListInt8UReverseRequest(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0xFFF1FC05
-            command_id: typing.ClassVar[int] = 0x000D
+            command_id: typing.ClassVar[int] = 0x0000000D
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = 'TestListInt8UReverseResponse'
 
@@ -27871,7 +27961,7 @@ class UnitTesting(Cluster):
         @dataclass
         class TestEnumsRequest(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0xFFF1FC05
-            command_id: typing.ClassVar[int] = 0x000E
+            command_id: typing.ClassVar[int] = 0x0000000E
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = 'TestEnumsResponse'
 
@@ -27889,7 +27979,7 @@ class UnitTesting(Cluster):
         @dataclass
         class TestNullableOptionalRequest(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0xFFF1FC05
-            command_id: typing.ClassVar[int] = 0x000F
+            command_id: typing.ClassVar[int] = 0x0000000F
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = 'TestNullableOptionalResponse'
 
@@ -27905,7 +27995,7 @@ class UnitTesting(Cluster):
         @dataclass
         class TestComplexNullableOptionalRequest(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0xFFF1FC05
-            command_id: typing.ClassVar[int] = 0x0010
+            command_id: typing.ClassVar[int] = 0x00000010
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = 'TestComplexNullableOptionalResponse'
 
@@ -27943,7 +28033,7 @@ class UnitTesting(Cluster):
         @dataclass
         class SimpleStructEchoRequest(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0xFFF1FC05
-            command_id: typing.ClassVar[int] = 0x0011
+            command_id: typing.ClassVar[int] = 0x00000011
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = 'SimpleStructResponse'
 
@@ -27959,7 +28049,7 @@ class UnitTesting(Cluster):
         @dataclass
         class TimedInvokeRequest(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0xFFF1FC05
-            command_id: typing.ClassVar[int] = 0x0012
+            command_id: typing.ClassVar[int] = 0x00000012
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -27977,7 +28067,7 @@ class UnitTesting(Cluster):
         @dataclass
         class TestSimpleOptionalArgumentRequest(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0xFFF1FC05
-            command_id: typing.ClassVar[int] = 0x0013
+            command_id: typing.ClassVar[int] = 0x00000013
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -27993,7 +28083,7 @@ class UnitTesting(Cluster):
         @dataclass
         class TestEmitTestEventRequest(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0xFFF1FC05
-            command_id: typing.ClassVar[int] = 0x0014
+            command_id: typing.ClassVar[int] = 0x00000014
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = 'TestEmitTestEventResponse'
 
@@ -28013,7 +28103,7 @@ class UnitTesting(Cluster):
         @dataclass
         class TestEmitTestFabricScopedEventRequest(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0xFFF1FC05
-            command_id: typing.ClassVar[int] = 0x0015
+            command_id: typing.ClassVar[int] = 0x00000015
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = 'TestEmitTestFabricScopedEventResponse'
 
@@ -29510,7 +29600,7 @@ class FaultInjection(Cluster):
         @dataclass
         class FailAtFault(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0xFFF1FC06
-            command_id: typing.ClassVar[int] = 0x0000
+            command_id: typing.ClassVar[int] = 0x00000000
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 
@@ -29534,7 +29624,7 @@ class FaultInjection(Cluster):
         @dataclass
         class FailRandomlyAtFault(ClusterCommand):
             cluster_id: typing.ClassVar[int] = 0xFFF1FC06
-            command_id: typing.ClassVar[int] = 0x0001
+            command_id: typing.ClassVar[int] = 0x00000001
             is_client: typing.ClassVar[bool] = True
             response_type: typing.ClassVar[str] = None
 

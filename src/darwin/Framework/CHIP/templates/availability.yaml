@@ -36,6 +36,8 @@
 #   * "ids": Can contain clusters, attributes, commands, events as described
 #            above inside it, but just indicates whether the id was
 #            introduced/deprecated, not the construct itself.
+#   * "command payloads": Lists commands only, if we introduced the payload without
+#                         actually exposing API for the command.
 #   * "global attributes": An array of names of global attributes.
 #   * "apis": An array of API labels that codegen can use.
 #
@@ -4542,6 +4544,10 @@
           attributes:
               Descriptor:
                   - DeviceTypeList
+  renames:
+      structs:
+          Descriptor:
+              DeviceTypeStruct: DeviceType
 
 - release: "First major API revamp"
   versions: "future"
@@ -4553,6 +4559,7 @@
           - WakeOnLAN
           - ClientMonitoring
           - BasicInformation
+          - BridgedDeviceBasicInformation
       attributes:
           Descriptor:
               # We really only started treating DeviceTypeList as DeviceTypeList in the API revamp,
@@ -4669,7 +4676,7 @@
               - FeatureMap
               - ClusterRevision
           OTASoftwareUpdateRequestor:
-              - DefaultOtaProviders
+              - DefaultOTAProviders
               - UpdatePossible
               - UpdateState
               - UpdateStateProgress
@@ -4711,6 +4718,35 @@
               - AttributeList
               - FeatureMap
               - ClusterRevision
+          ThreadNetworkDiagnostics:
+              - NeighborTable
+              - RouteTable
+          WiFiNetworkDiagnostics:
+              - BSSID
+              - RSSI
+          GeneralDiagnostics:
+              - BootReason
+          BridgedDeviceBasicInformation:
+              - VendorName
+              - VendorID
+              - ProductName
+              - NodeLabel
+              - HardwareVersion
+              - HardwareVersionString
+              - SoftwareVersion
+              - SoftwareVersionString
+              - ManufacturingDate
+              - PartNumber
+              - ProductURL
+              - ProductLabel
+              - SerialNumber
+              - Reachable
+              - UniqueID
+              - GeneratedCommandList
+              - AcceptedCommandList
+              - AttributeList
+              - FeatureMap
+              - ClusterRevision
       commands:
           OTASoftwareUpdateProvider:
               - QueryImage
@@ -4719,7 +4755,7 @@
               - ApplyUpdateResponse
               - NotifyUpdateApplied
           OTASoftwareUpdateRequestor:
-              - AnnounceOtaProvider
+              - AnnounceOTAProvider
           UnitTesting:
               - Test
               - TestSpecificResponse
@@ -4757,6 +4793,7 @@
               - TestEmitTestFabricScopedEventRequest
           ClientMonitoring:
               - RegisterClientMonitoring
+              - UnregisterClientMonitoring
               - StayAwakeRequest
       command fields:
           UnitTesting:
@@ -4876,8 +4913,8 @@
                   - arg1
           OTASoftwareUpdateProvider:
               QueryImage:
-                  - vendorId
-                  - productId
+                  - vendorID
+                  - productID
                   - softwareVersion
                   - protocolsSupported
                   - hardwareVersion
@@ -4903,9 +4940,9 @@
                   - updateToken
                   - softwareVersion
           OTASoftwareUpdateRequestor:
-              AnnounceOtaProvider:
-                  - providerNodeId
-                  - vendorId
+              AnnounceOTAProvider:
+                  - providerNodeID
+                  - vendorID
                   - announcementReason
                   - metadataForNode
                   - endpoint
@@ -4913,6 +4950,39 @@
               RegisterClientMonitoring:
                   - clientNodeId
                   - iCid
+              UnregisterClientMonitoring:
+                  - clientNodeId
+                  - iCid
+          Groups:
+              AddGroup:
+                  - groupID
+              AddGroupIfIdentifying:
+                  - groupID
+              AddGroupResponse:
+                  - groupID
+              RemoveGroup:
+                  - groupID
+              RemoveGroupResponse:
+                  - groupID
+              ViewGroup:
+                  - groupID
+              ViewGroupResponse:
+                  - groupID
+          OnOff:
+              OffWithEffect:
+                  - effectIdentifier
+          DiagnosticLogs:
+              RetrieveLogsResponse:
+                  - logContent
+                  - utcTimeStamp
+          AdministratorCommissioning:
+              OpenCommissioningWindow:
+                  - pakePasscodeVerifier
+          OperationalCredentials:
+              AttestationResponse:
+                  - attestationSignature
+              AddTrustedRootCertificate:
+                  - rootCACertificate
       structs:
           OTASoftwareUpdateRequestor:
               - ProviderLocation
@@ -4928,6 +4998,17 @@
               - MonitoringRegistration
           BasicInformation:
               - CapabilityMinimaStruct
+          AccessControl:
+              - AccessControlEntryStruct
+              - AccessControlExtensionStruct
+          SoftwareDiagnostics:
+              - ThreadMetricsStruct
+          GeneralDiagnostics:
+              - NetworkInterface
+          ModeSelect:
+              - SemanticTagStruct
+          OperationalCredentials:
+              - FabricDescriptorStruct
       struct fields:
           UnitTesting:
               SimpleStruct:
@@ -4992,6 +5073,53 @@
               CapabilityMinimaStruct:
                   - caseSessionsPerFabric
                   - subscriptionsPerFabric
+          Descriptor:
+              DeviceTypeStruct:
+                  - deviceType
+          AccessControl:
+              AccessControlEntryStruct:
+                  - privilege
+                  - authMode
+                  - subjects
+                  - targets
+                  - fabricIndex
+              AccessControlExtensionStruct:
+                  - data
+                  - fabricIndex
+          SoftwareDiagnostics:
+              ThreadMetricsStruct:
+                  - id
+                  - name
+                  - stackFreeCurrent
+                  - stackFreeMinimum
+                  - stackSize
+          GeneralDiagnostics:
+              NetworkInterface:
+                  - name
+                  - isOperational
+                  - offPremiseServicesReachableIPv4
+                  - offPremiseServicesReachableIPv6
+                  - hardwareAddress
+                  - iPv4Addresses
+                  - iPv6Addresses
+                  - type
+          ModeSelect:
+              SemanticTagStruct:
+                  - mfgCode
+                  - value
+          OperationalCredentials:
+              FabricDescriptorStruct:
+                  - rootPublicKey
+                  - vendorID
+                  - fabricID
+                  - nodeID
+                  - label
+                  - fabricIndex
+                  # Values that are actually deprecated, but we effectively
+                  # introduced them in this release.
+                  - vendorId
+                  - fabricId
+                  - nodeId
       events:
           OTASoftwareUpdateRequestor:
               - StateTransition
@@ -5001,6 +5129,15 @@
               - TestEvent
               - TestFabricScopedEvent
           BasicInformation:
+              - StartUp
+              - ShutDown
+              - Leave
+              - ReachableChanged
+          PowerSource:
+              - WiredFaultChange
+              - BatFaultChange
+              - BatChargeFaultChange
+          BridgedDeviceBasicInformation:
               - StartUp
               - ShutDown
               - Leave
@@ -5040,6 +5177,21 @@
                   - fabricIndex
               ReachableChanged:
                   - reachableNewValue
+          PowerSource:
+              WiredFaultChange:
+                  - current
+                  - previous
+              BatFaultChange:
+                  - current
+                  - previous
+              BatChargeFaultChange:
+                  - current
+                  - previous
+          BridgedDeviceBasicInformation:
+              StartUp:
+                  - softwareVersion
+              ReachableChanged:
+                  - reachableNewValue
       enums:
           OTASoftwareUpdateProvider:
               - OTAApplyUpdateAction
@@ -5051,6 +5203,20 @@
               - OTAUpdateStateEnum
           UnitTesting:
               - SimpleEnum
+          AccessControl:
+              - AccessControlEntryPrivilegeEnum
+              - AccessControlEntryAuthModeEnum
+          ThreadNetworkDiagnostics:
+              - ConnectionStatusEnum
+          EthernetNetworkDiagnostics:
+              - PHYRate
+          GeneralDiagnostics:
+              - HardwareFault
+              - RadioFault
+              - BootReasonEnum
+          OperationalCredentials:
+              - NodeOperationalCertStatusEnum
+              - CertificateChainTypeEnum
       enum values:
           OTASoftwareUpdateProvider:
               OTAApplyUpdateAction:
@@ -5094,6 +5260,91 @@
                   - ValueA
                   - ValueB
                   - ValueC
+          GeneralCommissioning:
+              CommissioningError:
+                  - OK
+          AccessControl:
+              AccessControlEntryPrivilegeEnum:
+                  - View
+                  - ProxyView
+                  - Operate
+                  - Manage
+                  - Administer
+              AccessControlEntryAuthModeEnum:
+                  - PASE
+                  - CASE
+                  - Group
+          PowerSource:
+              BatChargeLevel:
+                  - OK
+          ThreadNetworkDiagnostics:
+              ConnectionStatusEnum:
+                  - Connected
+                  - NotConnected
+          WiFiNetworkDiagnostics:
+              WiFiVersionType:
+                  - A
+                  - B
+                  - G
+                  - N
+                  - Ac
+                  - Ax
+          EthernetNetworkDiagnostics:
+              PHYRate:
+                  - Rate10M
+                  - Rate100M
+                  - Rate1G
+                  - Rate25G
+                  - Rate5G
+                  - Rate10G
+                  - Rate40G
+                  - Rate100G
+                  - Rate200G
+                  - Rate400G
+          GeneralDiagnostics:
+              HardwareFault:
+                  - Unspecified
+                  - Radio
+                  - Sensor
+                  - ResettableOverTemp
+                  - NonResettableOverTemp
+                  - PowerSource
+                  - VisualDisplayFault
+                  - AudioOutputFault
+                  - UserInterfaceFault
+                  - NonVolatileMemoryError
+                  - TamperDetected
+              RadioFault:
+                  - Unspecified
+                  - WiFiFault
+                  - CellularFault
+                  - ThreadFault
+                  - NFCFault
+                  - BLEFault
+                  - EthernetFault
+              BootReasonEnum:
+                  - Unspecified
+                  - PowerOnReboot
+                  - BrownOutReset
+                  - SoftwareWatchdogReset
+                  - HardwareWatchdogReset
+                  - SoftwareUpdateCompleted
+                  - SoftwareReset
+          OperationalCredentials:
+              NodeOperationalCertStatusEnum:
+                  - OK
+                  - InvalidPublicKey
+                  - InvalidNodeOpId
+                  - InvalidNOC
+                  - MissingCsr
+                  - TableFull
+                  - InvalidAdminSubject
+                  - FabricConflict
+                  - LabelConflict
+                  - InvalidFabricIndex
+              CertificateChainTypeEnum:
+                  - DACCertificate
+                  - PAICertificate
       bitmaps:
           UnitTesting:
               - Bitmap8MaskMap
@@ -5133,6 +5384,15 @@
               LevelControlOptions:
                   - ExecuteIfOff
                   - CoupleColorTempToLevel
+          NetworkCommissioning:
+              WiFiSecurity:
+                  - WEP
+                  - WPAPersonal
+                  - WPA2Personal
+                  - WPA3Personal
+          PressureMeasurement:
+              PressureFeature:
+                  - Extended
   deprecated:
       clusters:
           - OtaSoftwareUpdateProvider
@@ -5149,20 +5409,160 @@
               - PirOccupiedToUnoccupiedDelay
               - PirUnoccupiedToOccupiedDelay
               - PirUnoccupiedToOccupiedThreshold
+          ThreadNetworkDiagnostics:
+              - NeighborTableList
+              - RouteTableList
+          WiFiNetworkDiagnostics:
+              - Bssid
+              - Rssi
+          GeneralDiagnostics:
+              - BootReasons
+      command fields:
+          Groups:
+              AddGroup:
+                  - groupId
+              AddGroupIfIdentifying:
+                  - groupId
+              AddGroupResponse:
+                  - groupId
+              RemoveGroup:
+                  - groupId
+              RemoveGroupResponse:
+                  - groupId
+              ViewGroup:
+                  - groupId
+              ViewGroupResponse:
+                  - groupId
+          OnOff:
+              OffWithEffect:
+                  - effectId
+          DiagnosticLogs:
+              RetrieveLogsResponse:
+                  - content
+                  - timeStamp
+          AdministratorCommissioning:
+              OpenCommissioningWindow:
+                  - pakeVerifier
+          OperationalCredentials:
+              AttestationResponse:
+                  - signature
+              AddTrustedRootCertificate:
+                  - rootCertificate
       structs:
           Descriptor:
               - DeviceType
+          AccessControl:
+              - AccessControlEntry
+              - ExtensionEntry
+          PowerSource:
+              - WiredFaultChangeType
+              - BatFaultChangeType
+              - BatChargeFaultChangeType
+          SoftwareDiagnostics:
+              - ThreadMetrics
+          GeneralDiagnostics:
+              - NetworkInterfaceType
+          ModeSelect:
+              - SemanticTag
+          OperationalCredentials:
+              - FabricDescriptor
+      struct fields:
+          Descriptor:
+              DeviceTypeStruct:
+                  - type
+          OperationalCredentials:
+              FabricDescriptorStruct:
+                  - vendorId
+                  - fabricId
+                  - nodeId
       event fields:
           Switch:
               MultiPressComplete:
                   - newPosition
+      enums:
+          AccessControl:
+              - Privilege
+              - AuthMode
+          ThreadNetworkDiagnostics:
+              - ThreadConnectionStatus
+          EthernetNetworkDiagnostics:
+              - PHYRateType
+          GeneralDiagnostics:
+              - HardwareFaultType
+              - RadioFaultType
+              - BootReasonType
+          OperationalCredentials:
+              - OperationalCertStatus
+      enum values:
+          GeneralCommissioning:
+              CommissioningError:
+                  - Ok
+          PowerSource:
+              BatChargeLevel:
+                  - Ok
+          WiFiNetworkDiagnostics:
+              WiFiVersionType:
+                  - 80211a
+                  - 80211b
+                  - 80211g
+                  - 80211n
+                  - 80211ac
+                  - 80211ax
+      bitmap values:
+          NetworkCommissioning:
+              WiFiSecurity:
+                  - WepPersonal
+                  - WpaPersonal
+                  - Wpa2Personal
+                  - Wpa3Personal
+          PressureMeasurement:
+              PressureFeature:
+                  - EXT
       apis:
           - Timed Invoke for server to client commands
           - Deprecated global attribute names
   removed:
+      clusters:
+          # Not ready to be public API yet.
+          - ClientMonitoring
       commands:
           BasicInformation:
               - MfgSpecificPing
+      enum values:
+          EthernetNetworkDiagnostics:
+              # Both the enum and the values got renamed, so don't output the
+              # new values with the old enum name or the old values with the
+              # new enum name.
+              PHYRateType:
+                  - Rate10M
+                  - Rate100M
+                  - Rate1G
+                  - Rate25G
+                  - Rate5G
+                  - Rate10G
+                  - Rate40G
+                  - Rate100G
+                  - Rate200G
+                  - Rate400G
+              PHYRate:
+                  - 10M
+                  - 100M
+                  - 1000M
+                  - 25G
+                  - 5G
+                  - 10G
+                  - 40G
+                  - 100G
+                  - 200G
+                  - 400G
+          OperationalCredentials:
+              # Both the enum and the values got renamed, so don't output the
+              # new value with the old enum name or the old value with the
+              # new enum name.
+              NodeOperationalCertStatusEnum:
+                  - SUCCESS
+              OperationalCertStatus:
+                  - OK
   renames:
       clusters:
           UnitTesting: TestCluster
@@ -5170,6 +5570,7 @@
           OTASoftwareUpdateProvider: OtaSoftwareUpdateProvider
           OTASoftwareUpdateRequestor: OtaSoftwareUpdateRequestor
           WakeOnLAN: WakeOnLan
+          BridgedDeviceBasicInformation: BridgedDeviceBasic
       attributes:
           Descriptor:
               DeviceTypeList: DeviceList
@@ -5179,3 +5580,147 @@
               PIROccupiedToUnoccupiedDelay: PirOccupiedToUnoccupiedDelay
               PIRUnoccupiedToOccupiedDelay: PirUnoccupiedToOccupiedDelay
               PIRUnoccupiedToOccupiedThreshold: PirUnoccupiedToOccupiedThreshold
+          OTASoftwareUpdateRequestor:
+              DefaultOTAProviders: DefaultOtaProviders
+          ThreadNetworkDiagnostics:
+              NeighborTable: NeighborTableList
+              RouteTable: RouteTableList
+          WiFiNetworkDiagnostics:
+              BSSID: Bssid
+              RSSI: Rssi
+          GeneralDiagnostics:
+              BootReason: BootReasons
+      commands:
+          OTASoftwareUpdateRequestor:
+              AnnounceOTAProvider: AnnounceOtaProvider
+      command fields:
+          OTASoftwareUpdateProvider:
+              QueryImage:
+                  vendorID: vendorId
+                  productID: productId
+          OTASoftwareUpdateRequestor:
+              AnnounceOTAProvider:
+                  providerNodeID: providerNodeId
+                  vendorID: vendorId
+          Groups:
+              AddGroup:
+                  groupID: groupId
+              AddGroupIfIdentifying:
+                  groupID: groupId
+              AddGroupResponse:
+                  groupID: groupId
+              RemoveGroup:
+                  groupID: groupId
+              RemoveGroupResponse:
+                  groupID: groupId
+              ViewGroup:
+                  groupID: groupId
+              ViewGroupResponse:
+                  groupID: groupId
+          OnOff:
+              OffWithEffect:
+                  effectIdentifier: effectId
+          DiagnosticLogs:
+              RetrieveLogsResponse:
+                  logContent: content
+                  utcTimeStamp: timeStamp
+          AdministratorCommissioning:
+              OpenCommissioningWindow:
+                  pakePasscodeVerifier: pakeVerifier
+          OperationalCredentials:
+              AttestationResponse:
+                  attestationSignature: signature
+              AddTrustedRootCertificate:
+                  rootCACertificate: rootCertificate
+      structs:
+          AccessControl:
+              AccessControlEntryStruct: AccessControlEntry
+              AccessControlExtensionStruct: ExtensionEntry
+          SoftwareDiagnostics:
+              ThreadMetricsStruct: ThreadMetrics
+          GeneralDiagnostics:
+              NetworkInterface: NetworkInterfaceType
+          ModeSelect:
+              SemanticTagStruct: SemanticTag
+          OperationalCredentials:
+              FabricDescriptorStruct: FabricDescriptor
+      struct fields:
+          Descriptor:
+              DeviceTypeStruct:
+                  deviceType: type
+          OperationalCredentials:
+              FabricDescriptorStruct:
+                  vendorID: vendorId
+                  fabricID: fabricId
+                  nodeID: nodeId
+      event fields:
+          Switch:
+              MultiPressComplete:
+                  previousPosition: newPosition
+      enums:
+          AccessControl:
+              AccessControlEntryPrivilegeEnum: Privilege
+              AccessControlEntryAuthModeEnum: AuthMode
+          ThreadNetworkDiagnostics:
+              ConnectionStatusEnum: ThreadConnectionStatus
+          EthernetNetworkDiagnostics:
+              PHYRate: PHYRateType
+          GeneralDiagnostics:
+              HardwareFault: HardwareFaultType
+              RadioFault: RadioFaultType
+              BootReasonEnum: BootReasonType
+          OperationalCredentials:
+              NodeOperationalCertStatusEnum: OperationalCertStatus
+      enum values:
+          GeneralCommissioning:
+              CommissioningError:
+                  OK: Ok
+          PowerSource:
+              BatChargeLevel:
+                  OK: Ok
+          WiFiNetworkDiagnostics:
+              WiFiVersionType:
+                  A: 80211a
+                  B: 80211b
+                  G: 80211g
+                  N: 80211n
+                  Ac: 80211ac
+                  Ax: 80211ax
+          EthernetNetworkDiagnostics:
+              PHYRate:
+                  Rate10M: 10M
+                  Rate100M: 100M
+                  Rate1G: 1000M
+                  Rate25G: 25G
+                  Rate5G: 5G
+                  Rate10G: 10G
+                  Rate40G: 40G
+                  Rate100G: 100G
+                  Rate200G: 200G
+                  Rate400G: 400G
+              PHYRateType:
+                  Rate10M: 10M
+                  Rate100M: 100M
+                  Rate1G: 1000M
+                  Rate25G: 25G
+                  Rate5G: 5G
+                  Rate10G: 10G
+                  Rate40G: 40G
+                  Rate100G: 100G
+                  Rate200G: 200G
+                  Rate400G: 400G
+          OperationalCredentials:
+              NodeOperationalCertStatusEnum:
+                  OK: SUCCESS
+              OperationalCertStatus:
+                  OK: SUCCESS
+      bitmap values:
+          NetworkCommissioning:
+              WiFiSecurity:
+                  WEP: WepPersonal
+                  WPAPersonal: WpaPersonal
+                  WPA2Personal: Wpa2Personal
+                  WPA3Personal: Wpa3Personal
+          PressureMeasurement:
+              PressureFeature:
+                  Extended: EXT
