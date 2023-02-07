@@ -315,7 +315,7 @@ Command * Commands::GetGlobalCommand(CommandsVector & commands, std::string comm
 bool Commands::IsAttributeCommand(std::string commandName) const
 {
     return commandName.compare("read") == 0 || commandName.compare("write") == 0 || commandName.compare("force-write") == 0 ||
-        commandName.compare("subscribe") == 0;
+        commandName.compare("subscribe") == 0 || commandName.compare("set-attribute") == 0;
 }
 
 bool Commands::IsEventCommand(std::string commandName) const
@@ -357,6 +357,7 @@ void Commands::ShowCluster(std::string executable, std::string clusterName, Comm
     bool readCommand           = false;
     bool writeCommand          = false;
     bool writeOverrideCommand  = false;
+    bool setAttribute          = false;
     bool subscribeCommand      = false;
     bool readEventCommand      = false;
     bool subscribeEventCommand = false;
@@ -377,6 +378,10 @@ void Commands::ShowCluster(std::string executable, std::string clusterName, Comm
             else if (strcmp(command->GetName(), "force-write") == 0 && !writeOverrideCommand)
             {
                 writeOverrideCommand = true;
+            }
+            else if (strcmp(command->GetName(), "set-attribute") == 0 && !setAttribute)
+            {
+                setAttribute = true;
             }
             else if (strcmp(command->GetName(), "subscribe") == 0 && !subscribeCommand)
             {

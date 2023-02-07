@@ -1,0 +1,88 @@
+{{>header}}
+
+#pragma once
+
+#include "commands/common/Command.h"
+#include "commands/common/Commands.h"
+#include <platform/CHIPDeviceLayer.h>
+#include <app-common/zap-generated/attributes/Accessors.h>
+
+#include <string>
+
+using namespace ::chip::app::Clusters;
+
+{{#zcl_clusters}}
+{{#zcl_attributes_server}}
+{{#if_chip_complex}}
+{{else}}
+class Set{{asUpperCamelCase parent.name}}{{asUpperCamelCase name}}AttributeCommand : public Command
+{
+    public:
+        Set{{asUpperCamelCase parent.name}}{{asUpperCamelCase name}}AttributeCommand() : Command("set-attribute")
+        {
+            AddArgument("attribute-name", "{{cleanse_label_as_kebab_case (asUpperCamelCase name)}}", "The attribute name to write.");
+            AddArgument("endpointID", 0, UINT16_MAX, &mEndPointId, "Set the Value for an end point.");
+            {{#if_chip_complex}}
+            {{else if (isString type)}}
+            AddArgument("atribute-value", &{{asLowerCamelCase name}}, "Set the Value of on {{asUpperCamelCase name}}.");
+            {{else}}
+            AddArgument("atribute-value", {{as_type_min_value type language='c++'}}, {{as_type_max_value type language='c++'}}, &{{asLowerCamelCase name}}, "Set the Value of on {{asUpperCamelCase name}}.");
+            {{/if_chip_complex}}
+        }
+
+        /////////// Command Interface /////////
+        CHIP_ERROR Run() override
+        {
+            ChipLogProgress(chipTool, "Setting Attribute Value: {{asUpperCamelCase name}}");
+            chip::DeviceLayer::PlatformMgr().ScheduleWork(Set{{asUpperCamelCase name}}, reinterpret_cast<intptr_t>(this));
+            return CHIP_NO_ERROR;
+        }
+
+        void SetCommandExitStatus(CHIP_ERROR status){ }
+
+        {{zapTypeToEncodableClusterObjectType type ns=parent.name forceNotOptional=true}} {{asLowerCamelCase name}};
+        chip::EndpointId mEndPointId;
+    private:
+        static void Set{{asUpperCamelCase name}}(intptr_t context)
+        {
+            VerifyOrReturn(context != 0, ChipLogError(NotSpecified, "SetOnOff - Invalid Class"));
+
+            Set{{asUpperCamelCase parent.name}}{{asUpperCamelCase name}}AttributeCommand * command = reinterpret_cast<Set{{asUpperCamelCase parent.name}}{{asUpperCamelCase name}}AttributeCommand *>(context);
+            EmberAfStatus result = chip::app::Clusters::{{asUpperCamelCase parent.name}}::Attributes::{{asUpperCamelCase name}}::Set(command->mEndPointId, command->{{asLowerCamelCase name}});
+            ChipLogProgress(AppServer, "Set command Ember AF Status: %d", result);
+            if (EMBER_SUCCESS != result){
+                ChipLogError(AppServer, "Failed to set attribute {{asUpperCamelCase name}}"); 
+            }
+        }
+};
+{{/if_chip_complex}}
+{{/zcl_attributes_server}}
+{{/zcl_clusters}}
+
+/*----------------------------------------------------------------------------*\
+| Register all Set commands                                               |
+\*----------------------------------------------------------------------------*/
+{{#zcl_clusters}}
+void register{{asLowerCamelCase name}}SetAttributesCommands(Commands & commands)
+{
+    const char * clusterName = "{{asUpperCamelCase name}}";
+
+    commands_list clusterCommands = {
+        {{#zcl_attributes_server}}
+        {{#if_chip_complex}}
+        {{else}}
+        make_unique<Set{{asUpperCamelCase parent.name}}{{asUpperCamelCase name}}AttributeCommand>(), //
+        {{/if_chip_complex}}
+        {{/zcl_attributes_server}}
+    };
+
+    commands.Register(clusterName, clusterCommands);
+}
+{{/zcl_clusters}}
+
+void registerSetAttributeCommands(Commands & commands)
+{
+{{#zcl_clusters}}
+    register{{asLowerCamelCase name}}SetAttributesCommands(commands);
+{{/zcl_clusters}}
+}
