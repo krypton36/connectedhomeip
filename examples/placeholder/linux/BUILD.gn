@@ -32,7 +32,7 @@ executable("chip-${chip_tests_zap_config}") {
     "AppOptions.cpp",
     "InteractiveServer.cpp",
     "main.cpp",
-  ]
+p  ]
 
   deps = [
     "${chip_root}/examples/common/websocket-server",
