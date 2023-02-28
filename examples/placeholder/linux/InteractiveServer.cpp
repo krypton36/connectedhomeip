@@ -17,13 +17,11 @@
  */
 
 #include "InteractiveServer.h"
-#include <zap-generated/SetAttributeCommands.h>
 
 #include <json/json.h>
 #include <lib/support/Base64.h>
 #include <platform/CHIPDeviceLayer.h>
 #include <platform/logging/LogV.h>
-#include "commands/common/Commands.h"
 
 using namespace chip::DeviceLayer;
 
@@ -157,8 +155,6 @@ void ENFORCE_FORMAT(3, 0) InteractiveServerLoggingCallback(const char * module, 
     gInteractiveServerResult.MaybeAddLog(module, category, base64Message);
 }
 
-Commands gCommands;
-
 std::string JsonToString(Json::Value & json)
 {
     Json::FastWriter writer;
@@ -197,7 +193,6 @@ InteractiveServer & InteractiveServer::GetInstance()
 
 void InteractiveServer::Run(const chip::Optional<uint16_t> port)
 {
-    registerSetAttributeCommands(gCommands);
     mIsReady = false;
     wsThread = std::thread(&WebSocketServer::Run, &mWebSocketServer, port, this);
 
@@ -215,7 +210,6 @@ bool InteractiveServer::OnWebSocketMessageReceived(char * msg)
     }
     else
     {
-        gCommands.RunInteractive(msg);
         mIsReady = true;
     }
     return true;

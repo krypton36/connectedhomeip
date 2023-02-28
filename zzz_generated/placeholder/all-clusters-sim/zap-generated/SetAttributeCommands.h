@@ -3989,7 +3989,7 @@ public:
 
     void SetCommandExitStatus(CHIP_ERROR status) {}
 
-    chip::app::Clusters::UnitLocalization::TempUnit temperatureUnit;
+    chip::app::Clusters::UnitLocalization::TempUnitEnum temperatureUnit;
     chip::EndpointId mEndPointId;
 
 private:

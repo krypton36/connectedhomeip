@@ -27,11 +27,18 @@ source_set("app2") {
   include_dirs = [
     ".",
     "../../include",
+     "${chip_root}/examples/common",
   ]
 
   sources = [
     "../../src/bridged-actions-stub.cpp",
     "../../static-supported-modes-manager.cpp",
+    "../../InteractiveServer.cpp",
+  ]
+
+  deps = [
+    "${chip_root}/examples/common/websocket-server",
+    "${chip_root}/third_party/jsoncpp",
   ]
 
   public_deps = [ ":configuration" ]

@@ -65,7 +65,7 @@
     ],
     "templates": [
         {
-            "path": "tests-commands.zapt",
+            "path": "../../../../templates/tests-commands.zapt",
             "name": "Tests Commands header",
             "output": "test/Commands.h"
         },
